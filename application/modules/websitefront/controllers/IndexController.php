@@ -8,7 +8,7 @@ class Websitefront_IndexController extends PublicdetailController {
 	
 	public function initValue() {		
 		$cache = Zend_Registry::get('cache');
-		
+		$this->coquanId = 1;
 		$strIP = str_replace('.', '', $_SERVER['REMOTE_ADDR']);
 		if ($this->getRequest ()->isPost ()) {
 			$coquanId[$strIP] = $this->getRequest ()->getParam ( 'coquanId' );

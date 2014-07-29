@@ -1,0 +1,63 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+
+class Model_Diadiem {
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tendiadiem ";
+
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diadiem" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_diadiem ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $Tendiadiem) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diadiem WHERE Tendiadiem = '$Tendiadiem'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diadiem WHERE Id != $id AND Tendiadiem = '$Tendiadiem'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// lay thong tin ve id va ten doi tuong
+	
+	public function getIdName() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_diadiem" );
+		return $query->fetchAll ();
+	}
+	
+	// them moi dia diem kham
+	
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_diadiem', $data );
+		return $Id;
+	}
+	
+	// sua dia diem kham
+	
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_diadiem', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xoa dia diem kham benh
+	
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_diadiem', 'Id = ' . $id );
+		return $Id;
+	}
+}

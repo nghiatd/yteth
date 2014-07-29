@@ -1,0 +1,57 @@
+<?php
+class Model_Muccoso {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT Id, Tenmuccoso ";
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muccoso" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muccoso ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	public function getNameIdObj() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muccoso" );
+		return $query->fetchAll ();
+	}
+	public function getNameIdObjNoChuho() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muccoso WHERE Tenmuccoso != 'Chủ hộ'" );
+		return $query->fetchAll ();
+	}
+	public function dupObj($id, $Tenmuccoso) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muccoso WHERE Tenmuccoso = '$Tenmuccoso'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muccoso WHERE Id != $id AND Tenmuccoso = '$Tenmuccoso'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	// Bg Daitk
+	public function getIdByName($Tenmuccoso) {
+		$query = $this->db->query ( "SELECT Id FROM tbldm_muccoso WHERE Tenmuccoso LIKE '$Tenmuccoso'" );
+		$Rows = $query->fetchAll ();
+		if (count ( $Rows ) > 0)
+			$Id = $Rows [0] ['Id'];
+		else
+			$Id = 0;
+		return $Id;
+	}
+	// Ed Daitk
+	public function addObj($data) {
+		$id = $this->db->insert ( 'tbldm_muccoso', $data );
+		return $id;
+	}
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_muccoso', $data, 'Id =' . $id );
+		return $Id;
+	}
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_muccoso', 'Id =' . $id );
+		return $Id;
+	}
+}

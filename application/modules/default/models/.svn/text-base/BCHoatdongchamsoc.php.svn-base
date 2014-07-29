@@ -1,0 +1,17 @@
+<?php
+/**
+ *
+ * phadh
+ *	Edit by Daitk
+ */
+class Model_BCHoatdongchamsoc {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getData($stt, $thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$query = $this->db->query ( 'CALL 4_BCX_Q' . $stt . '(' . $thangnamBatdau . ', ' . $thangnamKetthuc . ', ' . $thongtincoquanId . ', ' . $namhoatdong . ')' );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+}

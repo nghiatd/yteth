@@ -1,0 +1,196 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BcsotheodoisotretController extends PublicdetailController {
+	private $_MBCSotheodoisotret;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	public function init() {
+		$this->initValue ();
+		$this->_MBCSotheodoisotret = new Model_Bcsotheodoisotret ();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+	}
+	
+	public function exstdsrAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowindex = 0;
+		
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+		/*
+		 * B?t d?u set các giá tr?, can ch?nh style B?t d?u set các giá tr?
+		 * tinh.
+		 */
+		$sheet->setCellValue ( 'A1', 'A7/YTCS' );
+		$sheet->mergeCellsByColumnAndRow ( 0, 1, 1, 1 );
+		$sheet->setCellValue ( 'A3', 'SỔ THEO DÕI BỆNH SỐT RÉT' );
+		$sheet->mergeCellsByColumnAndRow ( 0, 3, 17, 3 );
+		$sheet->setCellValue ('A4', 'Năm '.$this->_Namhoatdong);
+		$sheet->mergeCellsByColumnAndRow( 0, 4, 17, 4);
+		$helpExport->setStyle_13_TNR($sheet, 'A1', 'A1');
+		$helpExport->setStyle_15_TNR_B_C ( $sheet, 'A3', 'R4' );
+		
+		$rowStart = 6;
+		$colStart = 'A';
+		$rowindex = $rowStart;
+		$colIndex = $colStart;
+		$sheet = $objPHPExcel->getActiveSheet ();
+		// BEGIN set width for colums
+		$sheet->getColumnDimension ( 'A' )->setWidth ( 6 );
+		$sheet->getColumnDimension ( 'B' )->setWidth ( 10.43 );
+		$sheet->getColumnDimension ( 'C' )->setWidth ( 17.57 );
+		$sheet->getColumnDimension ( 'D' )->setWidth ( 7.29 );
+		$sheet->getColumnDimension ( 'E' )->setWidth ( 7.29 );
+		$sheet->getColumnDimension ( 'F' )->setWidth ( 6.71 );
+		$sheet->getColumnDimension ( 'G' )->setWidth ( 19.29 );
+		$sheet->getColumnDimension ( 'H' )->setWidth ( 12.29 );
+		$sheet->getColumnDimension ( 'I' )->setWidth ( 9.29 );
+		$sheet->getColumnDimension ( 'J' )->setWidth ( 8.43 );
+		$sheet->getColumnDimension ( 'K' )->setWidth ( 13.71 );
+		$sheet->getColumnDimension ( 'L' )->setWidth ( 10.86 );
+		$sheet->getColumnDimension ( 'M' )->setWidth ( 12.29 );
+		$sheet->getColumnDimension ( 'N' )->setWidth ( 12 );
+		$sheet->getColumnDimension ( 'O' )->setWidth ( 10.29 );
+		$sheet->getColumnDimension ( 'P' )->setWidth ( 10.71 );
+		$sheet->getColumnDimension ( 'Q' )->setWidth ( 8.57 );
+		$sheet->getColumnDimension ( 'R' )->setWidth ( 10.57 );
+		$sheet->getRowDimension('7')->setRowHeight(30);
+		// END set width for column
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Stt', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 0, $rowindex, 0, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Ngày tháng', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 1, $rowindex, 1, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Họ và tên', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 2, $rowindex, 2, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, 'D' . $rowindex, 'Tuổi', 'D' );
+		$sheet->mergeCellsByColumnAndRow ( 3, $rowindex, 4, ($rowindex) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, 'F' . $rowindex, 'Có thai', 'F' );
+		$sheet->mergeCellsByColumnAndRow ( 5, $rowindex, 5, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Ðịa chỉ', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 6, $rowindex, 6, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Ngề nghiệp', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 7, $rowindex, 7, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Dân tộc', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 8, $rowindex, 8, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Có sốt', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 9, $rowindex, 9, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Xét nghiệm lam, que thử', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 10, $rowindex, 10, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Kết quả xét nghiệm', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 11, $rowindex, 11, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Nơi phát hiện', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 12, $rowindex, 12, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Chuẩn đoán', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 13, $rowindex, 13, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Thuốc SR điều trị', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 14, $rowindex, 14, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Thuốc SR tự điều trị', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 15, $rowindex, 15, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Kết quả điều trị', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 16, $rowindex, 16, ($rowindex + 1) );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, 'Ghi chú', $colIndex );
+		$sheet->mergeCellsByColumnAndRow ( 17, $rowindex, 17, ($rowindex + 1) );
+
+		$helpExport->setValueForSheet ( $sheet, 'D' . ($rowindex + 1), 'Nam', 'D' );
+		$sheet->mergeCellsByColumnAndRow ( 3, $rowindex, 4, $rowindex );
+		$helpExport->setValueForSheet ( $sheet, 'E' . ($rowindex + 1), 'Nữ', 'E' );
+		$sheet->mergeCellsByColumnAndRow ( 4, $rowindex, 4, $rowindex );
+		//$helpExport->setStyleTitleTable ( $sheet, 'D'.($rowindex + 1), 'E'.($rowindex + 1) );
+		
+		$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowindex, $colIndex . ($rowindex + 1) );
+		
+		$rowindex += 2;
+		$colIndex = $colStart;
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '1', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '2', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '3', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '4', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '5', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '6', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '7', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '8', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '9', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '10', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '11', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '12', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '13', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '14', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '15', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '16', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '17', $colIndex );
+		$helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, '18', $colIndex );
+		$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowindex, $colIndex . $rowindex );
+		
+		$jsonObj = $this->_MBCSotheodoisotret->getSTDSR($this->_ThongtincoquanId, $this->_Namhoatdong);
+		$count = 0;
+		if (count ( $jsonObj ) > 0) {
+			foreach ( $jsonObj as $row ) {
+				$count += 1;
+				$rowindex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $count, $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Ngaythang'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Hoten'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Nam'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Nu'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Cothai'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Diachi'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Nghenghiep'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Dantocitnguoi'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Cosot'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Xetnghiemlamquethu'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Ketquaxetnghiem'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Noiphathien'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Chuandoan'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['ThuocSRdieutri'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['ThuocSRtudieutri'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Ketquadieutri'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowindex, $row ['Ghichu'], $colIndex );
+				$helpExport->setStyle_11_TNR_N_L ( $sheet, $colStart . $rowindex, $colIndex . $rowindex );
+			}
+			// $rowindex += 1;
+		}
+		
+		//$helpExport->setStyleRowDataTable ( $sheet, 'A' . ($rowStart + 2), 'R' . $rowindex );
+		$helpExport->setStyle_Align_Center ( $sheet, 'D' . $rowStart, 'F' . $rowindex );
+		$helpExport->setStyle_Align_Center ( $sheet, 'I' . $rowStart, 'J' . $rowindex );
+		$helpExport->setStyle_Align_Center ( $sheet, 'A' . $rowStart, 'A' . $rowindex );
+		$helpExport->setStyle_Align_Center ( $sheet, 'Q' . $rowStart, 'Q' . $rowindex );
+
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'R' . $rowindex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'R' . $rowindex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+		/*
+		 * Set active sheet index to the first sheet, so Excel opens this as the
+		 * first sheet
+		 */
+		$objPHPExcel->setActiveSheetIndex ( 0 );
+		/* Redirect output to a clientâ€™s web browser (Excel5) */
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A3);
+		$pageMargin = $sheet->getPageMargins();
+		$pageMargin->setTop(.5);
+		$pageMargin->setLeft(.73);
+		$pageMargin->setRight(.2);
+		
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="Sotheodoisotret(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+}

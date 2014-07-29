@@ -1,0 +1,117 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+include 'PublicdetailController.php';
+class NuocsanxuatController extends PublicdetailController
+{
+	
+	private $_MNuocsanxuat;
+	private $_Tennuocsanxuat;
+	private $_Nuocsanxuat = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MNuocsanxuat = new Model_Nuocsanxuat ();
+	
+		if (isset ( $_REQUEST ['Tennuocsanxuat'] ) && $_REQUEST ['Tennuocsanxuat'] != '') {
+			$this->_Tennuocsanxuat = $_REQUEST ['Tennuocsanxuat'];
+			$this->_Nuocsanxuat = array (
+					'Tennuocsanxuat' => $_REQUEST ['Tennuocsanxuat']
+			);
+		}
+	}
+	
+	public function indexAction()
+	{
+	
+	}
+	// kiem tra neu chua dang nhap thi quay tro lai trang dang nhap
+	
+	
+			// hien thi list danh muc
+			public function jsonAction(){
+				$this->_helper->layout()->disableLayout();
+	
+				$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+				$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+				$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+				$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+				$offset = ($page-1)*$rows;
+	
+				$nuocsx = new Model_Nuocsanxuat();
+				$jsonObj = json_encode($nuocsx->getFetObj($sort, $order, $offset, $rows));
+	
+				return $this->view->jsonObj = $jsonObj;
+			}
+			
+			public function comboAction() {
+				$this->_helper->layout ()->disableLayout ();
+				$jsonObj = json_encode ( $this->_MNuocsanxuat->getIdName () );
+				return $this->view->jsonObj = $jsonObj;
+			}
+			
+			// them moi phuong phuong phap dieu tri
+			public function addAction() {
+				$this->_helper->layout ()->disableLayout ();
+				$jsonObj = array ();
+			
+				$dup = $this->_MNuocsanxuat->dupliObj (0, $this->_Tennuocsanxuat );
+				if ($dup > 0) {
+					echo "<script type=\"text/javascript\">
+			    alert('Tên nước sản xuât này đã có!');
+			</script>";
+					$jsonObj ["success"] = false;
+					return $this->view->jsonObj = json_encode ( $jsonObj );
+				} else {
+					$this->_MNuocsanxuat->addObj ( $this->_Nuocsanxuat );
+					$jsonObj ["success"] = true;
+				}
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}
+			// update phuong phap dieu tri
+public function updateAction() {
+		$id = $this->_getParam ( 'idnuocsanxuat' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MNuocsanxuat->dupliObj ( $id, $this->_Tennuocsanxuat );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên nước sản xuất  này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MNuocsanxuat->updateObj ( $id, $this->_Nuocsanxuat );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+			
+
+			// xoa phuong phap dieu tri
+public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['idnuocsanxuat'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MNuocsanxuat->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+			
+			
+}

@@ -1,0 +1,165 @@
+<?php
+/****************
+ * Create by Phadh
+ */
+class Model_Nhanlucthuocdiabanxa {
+	
+	// ket noi co so du lieu
+	protected $db;
+	
+	// khoi tao ham dung cua class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	// bien query dung trong trong class
+	private $str_query = "SELECT Id, Hoten, Gioitinh, 
+			(DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh, Cmnd,
+			(DATE_FORMAT(Ngaycap,'%d/%m/%Y')) AS Ngaycap, Noicap, Diachi, ChucvuId, BophanId,
+			(SELECT Tenchucvu from tbldm_chucvu where tbldm_chucvu.Id=tblnhansu.ChucvuId) as Tenchucvu,
+			Dienthoai, Email, TrinhdohocvanId, Kynang, Ghichu, DiabanId, (SELECT Tentrinhdohocvan FROM tbldm_trinhdohocvan WHERE Id = TrinhdohocvanId) AS Tentrinhdo ";
+	
+	// liet ke danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $Namhoatdong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhansu WHERE ThongtincoquanId=$thongtincoquanId AND Namhoatdong<=$Namhoatdong AND BophanId = 0 AND DiabanId != 1 AND (($Namhoatdong - IF(Ngayketthuc IS NULL, 0, YEAR(Ngayketthuc))) IN (0, $Namhoatdong))" );
+		$row = $query->fetchAll ();
+		$diaban = 'Trạm y tế';
+		$query = $this->db->query ( "SELECT Id, Hoten, IF(Gioitinh = 'Nam', 'on', '') AS Gioitinh, 
+			(DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh, IF(Cmnd = 0, '', Cmnd) AS Cmnd,
+			IF(Ngaycap = '0000-00-00', '', (DATE_FORMAT(Ngaycap,'%d/%m/%Y'))) AS Ngaycap, Noicap, Diachi, ChucvuId, BophanId,
+			(SELECT Tenchucvu from tbldm_chucvu where tbldm_chucvu.Id=tblnhansu.ChucvuId) as Tenchucvu,
+			Dienthoai, Email, TrinhdohocvanId, Kynang, Ghichu, DiabanId, 
+			IF(Lydo IS NULL, '', Lydo) AS Lydo, 
+			(SELECT Tentrinhdohocvan FROM tbldm_trinhdohocvan WHERE Id = TrinhdohocvanId) AS Tentrinhdo,
+			IF(Ngayketthuc IS NULL, '', (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y')))AS Ngayketthuc, 
+			IF(Ngayketthuc IS NULL, '1', '0') AS Trangthai 
+				FROM tblnhansu where ThongtincoquanId=$thongtincoquanId AND Namhoatdong<=$Namhoatdong AND BophanId = 0 AND 
+				DiabanId in (SELECT Id FROM tbldm_diaban WHERE Tendiaban NOT LIKE '%$diaban%') AND (($Namhoatdong - IF(Ngayketthuc IS NULL, 0, YEAR(Ngayketthuc))) IN (0, $Namhoatdong))
+				ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	public function getIdName() {
+		$diaban = 'Trạm y tế';
+		$query = $this->db->query ( "SELECT Id, Tendiaban FROM tbldm_diaban WHERE  Tendiaban  not LIKE '%$diaban%'" );
+		return $query->fetchAll ();
+	}
+	public function getIdNameistramyte() {
+		$diaban = 'Trạm y tế';
+		$query = $this->db->query ( "SELECT Id, Tendiaban FROM tbldm_diaban WHERE  Tendiaban   LIKE '%$diaban%'" );
+		return $query->fetchAll ();
+	}
+	public function dupliObj($id, $hoten, $thongtincoquanId, $Namhoatdong) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhansu WHERE ThongtincoquanId=$thongtincoquanId and Namhoatdong<=$Namhoatdong and BophanId = 0 and DiabanId != 1 and Hoten = '$hoten'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhansu WHERE ThongtincoquanId=$thongtincoquanId and Namhoatdong<=$Namhoatdong and BophanId = 0 AND DiabanId != 1 and Hoten = '$hoten'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblnhansu', $data );
+		return $Id;
+	}
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tblnhansu', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblnhansu', 'Id = ' . $id );
+		return $Id;
+	}
+	public function getdanhsach($hoten, $chucvu, $gioitinh, $diachi, $thongtincoquanid, $namhoatdong) {
+		$wheregioitinh = "";
+		$where = "";
+		$wheregioitinh = "AND Gioitinh LIKE '%$gioitinh%'";
+		if ($gioitinh == "Tatca")
+			$wheregioitinh = "";
+		if ($hoten != '')
+			$where = $where . "AND Hoten LIKE '%$hoten%'";
+		if ($chucvu != '')
+			$where = $where . "AND ChucvuId = $chucvu";
+		if ($diachi != '')
+			$where = $where . "AND Diachi LIKE '%$diachi%'";
+		$str_query = ("
+				SELECT Id, Hoten, Gioitinh, (DATE_FORMAT(Ngaysinh, '%d/%m/%Y')) AS Ngaysinh, Cmnd, Diachi, ChucvuId, BophanId,
+				(SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu,
+				(DATE_FORMAT(Ngaycap, '%d/%m/%Y')) AS Ngaycap
+				FROM tblnhansu
+				WHERE
+				BophanId = 0 AND
+						ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhoatdong $wheregioitinh $where");
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	
+	// phadh tinh tong so nhan luc thuoc diaban xa
+	public function tong($hoten, $chucvu, $gioitinh, $diachi, $thongtincoquanid, $namhoatdong) {
+		$where = "";
+		$wheregioitinh = "";
+		$wheregioitinh = "AND Gioitinh LIKE '%$gioitinh%'";
+		if ($gioitinh == "Tatca")
+			$wheregioitinh = "";
+		if ($hoten != '')
+			$where = $where . "AND Hoten LIKE '%$hoten%'";
+		if ($chucvu != '')
+			$where = $where . "AND ChucvuId = $chucvu";
+		if ($diachi != '')
+			$where = $where . "AND Diachi LIKE '%$diachi%'";
+		$query = $this->db->query ( "SELECT count(Id) as Total FROM tblnhansu WHERE
+				BophanId = 0 AND
+				ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhoatdong $wheregioitinh $where" );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	public function getHoso($thongtincoquanId, $namhoatdong, $id) {
+		$str_query = "
+		SELECT Id, Hoten, Gioitinh, Ngaysinh, Cmnd, Diachi, ChucvuId, BophanId,
+		(SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu,
+		(SELECT Tenbophan FROM tbldm_bophan WHERE Id = BophanId) As Bophan,
+		Noicap, (DATE_FORMAT(Ngaycap, '%d/%m/%Y')) AS Ngaycap, Chandung,
+		Dienthoai, Email
+		FROM tblnhansu
+		WHERE  BophanId = 0 AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Id = $id
+		";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	public function searObj($hoten, $chucvu, $gioitinh, $diachi, $thongtincoquanid, $namhoatdong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = '';
+		if ($gioitinh != 'Tatca')
+			$where = "AND Gioitinh LIKE '%$gioitinh%' ";
+		if ($hoten != '')
+			$where = $where . "AND Hoten LIKE '%$hoten%' ";
+		if ($chucvu != '')
+			$where = $where . "AND ChucvuId = $chucvu ";
+		if ($diachi != '')
+			$where = $where . "AND Diachi LIKE '%$diachi%' ";
+			// lay thong tin ban ghi
+		$query = $this->db->query ( "SELECT count(Id) as Total FROM tblnhansu WHERE
+				BophanId = 0 AND
+				ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhoatdong AND (($namhoatdong - IF(Ngayketthuc IS NULL, 0, YEAR(Ngayketthuc))) IN (0, $namhoatdong)) $where" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		
+		// Thuc hien cau lenh truy xuat du lieu
+		
+		$query = $this->db->query ( "SELECT Id, Hoten, IF(Gioitinh = 'Nam', 'on', '') AS Gioitinh, 
+			(DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh, IF(Cmnd = 0, '', Cmnd) AS Cmnd,
+			IF(Ngaycap = '0000-00-00', '', (DATE_FORMAT(Ngaycap,'%d/%m/%Y'))) AS Ngaycap, Noicap, Diachi, ChucvuId, BophanId,
+			(SELECT Tenchucvu from tbldm_chucvu where tbldm_chucvu.Id=tblnhansu.ChucvuId) as Tenchucvu,
+			Dienthoai, Email, TrinhdohocvanId, Kynang, Ghichu, DiabanId, 
+			IF(Lydo IS NULL, '', Lydo) AS Lydo, 
+			(SELECT Tentrinhdohocvan FROM tbldm_trinhdohocvan WHERE Id = TrinhdohocvanId) AS Tentrinhdo,
+			IF(Ngayketthuc IS NULL, '', (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y')))AS Ngayketthuc, 
+			IF(Ngayketthuc IS NULL, '1', '0') AS Trangthai 
+			FROM tblnhansu WHERE BophanId = 0 AND ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhoatdong AND (($namhoatdong - IF(Ngayketthuc IS NULL, 0, YEAR(Ngayketthuc))) IN (0, $namhoatdong)) $where
+			ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+}

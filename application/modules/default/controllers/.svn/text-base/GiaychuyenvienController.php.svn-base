@@ -1,0 +1,118 @@
+<?php
+/**
+ *
+ * @author GiangKuteo
+ *
+ */
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class GiaychuyenvienController extends PublicdetailController {
+	private $_MGiaychuyenvien;
+	private $_ThongtincoquanId;
+	private $_Namhethong;
+	public function init() {
+		$this->initValue ();
+		$this->_MGiaychuyenvien = new Model_Giaychuyenvien ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhethong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+	}
+	
+	public function indexAction() {
+	}
+	public function giaychuyenvienAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$id = $this->_getParam ( 'id' );
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		
+		if (isset ( $id ) && $id != '') {
+			$objPHPExcel = new PHPExcel ();
+			$sheet = $objPHPExcel->getActiveSheet ();
+			
+			$jsonObj = $this->_MGiaychuyenvien->getFetObj ( $id, $this->_ThongtincoquanId, $this->_Namhethong );
+			$objPHPExcel = $objReader->load ( "public/media/temp/giaychuyenvien.xls" );
+			$sheet = $objPHPExcel->getActiveSheet ();
+			
+			foreach ( $jsonObj as $row ) {
+				$sheet->setCellValue ( "A" . "1", 'SỞ Y TẾ ' . mb_strtoupper ( $this->TblTinhbytramId ['0'] ['Tentinh'], "utf8" ) );
+				$sheet->setCellValue ( "A" . "2", $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+				$sheet->setCellValue ( "I" . "4", $jsonObj [0] ['Machuyenvien'] );
+				$sheet->setCellValue ( "C" . "7", $jsonObj [0] ['Noiden'] );
+				$sheet->setCellValue ( "C" . "11", $jsonObj [0] ['Hoten'] );
+				$sheet->setCellValue ( "G" . "11", $jsonObj [0] ['Namsinh'] );
+				$sheet->setCellValue ( "I" . "11", $jsonObj [0] ['Gioitinh'] );
+				$sheet->setCellValue ( "C" . "12", $jsonObj [0] ['Dantoc'] );
+				$sheet->setCellValue ( "C" . "13", $jsonObj [0] ['Nghenghiep'] );
+				$sheet->setCellValue ( "H" . "14", "Số: " . $jsonObj [0] ['Sobaohiem'] );
+				$sheet->setCellValue ( "C" . "14", $jsonObj [0] ['Giatritu'] );
+				$sheet->setCellValue ( "F" . "14", $jsonObj [0] ['Giatriden'] );
+				$sheet->setCellValue ( "C" . "15", $jsonObj [0] ['Thonto'] . "-" . $jsonObj [0] ['Tenxa'] . "-" . $jsonObj [0] ['Tenhuyen'] . "-" . $jsonObj [0] ['Tentinh'] );
+				$sheet->setCellValue ( "D" . "16", $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+				$sheet->setCellValue ( "B" . "17", $jsonObj [0] ['Ngayvaovien'] );
+				$sheet->setCellValue ( "F" . "17", $jsonObj [0] ['Ngaychuyenvien'] );
+				$sheet->setCellValue ( "C" . "20", $jsonObj [0] ['Dauhieulamsang'] );
+				$sheet->setCellValue ( "C" . "21", $jsonObj [0] ['Tenmucxetnghiem'] );
+				$sheet->setCellValue ( "E" . "24", $jsonObj [0] ['Tinhtranglucchuyen'] );
+				$sheet->setCellValue ( "D" . "28", $jsonObj [0] ['Phuongtien'] );
+				
+				$sheet->setCellValue ( "C" . "22", $jsonObj [0] ['Chuandoan'] );
+				$sheet->setCellValue ( "C" . "23", $jsonObj [0] ['Tenthuoc'] );
+				$sheet->setCellValue ( "C" . "25", $jsonObj [0] ['Lydochuyen'] );
+				$sheet->setCellValue ( "A" . "26", 'Chuyển hồi: ' . $jsonObj [0] ['Chuyenhoi'] );
+				$sheet->setCellValue ( "E" . "27", $jsonObj [0] ['Ngay'] );
+				$sheet->setCellValue ( "G" . "27", $jsonObj [0] ['Thang'] );
+				$sheet->setCellValue ( "I" . "27", $jsonObj [0] ['Nam'] );
+				$sheet->setCellValue ( "B" . "35", $jsonObj [0] ['Nhansu'] );
+				$sheet->setCellValue ( "A" . "10", $this->TblThongtincoquanbyId [0] ['Tencoquan'] . " Xin trân trọng giới thiệu" );
+			}
+			/* Redirect output to a clientâ€™s web browser (Excel5) */
+			
+			header ( 'Content-Type: application/vnd.ms-excel' );
+			header ( 'Content-Disposition: attachment;filename="Giaychuyenvien(' . $id . ').xls"' );
+			header ( 'Cache-Control: max-age=0' );
+			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+			$objWriter->save ( 'php://output' );
+		} else {
+			echo "<script type=\"text/javascript\">
+			    alert('Error!');
+			</script>";
+		}
+	}
+	
+	/**
+	 * - Khởi tạo các dòng trong sheet Excel với dữ liệu được đưa vào.
+	 *
+	 * @param PHPExcel_Worksheet $_sheet        	
+	 * @param HelpFuncExportExcel $_helpExport        	
+	 * @param Array $_data        	
+	 * @param Number $_rowIndex        	
+	 * @param Number $_numCol        	
+	 * @return Number
+	 */
+	public function initRow($_sheet, $_helpExport, $_data, $_rowIndex, $_numCol) {
+		$helpExport = $_helpExport;
+		$sheet = $_sheet;
+		$rowIndex = $_rowIndex;
+		$data = $_data;
+		$numCol = $_numCol;
+		foreach ( $data as $item ) {
+			$rowIndex += 1;
+			$colIndex = 'A';
+			for($i = 0; $i < $numCol; $i ++) {
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, (isset ( $item [$i] ) ? $item [$i] : ""), $colIndex );
+			}
+		}
+		return $rowIndex;
+	}
+}

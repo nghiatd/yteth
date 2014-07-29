@@ -1,0 +1,126 @@
+<?php 
+include 'PublicdetailController.php';
+
+class HinhthuctruyenthongController extends PublicdetailController
+{
+	private $_Tenhinhthuc;
+	private $_Kieutruyenthong;
+	private $_Hinhthuc;
+	private $_Mhinhthuc;
+	public function init()
+	{
+		$this->initValue ();
+		$this->_Mhinhthuc=new Model_Hinhthuctruyenthong();
+		if(isset($_REQUEST['Tenhinhthuc']) && $_REQUEST['Tenhinhthuc']!="")
+		{
+			$this->_Tenhinhthuc = $_REQUEST ["Tenhinhthuc"];
+			//$this->_Kieutruyenthong = ;
+			if(isset($_REQUEST ["Trangthai"]))
+			{
+				if($_REQUEST["Trangthai"]=="Trực tiếp")
+				{
+					$this->_Kieutruyenthong=1;
+				}
+				else
+				{
+					$this->_Kieutruyenthong=0;
+				}
+			}
+			$this->_Hinhthuc=array(
+				'Tenhinhthuc'=>$this->_Tenhinhthuc,
+				'Trangthai'=>$this->_Kieutruyenthong,		
+			);
+		}
+	}
+	
+	public function indexAction()
+	{
+		
+	}
+	public function jsonAction() {
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_Mhinhthuc->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();		
+		$dup = $this->_Mhinhthuc->CheckValueObj(0,$this->_Tenhinhthuc);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Hình thức truyền thông này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}  else {
+			$id = $this->_Mhinhthuc->AddObj ($this->_Hinhthuc);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function updateAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$id=$this->_getParam('idct');
+		$dup = $this->_Mhinhthuc->CheckValueObj($id,$this->_Tenhinhthuc);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Côn trùng này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}  else {
+			$id = $this->_Mhinhthuc->updateObj ($id,$this->_Hinhthuc);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() 
+	{
+		$id = $_REQUEST ['idct'];
+		$delId = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$delId = $this->_Mhinhthuc->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $delId) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$trangthai=$this->_getParam ('Trangthai');
+		$jsonObj = json_encode($this->_Mhinhthuc->getHinhthuc($trangthai));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function comboboxAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode($this->_Mhinhthuc->getHinhthucten());
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+}
+?>

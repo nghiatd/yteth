@@ -1,0 +1,15 @@
+<div id="account">
+	<div class="welcome-css"
+		style="float: right; margin: 3px 10px 0 0; display: inline;">
+		<span>Năm Hoạt Động : <?php echo $this->namhoatdong;?></span> <a
+			href="#" onclick="setNamhoatdong(<?php echo $this->namhoatdong;?>,<?php echo $this->thongtincoquanId;?>)" title="Năm Hoạt Động"><span><img
+				width=" 20px" border="0" alt="Logout"
+				src="<?php echo $this->baseUrl();?>/public/images/calendar.PNG"></span></a>
+	</div>
+	<div class="welcome-css"
+		style="float: right; margin: 3px 15px 0 0; display: inline;">
+		<span>Xin chào : <?php echo $this->fullname;?></span> <a
+			href="<?php  echo $this->baseUrl();?>/index/logout" title="Logout"><span><img width=" 20px"
+				border="0" alt="Logout" src="<?php echo $this->baseUrl();?>/public/images/logout.PNG"></span></a>
+	</div>
+</div>

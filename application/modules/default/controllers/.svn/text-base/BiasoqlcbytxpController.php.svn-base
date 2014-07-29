@@ -1,0 +1,55 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BiasoqlcbytxpController extends PublicdetailController{
+	private $_MBaocao;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Tencoquan;
+	private $_Tencaptren;
+	
+	public function init(){
+		$this->initValue();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Tencoquan = $this->TblThongtincoquanbyId[0]['Tencoquan'];
+		$this->_MBaocao;
+		$this->_Tencaptren = new Model_Tencaptrenofbc();
+	}
+	
+	
+	public function indexAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+			
+		$objPHPExcel = $objReader->load ( "public/media/Bia_so/YTXP_SQLCBYTXP.xls" );
+		$sheet = $objPHPExcel->getActiveSheet ();
+		$tencaptren = $this->_Tencaptren->gettencaptren($this->_ThongtincoquanId);
+		$tentinh = $this->_Tencaptren->gettentinh($this->_ThongtincoquanId);
+		$sheet->setCellValue('B5', 'SỞ Y TẾ '.$tentinh[0]['Tentinh']);
+		$sheet->setCellValue('B6', 'TRUNG TÂM Y TẾ '.$tencaptren[0]['Tencaptren']);
+		$sheet->setCellValue('B19', 'Y TẾ XÃ, PHƯỜNG : '.$this->_Tencoquan);
+		$sheet->setCellValue('B31', 'NĂM ' .$this->TblThongtincoquanbyId[0]['Namhoatdong']);
+		
+		
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="YTXP_BSQLCBYTXP.xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+}

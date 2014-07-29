@@ -1,0 +1,22 @@
+[production]
+routes.website.route = "websitefront/index.html"
+routes.website.defaults.module = "websitefront"
+routes.website.defaults.controller = "index"
+routes.website.defaults.action = "index"
+
+;routes.website1.route = ":title"
+;routes.website1.defaults.module = "websitefront"
+;routes.website1.defaults.controller = "index"
+;routes.website1.defaults.action = "index"
+
+routes.website_danhmuc.route = "websitefront/danhmuc/:title"
+routes.website_danhmuc.defaults.module = "websitefront"
+routes.website_danhmuc.defaults.controller = "tintuc"
+routes.website_danhmuc.defaults.action = "index"
+
+routes.website_tin.route = "websitefront/tintuc/:cate/:title"
+routes.website_tin.defaults.module = "websitefront"
+routes.website_tin.defaults.controller = "tintuc"
+routes.website_tin.defaults.action = "detail"
+
+

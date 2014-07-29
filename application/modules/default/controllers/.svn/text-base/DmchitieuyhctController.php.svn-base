@@ -1,0 +1,142 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ *
+ * @author Phadh
+ *
+ */
+class DmchitieuyhctController extends PublicdetailController{
+	private $_MBaocaotainan;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Tencoquan;
+	private $_Tencaptren;
+	public function init() {
+		$this->initValue ();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_Tencaptren = new Model_Tencaptrenofbc();
+		$this->_MBaocaotainan= new Model_Baocao();
+	}
+	
+	public function indexAction() {
+		$this->_helper->layout()->disableLayout();
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+		
+		//Bắt đầu set cac giá trị tĩnh //		
+		$sheet->setCellValue('A1', "VỤ Y HỌC CỔ TRUYỀN");
+		$sheet->mergeCellsByColumnAndRow(0, 1, 4, 1);
+		$helpExport->setStyle_12_TNR_N_L($sheet, "A1", "A1");
+		$sheet->setCellValue('A3', "DANH MỤC CHỈ TIÊU VÊ Y HỌC CỔ TRUYỀN");
+		$sheet->mergeCellsByColumnAndRow(0, 3, 6, 3);
+		$helpExport->setStyle_12_TNR_B_C($sheet, "A3", "A3");
+		
+		$rowStart = 5;
+		$colStart = 'A';
+		$rowIndex = $rowStart;
+		$colIndex = $colStart;
+		$sheet = $objPHPExcel->getActiveSheet ();
+		$sheet->getColumnDimension('A')->setWidth(6.71);
+		$sheet->getColumnDimension('B')->setWidth(21.57);
+		$sheet->getColumnDimension('C')->setWidth(20.43);
+		$sheet->getColumnDimension('D')->setWidth(22.14);
+		$sheet->getColumnDimension('E')->setWidth(13.43);
+		$sheet->getColumnDimension('F')->setWidth(21);
+		$sheet->getColumnDimension('G')->setWidth(21.71);
+		
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tên chỉ tiêu', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Phân tổ chủ yếu', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Phương pháp TT', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Kỳ công bố', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Cơ quan báo cáo/ Cơ quan cung cấp TT', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Cơ quan chính tổng hợp báo cáo', $colIndex );		
+		$helpExport->setStyle_11_TNR_B_C($sheet, $colStart.$rowIndex, $colIndex.$rowIndex);
+		
+		$rowIndex+=1;
+		$colIndex = $colStart;
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '4', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '5', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '6', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '7', $colIndex );
+		$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+		
+		$data_tc = array();
+		/*$jsonObj = $this->_MBCHoatdongchamsoc->getData(1, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+		 	
+		if(count($jsonObj) > 0){
+		$data_khamthai[0] = array('1', 'Phụ nữ có thai', $jsonObj[0]['TSSSQL']);
+		$data_khamthai[1] = array('', '      Trđ: Vị thành niên', $jsonObj[0]['TSSSQL']);
+		$data_khamthai[2] = array('2', 'Tổng số lần khám thai', $jsonObj[0]['TS_Khamthai'], $jsonObj[0]['TS_Khamthai_TYT'], $jsonObj[0]['TS_Khamthai_TN']);
+		$data_khamthai[3] = array('3', 'Phụ nữ đẻ được quản lý thai', $jsonObj[0]['TSSSQL'], $jsonObj[0]['TSSSQL_TYT'], $jsonObj[0]['TSSSQL_Tainha'], $jsonObj[0]['TSSSQL_CSK']);
+		$data_khamthai[4] = array('4', 'Số phụ nữ đẻ được tiêm UV đủ liều liều', $jsonObj[0]['TSSSUV'], $jsonObj[0]['TSSSUV_TYT'], $jsonObj[0]['TSSSUV_Tainha'], $jsonObj[0]['TSSSUV_CSK']);
+		$data_khamthai[5] = array('5', 'Số người đẻ', $jsonObj[0]['TSSSDe'], $jsonObj[0]['TSSSDe_TYT'], $jsonObj[0]['TSSSDe_Tainha'], $jsonObj[0]['TSSSDe_CSK']);
+		$data_khamthai[6] = array('', '    Trđ:');
+		$data_khamthai[7] = array('', '    - PNđẻ được KT >= 3 lần trong 3 thời kỳ', $jsonObj[0]['TSSSDe_KT3'], $jsonObj[0]['TSSSDe_TYT_KT3'], $jsonObj[0]['TSSSDe_Tainha_KT3'], $jsonObj[0]['TSSSDe_CSK_KT3']);
+		$data_khamthai[8] = array('', '    - Đẻ con thứ 3 trở lên', $jsonObj[0]['TSSSDe_CT3'], $jsonObj[0]['TSSSDe_TYT_CT3'], $jsonObj[0]['TSSSDe_Tainha_CT3'], $jsonObj[0]['TSSSDe_CSK_CT3']);
+		$data_khamthai[9] = array('', '    - Đẻ do CBYT đỡ', $jsonObj[0]['TSSSDe_CBYT'], $jsonObj[0]['TSSSDe_CBYT_TYT'], $jsonObj[0]['TSSSDe_CBYT_Tainha'], $jsonObj[0]['TSSSDe_CBYT_CSK']);
+		$data_khamthai[10] = array('', '    - Đẻ tại cơ sở y tế', $jsonObj[0]['TSSSDe_CSYT'], $jsonObj[0]['TSSSDe_CSYT_TYT'], $jsonObj[0]['TSSSDe_CSYT_CSK']);
+		$data_khamthai[11] = array('6', 'TS Bà mẹ/trẻ SS được chăm sóc sau sinh', $jsonObj[0]['TSSSDe_CSSS'], $jsonObj[0]['TSSSDe_CSSS_TYT'], $jsonObj[0]['TSSSDe_CSSS_Tainha'], $jsonObj[0]['TSSSDe_CSSS_CSK']);
+		$data_khamthai[12] = array('', '     Trđ: chăm sóc tuần đầu', $jsonObj[0]['TSSSDe_CSSS_Tuandau'], $jsonObj[0]['TSSSDe_CSSS_Tuandau_TYT'], $jsonObj[0]['TSSSDe_CSSS_Tuandau_Tainha'], $jsonObj[0]['TSSSDe_CSSS_Tuandau_CSK']);
+		} else {
+		$data_khamthai[0] = array('1', 'Phụ nữ có thai');
+		$data_khamthai[1] = array('', '      Trđ: Vị thành niên');
+		$data_khamthai[2] = array('2', 'Tổng số lần khám thai');
+		$data_khamthai[3] = array('3', 'Phụ nữ đẻ được quản lý thai');
+		$data_khamthai[4] = array('4', 'Số phụ nữ đẻ được tiêm UV đủ liều liều');
+		$data_khamthai[5] = array('5', 'Số người đẻ');
+		$data_khamthai[6] = array('', '    Trđ:');
+		$data_khamthai[7] = array('', '    - PN đẻ được KT >= 3 lần trong 3 thời kỳ');
+		$data_khamthai[8] = array('', '    - Đẻ con thứ 3 trở lên');
+		$data_khamthai[9] = array('', '    - Đẻ do CBYT đỡ');
+		$data_khamthai[10] = array('', '   - Đẻ tại cơ sở y tế');
+		$data_khamthai[11] = array('6', 'TS Bà mẹ/trẻ SS được chăm sóc sau sinh');
+		$data_khamthai[12] = array('', '    Trđ: chăm sóc tuần đầu');
+		}*/
+		
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'G' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'G' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		
+		$rowIndex += 2;
+		$sheet->setCellValue ( 'F' . $rowIndex, 'Ngày..... tháng......năm' );
+		$sheet->mergeCellsByColumnAndRow ( 5, $rowIndex, 6, $rowIndex );
+		$helpExport->setStyle_12_TNR_N_C ( $sheet, 'F' . $rowIndex, 'F' . $rowIndex );
+		
+		$rowIndex += 1;
+		$sheet->setCellValue ( 'F' . $rowIndex, 'Bệnh viện trưởng' );
+		$sheet->mergeCellsByColumnAndRow ( 5, $rowIndex, 6, $rowIndex );
+		$helpExport->setStyle_12_TNR_B_C ( $sheet, 'F' . $rowIndex, 'F' . $rowIndex );
+		
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE );
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4 );
+		$pageMargin = $sheet->getPageMargins ();
+		$pageMargin->setTop ( .5 );
+		$pageMargin->setLeft ( 0.75 );
+		$pageMargin->setRight ( 0.75 );
+		
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="YTXP_DMCTVYHCT_(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+}

@@ -1,0 +1,262 @@
+<?php
+class Model_Chantaymieng
+{
+protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+
+	public function getFetObj($sort,$order,$offset,$rows,$thongtincoquanId, $namhethong)
+	{		
+		$result = array ();
+		$query = $this->db->query ("
+		SELECT COUNT(*) AS Total 
+		FROM tblchantaymieng
+		WHERE ThongtincoquanId=$thongtincoquanId and Namhoatdong<=$namhethong
+		");
+		$row = $query->fetchAll ();
+		$query = $this->db->query ("
+		SELECT 
+			(CASE tblphieukhambenh.Chutrinhdieutri
+				WHEN 0 THEN 'Kết thúc'
+				WHEN 1 THEN 'Đang điều trị'
+				WHEN 2 THEN 'Chuyển viện'
+				WHEN 3 THEN 'Tử vong'
+				WHEN 4 THEN 'Khỏi'
+				WHEN 5 THEN 'Đỡ, Ổn định'
+				WHEN 6 THEN 'Nặng, xin về'
+				WHEN 7 THEN 'Trốn viện / Mất theo dõi'
+			END) as Ketqua,
+			DATE_FORMAT(tblphieukhambenh.Ngaylapphieu ,'%d/%m/%Y') AS Ngaynhapvien, 
+			tblnhankhau.Hoten as Nhankhau, tblnhankhau.Gioitinh,tblnhankhau.Ngaysinh  ,tblnhansu.Hoten as Hoten ,
+			tblchantaymieng.Id, tblchantaymieng.NhankhauId, tblchantaymieng.NhansuId, tblchantaymieng.Sophieukcb, 
+			DATE_FORMAT(tblchantaymieng.Ngaykhoiphat,'%d/%m/%Y')AS Ngaykhoiphat,tblchantaymieng.PhandoLS, 
+			tblchantaymieng.Loaicabenh, tblchantaymieng.Laymauvakqxn, tblchantaymieng.Codihoc, 
+			tblchantaymieng.ThongtincoquanId, tblchantaymieng.Namhoatdong 
+			FROM tblchantaymieng,tblnhansu,tblnhankhau,tblphieukhambenh
+			WHERE tblphieukhambenh.Sophieukcb= tblchantaymieng.Sophieukcb and
+				tblphieukhambenh.ThongtincoquanId= tblchantaymieng.ThongtincoquanId and					
+				tblchantaymieng.NhankhauId =tblnhankhau.Id and 
+				tblchantaymieng.ThongtincoquanId=tblnhankhau.ThongtincoquanId and 					
+				tblchantaymieng.NhansuId=tblnhansu.Id and tblchantaymieng.ThongtincoquanId=tblnhansu.ThongtincoquanId  and					
+				tblchantaymieng.ThongtincoquanId=$thongtincoquanId and tblchantaymieng.Namhoatdong<=$namhethong
+			ORDER BY tblchantaymieng.$sort $order LIMIT $offset, $rows
+		");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($id,$Sophieukcb, $ngaykhoiphat, $thongtincoquanId) {
+		if ($id == 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchantaymieng WHERE ThongtincoquanId = $thongtincoquanId AND Sophieukcb = '$Sophieukcb' AND Ngaykhoiphat = '$ngaykhoiphat'" );
+		}
+		else
+		{
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchantaymieng WHERE Id != $id and ThongtincoquanId = $thongtincoquanId AND Sophieukcb = '$Sophieukcb' AND Ngaykhoiphat = '$ngaykhoiphat'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function CheckNgaynhapvienupdate($id,$nhankhauId,$ngaynhapvien)
+	{
+		$result=array();
+		$query=$this->db->query("SELECT COUNT(*) AS Total FROM tblchantaymieng WHERE Id=$id AND NhankhauId = $nhankhauId AND Ngaynhapvien = $ngaynhapvien");
+		$result=$query->fetchAll();
+		$total=$result[0]['Total'];
+		return $total;
+	}
+	
+	public function CheckValueObj($id, $varNhansuId, $varNhankhauId) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchantaymieng WHERE NhankhauId = $varNhankhauId AND NhansuId = $varNhansuId" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchantaymieng WHERE Id != $id and NhankhauId = $varNhankhauId and NhansuId = $varNhansuId" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function duplibynhankhau($nhankhauid, $thongtincoquanId, $namhoatdong){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblgiaykhaitu WHERE NhankhauId = $nhankhauid AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	public function duplichantaymieng($sophieukcb, $thongtincoquanId, $namhoatdong){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblchantaymieng WHERE Sophieukcb = '$sophieukcb' AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	public function updateObj($id, $data) {
+		$this->db->update ( 'tblchantaymieng', $data, 'Id = ' . $id );
+	}
+	public function update($sophieukcb, $data){
+		$Id = $this->db->update('tblchantaymieng', $data, "Sophieukcb = '$sophieukcb'");
+		return $Id;
+	}
+	public function AddObj($data) {
+		$Id = $this->db->insert ( 'tblchantaymieng', $data );
+		return $Id;
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tblchantaymieng', 'Id=' . $Id );
+		return $Iddel;
+	}
+	public function del($sophieukcb){
+		$Id = $this->db->delete('tblchantaymieng', "Sophieukcb = '$sophieukcb'");
+		return $Id;
+	}
+	public function searObj($snguoibenh, $snguoikham, $sngaynhapvien, $sgioitinh, $sThonto,$sloaicabenh, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows)
+	{
+		$result = array ();
+		$where="";
+		if($snguoibenh!='')
+		{
+			$where=$where." AND  tblnhankhau.Hoten LIKE '%$snguoibenh%' ";
+		}
+		if($snguoikham!="")
+		{
+			$where=$where."AND tblnhansu.Hoten  LIKE '%$snguoikham%' ";
+		}
+		if($sngaynhapvien!="")
+		{
+			$where=$where."AND tblphieukhambenh.Ngaylapphieu ='$sngaynhapvien' ";
+		}
+		if($sgioitinh!="")
+		{
+			$where=$where."AND tblnhansu.Gioitinh ='$sgioitinh' ";
+		}
+		if($sThonto!="")
+		{
+			$where=$where."AND tblnhankhau.Mahodan IN (SELECT Mahodan FROM tblchuhodan WHERE  tblchuhodan.ThongtincoquanId=$thongtincoquanId and ThontoId='$sThonto') ";
+		}
+		if($sloaicabenh!="")
+		{
+			$where=$where."AND tblchantaymieng.Loaicabenh = '$sloaicabenh' ";
+		}
+		$query=$this->db->query("
+		SELECT COUNT(*) AS Total 
+		FROM tblchantaymieng,tblnhansu,tblnhankhau,tblphieukhambenh
+		WHERE tblphieukhambenh.Sophieukcb= tblchantaymieng.Sophieukcb and
+			tblphieukhambenh.ThongtincoquanId= tblchantaymieng.ThongtincoquanId and					
+			tblchantaymieng.NhankhauId =tblnhankhau.Id and 
+			tblchantaymieng.ThongtincoquanId=tblnhankhau.ThongtincoquanId and 					
+			tblchantaymieng.NhansuId=tblnhansu.Id and tblchantaymieng.ThongtincoquanId=tblnhansu.ThongtincoquanId  and					
+			tblchantaymieng.ThongtincoquanId=$thongtincoquanId and tblchantaymieng.Namhoatdong<=$namhoatdong
+		");
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		$query=$this->db->query("
+		SELECT 
+			(CASE tblphieukhambenh.Chutrinhdieutri
+				WHEN 0 THEN 'Kết thúc'
+				WHEN 1 THEN 'Đang điều trị'
+				WHEN 2 THEN 'Chuyển viện'
+				WHEN 3 THEN 'Tử vong'
+				WHEN 4 THEN 'Khỏi'
+				WHEN 5 THEN 'Đỡ, Ổn định'
+				WHEN 6 THEN 'Nặng, xin về'
+				WHEN 7 THEN 'Trốn viện / Mất theo dõi'
+			END) as Ketqua,
+			DATE_FORMAT(tblphieukhambenh.Ngaylapphieu ,'%d/%m/%Y') AS Ngaynhapvien, 
+			tblnhankhau.Hoten as Nhankhau, tblnhankhau.Gioitinh,tblnhankhau.Ngaysinh  ,tblnhansu.Hoten as Hoten ,
+			tblchantaymieng.Id, tblchantaymieng.NhankhauId, tblchantaymieng.NhansuId, tblchantaymieng.Sophieukcb, 
+			DATE_FORMAT(tblchantaymieng.Ngaykhoiphat,'%d/%m/%Y')AS Ngaykhoiphat,tblchantaymieng.PhandoLS, 
+			tblchantaymieng.Loaicabenh, tblchantaymieng.Laymauvakqxn, tblchantaymieng.Codihoc, 
+			tblchantaymieng.ThongtincoquanId, tblchantaymieng.Namhoatdong 
+			FROM tblchantaymieng,tblnhansu,tblnhankhau,tblphieukhambenh
+			WHERE tblphieukhambenh.Sophieukcb= tblchantaymieng.Sophieukcb and
+				tblphieukhambenh.ThongtincoquanId= tblchantaymieng.ThongtincoquanId and					
+				tblchantaymieng.NhankhauId =tblnhankhau.Id and 
+				tblchantaymieng.ThongtincoquanId=tblnhankhau.ThongtincoquanId and 					
+				tblchantaymieng.NhansuId=tblnhansu.Id and tblchantaymieng.ThongtincoquanId=tblnhansu.ThongtincoquanId  and					
+				tblchantaymieng.ThongtincoquanId=$thongtincoquanId and tblchantaymieng.Namhoatdong<=$namhoatdong $where
+			ORDER BY tblchantaymieng.$sort $order LIMIT $offset, $rows			
+		");
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+
+	public function printviewdschantaymieng($Tinh,$Huyen,$Xa,$thongtincoquanId, $namhoatdong)
+	{
+		$result=array();
+		$query=$this->db->query("
+			SELECT 
+					IF(TIMESTAMPDIFF(YEAR,tblnhankhau.Ngaysinh,CURDATE())>=5,TIMESTAMPDIFF(YEAR,tblnhankhau.Ngaysinh,CURDATE()), NULL ) AS Nam,
+					IF (TIMESTAMPDIFF(YEAR,tblnhankhau.Ngaysinh,CURDATE())<5,TIMESTAMPDIFF(MONTH,tblnhankhau.Ngaysinh,CURDATE()),NULL) AS Thang,
+					IF(tblnhankhau.Vanglai=1,tblnhankhau.Diachi,(select tblchuhodan.Diachi from tblchuhodan where tblnhankhau.Mahodan=tblchuhodan.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanId ))AS Diachi, 
+					IF(tblnhankhau.Vanglai=1,(select tenxa from tbldm_xa where tbldm_xa.Id=tblnhankhau.XaId),'$Xa') AS Xa,
+					IF(tblnhankhau.Vanglai=1,(select tenhuyen from tbldm_xa,tbldm_huyen where  tbldm_xa.HuyenId =tbldm_huyen.Id and tbldm_xa.Id=tblnhankhau.XaId),'$Huyen') AS Huyen,
+					IF(tblnhankhau.Vanglai=1,(select tenhuyen from tbldm_xa,tbldm_huyen,tbldm_tinh where tbldm_huyen.TinhId=tbldm_tinh.Id and  tbldm_xa.HuyenId =tbldm_huyen.Id and tbldm_xa.Id=tblnhankhau.XaId),'$Tinh') AS Tinh,
+					(CASE tblphieukhambenh.Chutrinhdieutri
+						WHEN 0 THEN 'Kết thúc'
+						WHEN 1 THEN 'Đang điều trị'
+						WHEN 2 THEN 'Chuyển viện'
+						WHEN 3 THEN 'Tử vong'
+						WHEN 4 THEN 'Khỏi'
+						WHEN 5 THEN 'Đỡ, Ổn định'
+						WHEN 6 THEN 'Nặng, xin về'
+						WHEN 7 THEN 'Trốn viện / Mất theo dõi'
+					END) as Ketqua,
+					DATE_FORMAT(tblphieukhambenh.Ngayketthuc ,'%d/%m/%Y') AS Ngayravien,tblnhankhau.Mahodan,					
+					(select Tendiadiem from tbldm_diadiem where tbldm_diadiem.Id=tblphieukhambenh.DiadiemId) AS Noidieutri,  					
+					DATE_FORMAT(tblphieukhambenh.Ngaylapphieu ,'%d/%m/%Y') AS Ngaylapphieu, 
+					tblnhankhau.Hoten as Nhankhau, tblnhankhau.Gioitinh,DATE_FORMAT(tblnhankhau.Ngaysinh,'%d/%m/%Y') AS Ngaysinh ,tblnhansu.Hoten as Hoten ,tblchantaymieng.Id, tblchantaymieng.NhankhauId, tblchantaymieng.NhansuId, tblchantaymieng.Sophieukcb, 
+					DATE_FORMAT(tblchantaymieng.Ngaykhoiphat,'%d/%m/%Y')AS Ngaykhoiphat,
+					DATE_FORMAT(tblchantaymieng.Ngaynhapvien,'%d/%m/%Y')AS Ngaynhapvien, 
+					tblchantaymieng.PhandoLS, tblchantaymieng.Loaicabenh, tblchantaymieng.Laymauvakqxn, tblchantaymieng.Codihoc, tblchantaymieng.ThongtincoquanId, tblchantaymieng.Namhoatdong 
+				FROM tblchantaymieng,tblnhansu,tblnhankhau,tblphieukhambenh
+				WHERE tblphieukhambenh.Sophieukcb= tblchantaymieng.Sophieukcb and
+					tblphieukhambenh.ThongtincoquanId= tblchantaymieng.ThongtincoquanId and					
+					tblchantaymieng.NhankhauId =tblnhankhau.Id and 
+					tblchantaymieng.ThongtincoquanId=tblnhankhau.ThongtincoquanId and 					
+					tblchantaymieng.NhansuId=tblnhansu.Id and tblchantaymieng.ThongtincoquanId=tblnhansu.ThongtincoquanId and					
+				tblchantaymieng.ThongtincoquanId=$thongtincoquanId and tblchantaymieng.Namhoatdong<=$namhoatdong											
+		");
+		$result=$query->fetchAll();
+		return $result;
+	}
+	public function getCT($id,$Xa,$Huyen,$Tinh,$thongtincoquanId,$namhoatdong)
+	{
+		$result=array();
+		$query=$this->db->query("
+			SELECT 
+					IF(TIMESTAMPDIFF(YEAR,tblnhankhau.Ngaysinh,CURDATE())>=5,TIMESTAMPDIFF(YEAR,tblnhankhau.Ngaysinh,CURDATE()), NULL ) AS Nam,
+					IF (TIMESTAMPDIFF(YEAR,tblnhankhau.Ngaysinh,CURDATE())<5,TIMESTAMPDIFF(MONTH,tblnhankhau.Ngaysinh,CURDATE()),NULL) AS Thang,
+					IF(tblnhankhau.Vanglai=1,tblnhankhau.Diachi,(select tblchuhodan.Diachi from tblchuhodan where tblnhankhau.Mahodan=tblchuhodan.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanId ))AS Diachi, 
+					IF(tblnhankhau.Vanglai=1,(select tenxa from tbldm_xa where tbldm_xa.Id=tblnhankhau.XaId),'$Xa') AS Xa,
+					IF(tblnhankhau.Vanglai=1,(select tenhuyen from tbldm_xa,tbldm_huyen where  tbldm_xa.HuyenId =tbldm_huyen.Id and tbldm_xa.Id=tblnhankhau.XaId),'$Huyen') AS Huyen,
+					IF(tblnhankhau.Vanglai=1,(select tenhuyen from tbldm_xa,tbldm_huyen,tbldm_tinh where tbldm_huyen.TinhId=tbldm_tinh.Id and  tbldm_xa.HuyenId =tbldm_huyen.Id and tbldm_xa.Id=tblnhankhau.XaId),'$Tinh') AS Tinh,
+					(CASE tblphieukhambenh.Chutrinhdieutri
+						WHEN 0 THEN 'Kết thúc'
+						WHEN 1 THEN 'Đang điều trị'
+						WHEN 2 THEN 'Chuyển viện'
+						WHEN 3 THEN 'Tử vong'
+						WHEN 4 THEN 'Khỏi'
+						WHEN 5 THEN 'Đỡ, Ổn định'
+						WHEN 6 THEN 'Nặng, xin về'
+						WHEN 7 THEN 'Trốn viện / Mất theo dõi'
+					END) as Ketqua,
+					DATE_FORMAT(tblphieukhambenh.Ngayketthuc ,'%d/%m/%Y') AS Ngayravien,tblnhankhau.Mahodan,					
+					(select Tendiadiem from tbldm_diadiem where tbldm_diadiem.Id=tblphieukhambenh.DiadiemId) AS Noidieutri,  					
+					DATE_FORMAT(tblphieukhambenh.Ngaylapphieu ,'%d/%m/%Y') AS Ngaylapphieu, 
+					tblnhankhau.Hoten as Nhankhau, tblnhankhau.Gioitinh,DATE_FORMAT(tblnhankhau.Ngaysinh,'%d/%m/%Y') AS Ngaysinh ,tblnhansu.Hoten as Hoten ,tblchantaymieng.Id, tblchantaymieng.NhankhauId, tblchantaymieng.NhansuId, tblchantaymieng.Sophieukcb, 
+					DATE_FORMAT(tblchantaymieng.Ngaykhoiphat,'%d/%m/%Y')AS Ngaykhoiphat,
+					DATE_FORMAT(tblchantaymieng.Ngaynhapvien,'%d/%m/%Y')AS Ngaynhapvien, 
+					tblchantaymieng.PhandoLS, tblchantaymieng.Loaicabenh, tblchantaymieng.Laymauvakqxn, tblchantaymieng.Codihoc, tblchantaymieng.ThongtincoquanId, tblchantaymieng.Namhoatdong 
+				FROM tblchantaymieng,tblnhansu,tblnhankhau,tblphieukhambenh
+				WHERE tblphieukhambenh.Sophieukcb= tblchantaymieng.Sophieukcb and
+					tblphieukhambenh.ThongtincoquanId= tblchantaymieng.ThongtincoquanId and					
+					tblchantaymieng.NhankhauId =tblnhankhau.Id and 
+					tblchantaymieng.ThongtincoquanId=tblnhankhau.ThongtincoquanId and 					
+					tblchantaymieng.NhansuId=tblnhansu.Id and tblchantaymieng.ThongtincoquanId=tblnhansu.ThongtincoquanId  and					
+					tblchantaymieng.ThongtincoquanId=$thongtincoquanId and tblchantaymieng.Namhoatdong<=$namhoatdong AND tblchantaymieng.Id='$id'		
+		");
+		$result=$query->fetchAll();
+		return $result;
+	}
+	
+}

@@ -1,0 +1,62 @@
+<?php
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class Model_Nguyennhantainan{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get('db');
+	}
+	
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_nguyennhantainan" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Tennguyennhantainan FROM tbldm_nguyennhantainan ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	//phadh
+	//combo nguyennhantainan
+	public function getNamebyId(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tennguyennhantainan FROM tbldm_nguyennhantainan ORDER BY Tennguyennhantainan ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	public function CheckValueObj($id, $varTennguyennhantainan) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_nguyennhantainan WHERE Tennguyennhantainan = '$varTennguyennhantainan'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_nguyennhantainan WHERE Id !=$id and Tennguyennhantainan = '$varTennguyennhantainan'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($varTennguyennhantainan) {
+		$data = array (
+				'Tennguyennhantainan' => $varTennguyennhantainan
+		);
+		$Id = $this->db->insert ( 'tbldm_nguyennhantainan', $data );
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id, $varTennguyennhantainan) {
+		$data = array (
+				'Tennguyennhantainan' => $varTennguyennhantainan
+		)
+		;
+		$this->db->update ( 'tbldm_nguyennhantainan', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_nguyennhantainan', 'Id=' . $Id );
+		return $Iddel;
+	}
+}

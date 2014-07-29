@@ -1,0 +1,86 @@
+<?php
+class Model_Nguyennhan extends Zend_Db_Table_Abstract
+{
+	/*
+	 * Class co the su dung ca 2 phuong phap ket noi database:
+	 * 1, Zend_Db_Table
+	 * 2, Zend_Db
+	 */
+	
+	protected $DataApdb;
+	
+	public function __construct()
+	{
+		$this->DataApdb = Zend_Registry::get("db");
+	}
+	
+	//thomnd
+	//phadh sua phan trang
+	public function getFetObj($sort, $order, $offset, $rows)
+	{
+		$result = array();
+		$query = $this->DataApdb->query('SELECT COUNT(*) AS Total FROM tbldm_nguyennhan');
+		$row = $query->fetchAll();
+		$result["total"] = $row[0]['Total'];
+		
+		$query = $this->DataApdb->query("SELECT Id, Tennguyennhan FROM tbldm_nguyennhan
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	public function CheckValueObj($id,$varTennguyennhan)
+	{
+	
+		$query = $this->DataApdb->query("SELECT COUNT(*) AS Total FROM tbldm_nguyennhan WHERE Tennguyennhan = '$varTennguyennhan'");
+		if($id!=0)
+		{
+			$query = $this->DataApdb->query("SELECT COUNT(*) AS Total FROM tbldm_nguyennhan WHERE Id !=$id and Tennguyennhan = '$varTennguyennhan'");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	// combobox nguyen nhan
+	public function getIdName($snguyennhan, $q,  $sort, $order, $offset, $rows){
+		$result = array();
+		$where ="Tennguyennhan LIKE '%$snguyennhan%'";
+		$query = $this->DataApdb->query("SELECT COUNT(*) AS Total FROM tbldm_nguyennhan WHERE Tennguyennhan LIKE '%$q%' AND $where");
+		$row = $query->fetchAll();
+		$result["total"] = $row[0]['Total'];
+		
+		$query = $this->DataApdb->query("SELECT Id, Tennguyennhan FROM tbldm_nguyennhan WHERE Tennguyennhan LIKE '%$q%' AND $where
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// add new
+	public function AddObj($varTennguyennhan)
+	{
+		$data=array('Tennguyennhan'=>$varTennguyennhan);
+		$Id= $this->DataApdb->insert('tbldm_nguyennhan',$data);
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id ,$varTennguyennhan)
+	{
+		$data = array(
+				'Tennguyennhan' => $varTennguyennhan
+	
+		);
+		$this->DataApdb->update('tbldm_nguyennhan', $data, 'Id = ' . $id);
+	}
+	
+	public function DelObj($Id)
+	{
+			
+		$Iddel=$this->DataApdb->delete('tbldm_nguyennhan','Id='.$Id);
+		return $Iddel;
+			
+	
+	}
+	// end thomnd
+}

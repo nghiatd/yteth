@@ -1,0 +1,71 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+class Model_Loaithuoc
+{
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getFetaddrowObj($ThongtincoquanId)
+	{
+		$result = array ();
+		$query = $this->db->query ( "
+				SELECT '0' as Id, 'Tất cả' as Tenloaithuoc FROM tblthongtincoquan WHERE Id=$ThongtincoquanId union
+				SELECT Id, Tenloaithuoc FROM tbldm_loaithuoc" );
+		$result ['rows'] = $query->fetchAll ();
+	
+		return $result;
+	}
+	public function getFetObj($sort, $order, $offset, $rows)
+	{
+		$result = array ();
+		$query = $this->db->query ( 'SELECT COUNT(*) AS Total FROM tbldm_loaithuoc' );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+	
+		$query = $this->db->query ( "SELECT Id, Tenloaithuoc FROM tbldm_loaithuoc
+				order by $sort $order limit $offset, $rows" );
+	
+		$result ['rows'] = $query->fetchAll ();
+	
+		return $result;
+	}
+	// lay thong tin ve id va ten doi tuong 
+	
+	public function getIdName() {
+		$query = $this->db->query ("SELECT Id, Tenloaithuoc FROM tbldm_loaithuoc" );
+		return $query->fetchAll ();
+	}
+	
+	//them moi nuoc san xuat
+	
+	public function addObj($data)
+	{
+		$id = $this->db->insert ( 'tbldm_loaithuoc', $data );
+		return $id;
+	}
+	
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_loaithuoc', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xoa loai thuoc
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_loaithuoc', 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// kiem tra trung lap
+	
+	public function dupliObj($Tenloaithuoc)
+	{
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaithuoc WHERE Tenloaithuoc = '$Tenloaithuoc'" );
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+}

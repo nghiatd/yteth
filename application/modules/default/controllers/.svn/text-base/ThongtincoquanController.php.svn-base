@@ -1,0 +1,205 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class ThongtincoquanController extends PublicdetailController {
+	private $_MThongtincoquan;
+	private $_Tencoquan;
+	private $_Matram;
+	private $_CoquanId;
+	private $_Phuluc;
+	private $_Thongtincoquan = array ();
+	private $_MHistory;
+	public function init() {
+		$this->initValue ();
+		$this->_MThongtincoquan = new Model_Thongtincoquan ();
+		$this->_MHistory = new Model_History ();
+		try {
+			if (isset ( $_REQUEST ['Matram'] ) && $_REQUEST ['Matram'] != '') {
+				$this->_Tencoquan = $_REQUEST ['Tencoquan'];
+				$this->_Matram = $_REQUEST ['Matram'];
+				$this->_CoquanId = $_REQUEST ['Xa'];
+				$this->_Phuluc = 1;
+				$_Datchuan = isset ( $_REQUEST ['Datchuan'] ) ? $_REQUEST ['Datchuan'] : '';
+				$_Datchuan = $_Datchuan == 'on' ? 1 : 0;
+				$logo = $this->getImage ();
+				$this->_Thongtincoquan = array (
+						'Tencoquan' => $this->_Tencoquan,
+						'Nguoidaidien' => $_REQUEST ['Nguoidaidien'],
+						'Dienthoai' => $_REQUEST ['Dienthoai'],
+						'PhanloaixaId' => $_REQUEST ['Loaixa'],
+						'Diachi' => $_REQUEST ['Diachi'],
+						'Email' => $_REQUEST ['Email'],
+						'Datchuan' => $_Datchuan,
+						'website' => $_REQUEST ['website'],
+						'Matram' => $this->_Matram,
+						'CoquanId' => $this->_CoquanId,
+						'Phuluc' => $this->_Phuluc,
+						'Namhoatdong' => $_REQUEST ['Namhoatdong'],
+						'Logo' => $logo 
+				);
+			}
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Thao tác không thành công!');
+					</script>";
+			return;
+		}
+	}
+	public function indexAction() {
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThongtincoquan->getFetObj ( $this->TblThongtincoquanbyId [0] ['Id'], $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra về Id và Tên của đối tượng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThongtincoquan->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// thomnd
+	public function combobyphulucAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThongtincoquan->getIdNamebyphulucandcoquan ( $this->TblThongtincoquanbyId [0] ['Phuluc'], $this->TblThongtincoquanbyId [0] ['Id'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function combobythongtincoquanidAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThongtincoquan->getIdNamebyThongtincoquanId ( $this->TblThongtincoquanbyId [0] ['Id'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//
+	
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MThongtincoquan->dupliObj ( 0, $this->_Tencoquan, $this->_Matram, $this->_CoquanId, $this->_Phuluc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên đơn vị hoặc Mã trạm này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThongtincoquan->addObj ( $this->_Thongtincoquan );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblthongtincoquan', 'Cập nhật', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MThongtincoquan->dupliObj ( $id, $this->_Tencoquan, $this->_Matram, $this->_CoquanId, $this->_Phuluc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên đơn vị hoặc Mã trạm này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThongtincoquan->updateObj ( $id, $this->_Thongtincoquan );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblthongtincoquan', 'Cập nhật', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu (năm hệ thống).
+	 *
+	 * @return string json
+	 */
+	public function updatenamhethongAction() {
+		$this->_helper->layout ()->disableLayout ();
+		try {
+			$id = $_REQUEST ['Sys_ThongtincoquanId'];
+			$data = array (
+					'Namhoatdong' => $_REQUEST ['Sys_Namhoatdong'] 
+			);
+			$this->_MThongtincoquan->updateObj ( $id, $data );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblthongtincoquan', 'Cập nhật năm hệ thống', $this->UserIP );
+			$jsonObj ["success"] = true;
+		} catch ( Exception $e ) {
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MThongtincoquan->delObj ( $id );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblthongtincoquan', 'Xóa', $this->UserIP );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Trả về Byte của Image được upload.
+	 *
+	 * @return Array byte
+	 */
+	public function getImage() {
+		$logo = (isset ( $_FILES ['image'] ['tmp_name'] ) && $_FILES ['image'] ['tmp_name'] != "") ? $_FILES ['image'] ['tmp_name'] : "";
+		$imgData = "";
+		try {
+			if ($logo != "")
+				$imgData = file_get_contents ( $logo );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+				alert('Exception: Upload image!');
+				</script>";
+		}
+		return $imgData;
+	}
+}

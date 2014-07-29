@@ -1,0 +1,91 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+class Model_Thonto {
+
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tenthonto, XaId, Kieuthonban,
+			(SELECT Tenxa FROM tbldm_xa WHERE Id = XaId) AS Tenxa ";
+	
+	public function getFetObj($XaId,$sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thonto where XaId=$XaId" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_thonto where XaId=$XaId ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($tenthonto, $Id,$CoquanId) {
+		$str="SELECT COUNT(*) AS Total FROM tbldm_thonto
+				WHERE Tenthonto = '$tenthonto' AND Id != $Id and XaId =$CoquanId ";
+		if($Id==0)
+			$str="SELECT COUNT(*) AS Total FROM tbldm_thonto
+			WHERE Tenthonto = '$tenthonto' and XaId =$CoquanId";
+		$query = $this->db->query ( $str );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function getIdName() {
+		$query = $this->db->query ( "SELECT Id, Tenthonto FROM tdldm_thonto" );
+		return $query->fetchAll ();
+	}
+	
+	public function getIdNameById($_id)
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenthonto FROM tbldm_thonto WHERE XaId = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	
+	
+	
+	public function getIdNameadrowByXaId($_id,$CoquanId)
+	{
+		$query = $this->db->query ( "
+				SELECT '0' as Id, 'Ngoài trạm' as Tenthonto FROM tblthongtincoquan where Id=". $_id."	union
+				SELECT Id, Tenthonto FROM tbldm_thonto WHERE ThongtincoquanId = " . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	
+	public function getIdNameByXaId($_id)
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenthonto FROM tbldm_thonto WHERE XaId = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_thonto', $data );
+		return $Id;
+	}
+	
+	// cap nhat thon to
+	
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_thonto', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xao thong tin thon to
+	
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_thonto', 'Id = ' . $id );
+		return $Id;
+	}
+}

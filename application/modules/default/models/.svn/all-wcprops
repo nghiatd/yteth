@@ -1,0 +1,1043 @@
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/SVN_Ytetonghop/!svn/ver/990/application/modules/default/models
+END
+Phuongphapkhhgd.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Phuongphapkhhgd.php
+END
+Nhapxuat.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nhapxuat.php
+END
+Daotaonhansu.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Daotaonhansu.php
+END
+Mangach.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1082/application/modules/default/models/Mangach.php
+END
+Bangcap.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bangcap.php
+END
+Tinhhinhsdthuocbhyt.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tinhhinhsdthuocbhyt.php
+END
+Tiemchungmiendich.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tiemchungmiendich.php
+END
+Ngansachmotnam.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Ngansachmotnam.php
+END
+Nhapthietbi.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1299/application/modules/default/models/Nhapthietbi.php
+END
+Tachkhau.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/473/application/modules/default/models/Tachkhau.php
+END
+CTSieuam.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/CTSieuam.php
+END
+Kehoachtruyenthong.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Kehoachtruyenthong.php
+END
+Donvitinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Donvitinh.php
+END
+Mucluutru.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1301/application/modules/default/models/Mucluutru.php
+END
+Trinhdovanhoa.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1213/application/modules/default/models/Trinhdovanhoa.php
+END
+Diadiemtainan.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Diadiemtainan.php
+END
+Xa.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/SVN_Ytetonghop/!svn/ver/894/application/modules/default/models/Xa.php
+END
+Chedo.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Chedo.php
+END
+Tiemchung.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tiemchung.php
+END
+Nguyennhan.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nguyennhan.php
+END
+Contrung.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Contrung.php
+END
+Giaykhaisinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Giaykhaisinh.php
+END
+Biabegin.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Biabegin.php
+END
+Tinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/714/application/modules/default/models/Tinh.php
+END
+Tinhluong.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tinhluong.php
+END
+Lamthem.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Lamthem.php
+END
+Cosovatchat.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Cosovatchat.php
+END
+Hinhthuc.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hinhthuc.php
+END
+Uutien.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Uutien.php
+END
+Luong.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Luong.php
+END
+Nhacungcap.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nhacungcap.php
+END
+CTDutruthuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/CTDutruthuoc.php
+END
+Tamthan.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tamthan.php
+END
+Dangkhuyettat.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dangkhuyettat.php
+END
+Thongtintruyenthong.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Thongtintruyenthong.php
+END
+Giamsatvsattp.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Giamsatvsattp.php
+END
+Biendongbaohiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Biendongbaohiem.php
+END
+Bctiemchung2.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bctiemchung2.php
+END
+Bcketquatiemchungtreem.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bcketquatiemchungtreem.php
+END
+Nhansu.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nhansu.php
+END
+Sotret.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1171/application/modules/default/models/Sotret.php
+END
+Quatrinhcongtac.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Quatrinhcongtac.php
+END
+Hoatchatchinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hoatchatchinh.php
+END
+Hedaotao.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hedaotao.php
+END
+Index.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Index.php
+END
+Quoctich.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/713/application/modules/default/models/Quoctich.php
+END
+CTPhieunhapthietbi.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/CTPhieunhapthietbi.php
+END
+Diaban.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Diaban.php
+END
+Dantoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1129/application/modules/default/models/Dantoc.php
+END
+Trinhdohocvan.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1083/application/modules/default/models/Trinhdohocvan.php
+END
+BCTiemchunguonvan.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCTiemchunguonvan.php
+END
+Dongia.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dongia.php
+END
+Bcsode.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/734/application/modules/default/models/Bcsode.php
+END
+Bctbsxhdengue.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bctbsxhdengue.php
+END
+Thietbivattu.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/137/application/modules/default/models/Thietbivattu.php
+END
+Tainanthuongtich.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tainanthuongtich.php
+END
+BCTamthan.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/733/application/modules/default/models/BCTamthan.php
+END
+Giaykhaitu.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Giaykhaitu.php
+END
+Thongtincoquan.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Thongtincoquan.php
+END
+Quanlynguoidung.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Quanlynguoidung.php
+END
+Tongiao.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tongiao.php
+END
+BCtkcpkcbncndt.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1300/application/modules/default/models/BCtkcpkcbncndt.php
+END
+Phuongphapdieutri.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/139/application/modules/default/models/Phuongphapdieutri.php
+END
+Phanbothuocvattu.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Phanbothuocvattu.php
+END
+Diadiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Diadiem.php
+END
+Bchoatdongphongchongbenhxahoi.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bchoatdongphongchongbenhxahoi.php
+END
+Loaihinhkham.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Loaihinhkham.php
+END
+Tailieuchuyenmon.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tailieuchuyenmon.php
+END
+Chucvu.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Chucvu.php
+END
+Hosodaotao.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hosodaotao.php
+END
+Biendong.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Biendong.php
+END
+BCHoatdongchamsoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCHoatdongchamsoc.php
+END
+Cleardata.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Cleardata.php
+END
+Baohiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Baohiem.php
+END
+CTPhieunhap.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1338/application/modules/default/models/CTPhieunhap.php
+END
+Truyenthonggdsk.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Truyenthonggdsk.php
+END
+Trinhdolyluanchinhtri.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Trinhdolyluanchinhtri.php
+END
+BCSokhamthai.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/737/application/modules/default/models/BCSokhamthai.php
+END
+Tiemchungmorong.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tiemchungmorong.php
+END
+Hangdonvi.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hangdonvi.php
+END
+Phathai.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Phathai.php
+END
+BCKhambenh.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCKhambenh.php
+END
+Kehoachhoagiadinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Kehoachhoagiadinh.php
+END
+Xetnghiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Xetnghiem.php
+END
+Ctdaotaonhansu.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Ctdaotaonhansu.php
+END
+Loaithuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Loaithuoc.php
+END
+Vesinhnuocsach.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Vesinhnuocsach.php
+END
+Chuyenvien.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/71/application/modules/default/models/Chuyenvien.php
+END
+Bcvesinhnuocsach.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bcvesinhnuocsach.php
+END
+Dutruthuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dutruthuoc.php
+END
+Daotao.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Daotao.php
+END
+Loaicanbo.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Loaicanbo.php
+END
+Hiv.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hiv.php
+END
+Nuocsanxuat.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/131/application/modules/default/models/Nuocsanxuat.php
+END
+CTKhamthai.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1170/application/modules/default/models/CTKhamthai.php
+END
+Hokhau.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hokhau.php
+END
+Hangsanxuat.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hangsanxuat.php
+END
+Kynop.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Kynop.php
+END
+Mucdanhhieu.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Mucdanhhieu.php
+END
+BCSokhambenh.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCSokhambenh.php
+END
+Bcphathai.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/731/application/modules/default/models/Bcphathai.php
+END
+Khamthai.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Khamthai.php
+END
+Benhdich.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Benhdich.php
+END
+Chantaymieng.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Chantaymieng.php
+END
+Danhhieu.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Danhhieu.php
+END
+Giaychuyenvien.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/773/application/modules/default/models/Giaychuyenvien.php
+END
+Nhapkho.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1299/application/modules/default/models/Nhapkho.php
+END
+Trucca.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Trucca.php
+END
+Bcbkdsctbhyt.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bcbkdsctbhyt.php
+END
+Bcsotheodoisotret.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bcsotheodoisotret.php
+END
+Mucsieuam.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Mucsieuam.php
+END
+Bcketquatiemchungchotreem.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bcketquatiemchungchotreem.php
+END
+BCBenhtruyennhiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCBenhtruyennhiem.php
+END
+Doandang.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Doandang.php
+END
+Bophan.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bophan.php
+END
+Hinhthucsinhsan.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hinhthucsinhsan.php
+END
+Huyen.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/715/application/modules/default/models/Huyen.php
+END
+Chamcong.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Chamcong.php
+END
+Lieudung.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/1032/application/modules/default/models/Lieudung.php
+END
+Nhankhauvanglai.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nhankhauvanglai.php
+END
+CTXetnghiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/CTXetnghiem.php
+END
+Phanloaixa.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Phanloaixa.php
+END
+Publicdetail.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/990/application/modules/default/models/Publicdetail.php
+END
+Mucbaocao.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Mucbaocao.php
+END
+Nhanlucthuocdiabanxa.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nhanlucthuocdiabanxa.php
+END
+Dieukienhuong.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dieukienhuong.php
+END
+Mucbangcap.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Mucbangcap.php
+END
+Dieutrasotxuathuyet.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dieutrasotxuathuyet.php
+END
+BCNhanlucytexa.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCNhanlucytexa.php
+END
+Nhanvien.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nhanvien.php
+END
+Taibiensinhsan.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Taibiensinhsan.php
+END
+Bctiemchung1.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/800/application/modules/default/models/Bctiemchung1.php
+END
+Khambenh.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/48/application/modules/default/models/Khambenh.php
+END
+Dungcuchuanuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dungcuchuanuoc.php
+END
+Dutruthuocbaohiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dutruthuocbaohiem.php
+END
+Hoatdongchinhtri.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hoatdongchinhtri.php
+END
+Quanhe.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Quanhe.php
+END
+Thonto.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Thonto.php
+END
+Uonvan.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/534/application/modules/default/models/Uonvan.php
+END
+Sinhsan.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Sinhsan.php
+END
+Nopbaocao.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nopbaocao.php
+END
+BCHanhchinhdansosinhtu.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCHanhchinhdansosinhtu.php
+END
+Tencaptrenofbc.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Tencaptrenofbc.php
+END
+Dongiacholankham.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dongiacholankham.php
+END
+Bcsotheodoituvong.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/732/application/modules/default/models/Bcsotheodoituvong.php
+END
+Nghenghiep.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nghenghiep.php
+END
+Phongban.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Phongban.php
+END
+Dangthuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Dangthuoc.php
+END
+Bchoatdongtiemchungmorong.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Bchoatdongtiemchungmorong.php
+END
+Khuvucthaotac.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Khuvucthaotac.php
+END
+Chucdanh.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Chucdanh.php
+END
+Nguyennhantainan.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nguyennhantainan.php
+END
+Hinhthuctruyenthong.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Hinhthuctruyenthong.php
+END
+Mucxetnghiem.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Mucxetnghiem.php
+END
+Logs.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Logs.php
+END
+Quanhegiadinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Quanhegiadinh.php
+END
+Mucdokhuyettat.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Mucdokhuyettat.php
+END
+Nghichedo.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Nghichedo.php
+END
+Sieuam.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Sieuam.php
+END
+Khenthuongkyluat.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Khenthuongkyluat.php
+END
+Nhankhau.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/466/application/modules/default/models/Nhankhau.php
+END
+Capphatthuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/SVN_Ytetonghop/!svn/ver/353/application/modules/default/models/Capphatthuoc.php
+END
+Baocao.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/SVN_Ytetonghop/!svn/ver/1365/application/modules/default/models/Baocao.php
+END
+Muccoso.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Muccoso.php
+END
+BCbhytkcbncdntt.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCbhytkcbncdntt.php
+END
+Tieuhuy.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1286/application/modules/default/models/Tieuhuy.php
+END
+BCkehoachhoagiadinh.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/BCkehoachhoagiadinh.php
+END
+Xulytainan.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Xulytainan.php
+END
+Doituong.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Doituong.php
+END
+Trinhdongoaingu.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Trinhdongoaingu.php
+END
+Chuyennganh.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/Chuyennganh.php
+END
+History.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/1/application/modules/default/models/History.php
+END
+Thuoc.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/SVN_Ytetonghop/!svn/ver/132/application/modules/default/models/Thuoc.php
+END

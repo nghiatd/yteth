@@ -1,0 +1,117 @@
+<?php
+/**
+ * 
+ * @author thomnd
+ */
+class Model_Trinhdovanhoa {
+	/**
+	 * - Kết nối DB
+	 * 
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 * 
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, Tentrinhdovanhoa ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdovanhoa" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_trinhdovanhoa ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tentrinhdovanhoa    	
+	 * @return String
+	 */
+	public function dupliObj($id, $tentrinhdovanhoa) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdovanhoa WHERE Tentrinhdovanhoa = '$tentrinhdovanhoa'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdovanhoa WHERE Id != $id AND Tentrinhdovanhoa = '$tentrinhdovanhoa'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 * 
+	 * @return Array item
+	 */
+	public function getIdName($stdvh, $q, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = "Tentrinhdovanhoa LIKE '%$stdvh%'";
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdovanhoa WHERE Tentrinhdovanhoa LIKE '%$q%' AND $where" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_trinhdovanhoa WHERE Tentrinhdovanhoa LIKE '%$q%' AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	public function getIdNameforcbogrid( $q) {
+		$result = array ();
+		
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_trinhdovanhoa WHERE Tentrinhdovanhoa LIKE '%$q%'" );
+		
+		
+		return  $query->fetchAll ();
+	}
+	public function getNamehokhau() {
+		$query = $this->db->query ( "SELECT Id AS TrinhdovanhoaIdch, Tentrinhdovanhoa FROM tbldm_trinhdovanhoa" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function getNamenhankhau() {
+		$query = $this->db->query ( "SELECT Id AS TrinhdovanhoaId, Tentrinhdovanhoa FROM tbldm_trinhdovanhoa" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_trinhdovanhoa', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_trinhdovanhoa', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_trinhdovanhoa', 'Id = ' . $id );
+		return $Id;
+	}
+}
+?>

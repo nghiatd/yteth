@@ -1,0 +1,60 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class SotheodoiketquathctctytController extends PublicdetailController{
+	private $_MBaocao;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Tencoquan;
+	
+	public function init(){
+		$this->initValue();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Tencoquan = $this->TblThongtincoquanbyId[0]['Tencoquan'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+	}
+	
+	
+	public function indexAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		
+		$rowStart = 9;
+		$colStart = 'A';
+		$rowIndex = $rowStart;
+		$colIndex = $colStart;
+		$objPHPExcel = new PHPExcel ();
+		//$jsonObj = $this->_MBaocao->getData($this->_ThongtincoquanId);
+		$objPHPExcel = $objReader->load ( "public/media/Maubaocao/YTXP_STDKQTHCTCTYT.xls" );
+		/*if(count($jsonObj) > 0){
+			$stt=0;
+			foreach($jsonObj as $row){
+				$stt++;
+				$objPHPExcel->getActiveSheet()->setCellValue('A'.$rowIndex, $stt);
+				$objPHPExcel->getActiveSheet()->setCellValue('C'.$rowIndex, $row['Mucbangcap']);
+				$objPHPExcel->getActiveSheet()->setCellValue('D'.$rowIndex, $row['Nhanvien']);
+				$rowIndex++;
+			}
+		}*/
+		
+		
+		$objPHPExcel->getActiveSheet()->getHeaderFooter()->setOddHeader('&C&H&"-,Bold"&"Time New Roman"KẾT QUẢ THỰC HIỆN CHI TIÊU CÔNG TÁC'."\n".'Năm '.$this->_Namhoatdong.'&L&H&"-,Bold"&"Time New Roman"'.$this->_Tencoquan);
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="YTXP_STDKQTHCTCTYT.xls.xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+}

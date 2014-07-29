@@ -1,0 +1,29 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Create By Daitk
+ */
+class CtxetnghiemController extends PublicdetailController {
+	private $_MCTXetnghiem;
+	private $_ThongtincoquanId;
+	public function init() {
+		$this->initValue ();
+		$this->_MCTXetnghiem = new Model_CTXetnghiem ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+	}
+
+	public function getbyxnidAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'id' );
+		$jsonObj = json_encode ( $this->_MCTXetnghiem->getFetObjByXetnghiemId ( $id,$this->TblThongtincoquanbyId[0]['Id'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+}
+
+
+
+
+
+
+
+

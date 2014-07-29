@@ -1,0 +1,174 @@
+<?php
+/**
+ *  Lê văn Kiên
+ */
+include 'PublicdetailController.php';
+
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class CosovatchatController extends PublicdetailController {
+	private $_Mcosovatchat;
+	private $_Cosovatchat = array ();
+	private $_Bophan = array ();
+	private $_Tenbophan;
+	private $_MHistory;
+	private $_Tencsvc;
+	private $_Loai;
+	private $_Soluong;
+	private $_Dangsudung;
+	private $_Noicungcap;
+	private $_Soluongcanbosung;
+	private $_Ngaynhap;
+	private $_Namhethong;	
+	private $_Namhoatdong;
+	private $_ThongtincoquanId;		
+	public function init() {
+		$this->initValue ();
+		$this->_Mcosovatchat = new Model_Cosovatchat();
+		$this->_MBophan = new Model_Bophan ();
+		$this->_MHistory = new Model_History ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhethong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+
+		if(isset ( $_REQUEST ['Tencsvc'] ) && $_REQUEST ['Tencsvc'] != '') {
+			$this->_Tencsvc = $_REQUEST ['Tencsvc'];
+			$this->_Loai = $_REQUEST ['Loai'];
+			$this->_Soluong = $_REQUEST ['Soluong'];
+			$this->_Dangsudung = $_REQUEST ['Dangsudung'];
+			$this->_Noicungcap = $_REQUEST ['Noicungcap'];
+			$this->_Soluongcanbosung = $_REQUEST ['Soluongcanbosung'];
+			$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		}
+		$this->_Ngaynhap = (isset ( $_REQUEST ["Ngaynhap"] ) && $_REQUEST ["Ngaynhap"] != "") ? $_REQUEST ["Ngaynhap"] : "";
+		if ($this->_Ngaynhap != '') {
+			list ( $date, $month, $year ) = explode ( "/", $this->_Ngaynhap );
+			$this->_Ngaynhap = $year . '-' . $month . '-' . $date;
+		}
+		$this->_Cosovatchat = array (
+				'Tencsvc' => $this->_Tencsvc,
+				'Loai' => $this->_Loai,
+				'Soluong' => $this->_Soluong,
+				'Dangsudung' => $this->_Dangsudung,
+				'Noicungcap' => $this->_Noicungcap,
+				'Soluongcanbosung' => $this->_Soluongcanbosung,
+				'Ngaynhap'=>$this->_Ngaynhap,
+				'Namhoatdong' => $this->_Namhoatdong,
+				'ThongtincoquanId' => $this->_ThongtincoquanId 
+		);
+	}
+	
+	
+	
+	public function indexAction()
+	{
+		
+	}
+	public function jsonAction()
+	{
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mcosovatchat->getFetObj ( $sort, $order, $offset, $rows, $this->_ThongtincoquanId, $this->_Namhethong ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function addAction()
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		if($this->_Soluong<$this->_Dangsudung)
+		{
+			echo "<script type=\"text/javascript\">
+			    alert('Số cơ sở vật chất đang sử dụng không được lớn hơn số lượng đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		$dup=$this->_Mcosovatchat->CheckValueObj(0,$this->_Tencsvc,$this->_Ngaynhap);
+		if ($dup>0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên cơ sở vật chất này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		else{
+			$id=$this->_Mcosovatchat->AddObj($this->_Cosovatchat);
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, ' tblvesinh_nuocsach', 'Thêm', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction()
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$varid = $this->_getParam('id');
+		$dup = $this->_Mcosovatchat->CheckValueObj ($varid,$this->_Tencsvc,$this->_Ngaynhap);
+		if ($dup>0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên cơ sở vật chất này đã có trong danh sách');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else {
+			$this->_Mcosovatchat->updateObj ( $varid, $this->_Cosovatchat );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblvesinh_nuocsach', 'Sửa', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}		
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false 
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_Mcosovatchat->DelObj ( $item ['Id'] );
+				$jsonObj = array (
+						'success' => true 
+				);
+			}
+		}
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblvesinh_nuocsach', 'Xóa', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function searAction()
+	{
+
+		$this->_helper->layout ()->disableLayout ();
+		
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$smahodan = $this->_getParam ('smahodan');
+		$sloaigieng = $this->_getParam ('sloaigieng');		
+		$sthonto = $this->_getParam ('sthonto');
+		$sloainhatieu = $this->_getParam ('sloainhatieu');
+		$sngaynhap = $this->_getParam ('sngaynhap');
+		
+		if ($sngaynhap != '') {
+			$sngaynhap = $this->convertDateSearch($sngaynhap);
+		}
+		
+		$jsonObj = json_encode ( $this->_Mvesinhnuocsach->searObj ( $smahodan, $sloaigieng, $sthonto, $sloainhatieu,$sngaynhap, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'], $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;		
+	}
+}
+?>

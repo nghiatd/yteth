@@ -1,0 +1,52 @@
+<script>
+var url;
+
+$(function(){
+	$('#dg').edatagrid({
+		url: 'logs/json'
+	});
+});
+
+function del(){
+	var rows = $('#dg').datagrid('getChecked');
+	numberrow = rows.length;
+	if (numberrow > 0){
+		$.messager.confirm('Thông báo','Bạn có chắc chắn muốn xóa '+numberrow+' phần tử?',function(r){
+			if (r){
+				$.post('logs/del',{items:rows}, function(result){
+					if(result.success){
+						$('#dg').datagrid('reload');
+						show_messager('Cập nhật dữ liệu thành công!');
+					} else {
+						show_messager('Cập nhật dữ liệu không thành công!');
+					}
+				},'json');
+			}
+		});
+	}else{
+		show_messager('Không có bản ghi nào được chọn!');
+	}
+}
+
+</script>
+
+<!-- Begin Datagrid -->
+<table id="dg" title="Lịch sử người dùng thao tác" style="width: 100%;"
+	toolbar="#toolbar" pagination="true" idField="id" rownumbers="true"
+	fitColumns="false" singleSelect="true" nowrap="true"
+	data-options="border:false,fit:true, selectOnCheck:false, checkOnSelect:false">
+	<thead>
+		<tr>
+			<th data-options="field:'ck',checkbox:true"></th>
+			<th field="User" width="100" sortable="true" >Tên người dùng</th>
+			<th field="Datetime_Action" width="250" sortable="true" >Thời gian thao tác</th>
+			<th field="Thaotac" width="250" sortable="true" >Thao tác</th>
+			<th field="User_Ip" width="250" sortable="true" >User - IP</th>
+			<th field="Id" data-options="hidden:true" >Id</th>	
+		</tr>
+	</thead>
+</table>
+<div id="toolbar" style="padding: 5px; height: auto;"> 
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="del()">Xóa</a>
+</div>
+<!-- End DataGrid -->

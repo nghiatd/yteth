@@ -1,0 +1,20 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class DoituongController extends PublicdetailController{
+	private $_MDoituong;
+	public function init(){
+		$this->initValue();
+		$this->_MDoituong = new Model_Doituong();
+	}
+	// combo du  lieu
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDoituong->getNamebyId () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

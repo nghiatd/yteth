@@ -1,0 +1,116 @@
+<?php
+include 'PublicdetailController.php';
+class DongiaController extends PublicdetailController{
+	private $_MDongia;
+	private $_Tendongia;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Dongia = array();
+	
+	public function init(){
+		$this->initValue();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+		$this->_MDongia = new Model_Dongia();
+		if (isset ( $_REQUEST ['Tendongia'] ) && $_REQUEST ['Tendongia'] != '') {
+			$this->_Tendongia = $_REQUEST ['Tendongia'];
+			$this->_Dongia = array (
+					'Tendongia' => $this->_Tendongia,
+					'Giatien' => $_REQUEST ['Giatien'],
+					'Tienthuthuat' => $_REQUEST['Tienthuthuat'],
+					'Tientruc' => $_REQUEST['Tientruc'],
+					'Luongcoban' => $_REQUEST['Luongcoban'],
+					'Namhoatdong' => $this->_Namhoatdong,
+					'ThongtincoquanId' => $this->_ThongtincoquanId
+			);
+		}
+	}
+	
+	public function indexAction(){}
+	
+	/**
+	 * Hiển thị dữ liệu phần trang
+	 * @return string
+	 */
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDongia->getFetObj($this->_ThongtincoquanId, $this->_Namhoatdong, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	/**
+	 * Thêm mới dữ liệu
+	 * @return string
+	 */
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MDongia->dupliObj(0, $this->_Tendongia, $this->_ThongtincoquanId, $this->_Namhoatdong);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bạn nhập đã có trong dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MDongia->addObj($this->_Dongia);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	/**
+	 * Cập nhật duex liệu
+	 * @return string
+	 */
+	public function updateAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam("id");
+		// kiem tra trung lap du lieu
+		$dup = $this->_MDongia->dupliObj($id, $this->_Tendongia, $this->_ThongtincoquanId, $this->_Namhoatdong);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bạn nhập đã có trong dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MDongia->updateObj($id, $this->_Dongia);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	/**
+	 * Xóa dữ liệu
+	 * @return void|string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MDongia->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

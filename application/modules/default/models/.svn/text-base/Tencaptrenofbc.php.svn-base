@@ -1,0 +1,43 @@
+<?php
+class Model_Tencaptrenofbc{
+	
+	protected $db;
+	public function __construct()
+	{
+		$this->db = Zend_Registry::get("db");
+	}	
+	
+	// lay ten cap tren cho bao cao
+	public function gettencaptren($thongtincoquanId){
+		$query = $this->db->query("SELECT Id, CoquanId,
+				IF(Phuluc = 1, (SELECT Tenhuyen FROM tbldm_huyen WHERE Id = (SELECT HuyenId FROM tbldm_xa WHERE Id = CoquanId)), (SELECT Tentinh FROM tbldm_tinh WHERE Id = (SELECT TinhId FROM tbldm_huyen WHERE Id = CoquanId))) AS Tencaptren
+				FROM tblthongtincoquan WHERE Id = $thongtincoquanId");
+		return $query->fetchAll();
+	}
+	
+	// lay ten tinh lam bai so 
+	public function gettentinh($thongtincoquanId){
+		$query = $this->db->query("SELECT Id, CoquanId,
+				IF(Phuluc = 1, (SELECT Tentinh FROM tbldm_tinh WHERE Id = (SELECT TinhId FROM tbldm_huyen WHERE Id = (SELECT HuyenId FROM tbldm_xa WHERE Id = CoquanId))),
+				(SELECT Tentinh FROM tbldm_tinh WHERE Id = (SELECT TinhId FROM tbldm_huyen WHERE Id = CoquanId))) AS Tentinh
+				FROM tblthongtincoquan WHERE Id = $thongtincoquanId");
+		return $query->fetchAll();
+	}
+	// lay ten Tinh, huyen, xa
+	public function getInfo($thongtincoquanId, $namhoatdong){
+		$query = $this->db->query("SELECT Id, CoquanId,
+						(SELECT Tenxa FROM tbldm_xa WHERE Id = CoquanId) AS Tenxa,
+						(SELECT HuyenId FROM tbldm_xa WHERE Id = CoquanId) AS HuyenId,
+						(SELECT Tenhuyen FROM tbldm_huyen WHERE Id = HuyenId) AS Tenhuyen,
+						(SELECT TinhId FROM tbldm_huyen WHERE Id= HuyenId) AS TinhId,
+						(SELECT Tentinh FROM tbldm_tinh WHERE Id = TinhId) AS Tentinh
+						FROM tblthongtincoquan WHERE Id = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		return $query->fetchAll();
+	}
+	
+	// lay ten benh dich cho bao vao
+	public function getNamebyId($id){
+		$query = $this->db->query("SELECT Tenbenhdich FROM tbldm_benhdich WHERE Id = $id");
+		return $query->fetchAll();
+	}
+}

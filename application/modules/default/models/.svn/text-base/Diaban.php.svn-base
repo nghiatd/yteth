@@ -1,0 +1,63 @@
+<?php
+/*********
+ * Create by thomnd
+ */
+
+class Model_Diaban {
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tendiaban ";
+
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diaban" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_diaban ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $Tendiaban) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diaban WHERE Tendiaban = '$Tendiaban'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diaban WHERE Id != $id AND Tendiaban = '$Tendiaban'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// lay thong tin ve id va ten doi tuong
+	
+	public function getIdName() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_diaban" );
+		return $query->fetchAll ();
+	}
+	
+	// them moi dia diem kham
+	
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_diaban', $data );
+		return $Id;
+	}
+	
+	// sua dia diem kham
+	
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_diaban', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xoa dia diem kham benh
+	
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_diaban', 'Id = ' . $id );
+		return $Id;
+	}
+}

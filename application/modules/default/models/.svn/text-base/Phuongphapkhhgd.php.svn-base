@@ -1,0 +1,58 @@
+<?php
+/**
+ *
+ * @author Giangnl
+ *
+ */
+class Model_Phuongphapkhhgd
+{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	private $str_query = "SELECT Id, Tenphuongphap ";
+	
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_phuongphapkhhgd");
+		$row = $query->fetchAll();
+		$query = $this->db->query($this->str_query."FROM tbldm_phuongphapkhhgd ORDER BY $sort $order LIMIT $offset, $rows");
+		$result["total"] = $row[0]['Total'];
+		$result["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	public function getIdNameObj(){
+		$query = $this->db->query($this->str_query."FROM tbldm_phuongphapkhhgd");
+		return $query->fetchAll();
+	}
+	
+	public function dupObj($id, $tenphuongphap) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phuongphapkhhgd WHERE Tenphuongphap = '$tenphuongphap'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phuongphapkhhgd WHERE Id != $id AND Tenphuongphap = '$tenphuongphap'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function addObj($data){
+		$id = $this->db->insert('tbldm_phuongphapkhhgd', $data);
+		return $id;
+	} 
+	
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbldm_phuongphapkhhgd', $data, 'Id ='.$id);
+		return $Id;
+	}
+	
+	public function delObj($id){
+		$Id = $this->db->delete('tbldm_phuongphapkhhgd', 'Id ='.$id);
+		return $Id;
+	}
+	
+	
+	
+}

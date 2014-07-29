@@ -1,0 +1,119 @@
+<?php
+/**
+ * @author Phadh
+ * */
+ include 'PublicdetailController.php';
+ class KynopController extends PublicdetailController{
+    
+    private $_MKynop;
+    private $_Tenkynop;
+    private $_Kynop = array();
+    public function init(){
+		$this->initValue();
+		$this->_MKynop = new Model_Kynop();
+		
+		if (isset ($_REQUEST['Tenkynop']) && $_REQUEST['Tenkynop'] != ''){
+			$this->_Tenkynop = $_REQUEST['Tenkynop'];
+			$this->_Kynop = array(
+					'Tenkynop' => $_REQUEST['Tenkynop'],
+                    'Giatri' => $_REQUEST['Giatri']
+					);
+		}
+	}
+	
+
+	
+    public function indexAction(){
+        
+    }
+    
+    // combobox ky nop
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MKynop->getIdName());
+		return $this->view->jsonObj = $jsonObj;
+	}
+    
+    // hien thi du lieu theo phan trang
+    public function jsonAction(){
+        $page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MKynop->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+    }
+    
+    // them moi du lieu ky nop
+    public function addAction(){
+        $this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		$dub = $this->_MKynop->dupliObj(0, $this->_Tenkynop);
+		if($dub > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên kỳ nộp này đã có!');
+			</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj=json_encode($jsonObj);
+		}else{
+			$this->_MKynop->addObj($this->_Kynop);
+			$jsonObj["success"]=true;
+			return $this->view->jsonObj=json_encode($jsonObj);
+		}
+    }
+    
+    // cap nhat du lieu ky nop
+    public function updateAction(){
+        $id = $this->getParam('id');
+		$Tenkynop = $_REQUEST['Tenkynop'];
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		$dup = $this->_MKynop->dupliObj($id, $Tenkynop);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên kỳ nộp này đã có!');
+			</script>";
+			$jsonObj["success"]=false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}else{
+			$this->_MKynop->updateObj($id, $this->_Kynop);
+			$jsonObj["success"]=true;
+		}
+			return $this->view->jsonObj = json_encode($jsonObj);
+    }
+    
+    // xoa du lieu ky nop
+    public function delAction(){
+        $this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MKynop->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+    }
+    
+    
+ }

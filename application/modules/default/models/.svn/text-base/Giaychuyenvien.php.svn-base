@@ -1,0 +1,103 @@
+<?php
+class Model_Giaychuyenvien {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getFetObj($id, $thongtincoquanid, $namhethong) {
+		
+		$arrdsthuoc=$this->getdsthuocdadungFetObj($id,$thongtincoquanid,$namhethong);
+		$dsthuoc="";
+		foreach ( $arrdsthuoc as $row ) 
+		{
+			if($dsthuoc!="")
+				$dsthuoc=$dsthuoc.', '.$row['Tenthuoc'];
+			else
+				$dsthuoc=$row['Tenthuoc'];
+		}
+		
+		$arrdsxetnghiem=$this->getdsxetnghiemFetObj($id,$thongtincoquanid,$namhethong);
+		$dsxetnghiem="";
+		foreach ( $arrdsxetnghiem as $row )
+		{
+			if($dsxetnghiem!="")
+				$dsxetnghiem=$dsxetnghiem.', '.$row['Tenmuc'];
+			else
+				$dsxetnghiem=$row['Tenmuc'];
+		}
+		
+		 
+		$query = $this->db->query ( "SELECT tblchuyenvien.Id,  Machuyenvien, (DATE_FORMAT(Ngaychuyenvien,'%d/%m/%Y')) AS Ngaychuyenvien, Noiden, Lydochuyen, NhansuId, ThongtincoquanId, Namhoatdong,
+				(SELECT Hoten FROM tblnhanvien WHERE tblnhanvien.Id = tblchuyenvien.NhansuId and tblnhanvien.ThongtincoquanId = tblchuyenvien.ThongtincoquanId ) AS Nhansu, Chuyenhoi, 
+				(SELECT NhankhauId FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS NhankhauId,
+				(SELECT tblnhankhau.Hoten FROM tblnhankhau,tblphieukhambenh WHERE tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Hoten,
+				(SELECT YEAR(tblnhankhau.Ngaysinh) FROM tblnhankhau,tblphieukhambenh WHERE tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Namsinh,
+				(SELECT tblnhankhau.Gioitinh FROM tblnhankhau,tblphieukhambenh WHERE tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Gioitinh ,
+				
+				(SELECT tblnhankhau.DantocId FROM tblnhankhau,tblphieukhambenh WHERE tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS DantocId ,
+				(SELECT Tendantoc FROM tbldm_dantoc,tblnhankhau,tblphieukhambenh WHERE tbldm_dantoc.Id=tblnhankhau.DantocId and tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Dantoc,
+				(SELECT tblnhankhau.Nghenghiep FROM tblnhankhau,tblphieukhambenh WHERE tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Nghenghiep,
+				(SELECT Sobaohiem FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Sobaohiem,
+				
+				(SELECT tblchuhodan.ThontoId FROM tblchuhodan,tblnhankhau,tblphieukhambenh WHERE tblchuhodan.ThongtincoquanId =tblnhankhau.ThongtincoquanId and tblchuhodan.Mahodan=tblnhankhau.Mahodan and tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS ThontoId ,
+				
+				(SELECT Tenthonto FROM tbldm_thonto,tblchuhodan,tblnhankhau,tblphieukhambenh WHERE tblchuhodan.ThontoId=tbldm_thonto.Id and  tblchuhodan.ThongtincoquanId =tblnhankhau.ThongtincoquanId and tblchuhodan.Mahodan=tblnhankhau.Mahodan and tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Thonto,
+				
+				(SELECT Tenxa FROM tbldm_xa,tbldm_thonto,tblchuhodan,tblnhankhau,tblphieukhambenh WHERE  tbldm_thonto.ThongtincoquanId=tblchuhodan.ThongtincoquanId and tbldm_xa.Id=tbldm_thonto.XaId and tblchuhodan.ThontoId=tbldm_thonto.Id and  tblchuhodan.ThongtincoquanId =tblnhankhau.ThongtincoquanId and tblchuhodan.Mahodan=tblnhankhau.Mahodan and tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Tenxa ,
+				
+				(SELECT Tenhuyen  FROM tbldm_huyen,tbldm_xa,tbldm_thonto,tblchuhodan,tblnhankhau,tblphieukhambenh WHERE  tbldm_huyen.Id=tbldm_xa.HuyenId and tbldm_thonto.ThongtincoquanId=tblchuhodan.ThongtincoquanId and tbldm_xa.Id=tbldm_thonto.XaId and tblchuhodan.ThontoId=tbldm_thonto.Id and  tblchuhodan.ThongtincoquanId =tblnhankhau.ThongtincoquanId and tblchuhodan.Mahodan=tblnhankhau.Mahodan and tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Tenhuyen ,
+				
+				
+				
+				(SELECT Tentinh  FROM tbldm_tinh,tbldm_huyen,tbldm_xa,tbldm_thonto,tblchuhodan,tblnhankhau,tblphieukhambenh WHERE  tbldm_tinh.Id=tbldm_huyen.TinhId and tbldm_huyen.Id=tbldm_xa.HuyenId and tbldm_thonto.ThongtincoquanId=tblchuhodan.ThongtincoquanId and tbldm_xa.Id=tbldm_thonto.XaId and tblchuhodan.ThontoId=tbldm_thonto.Id and  tblchuhodan.ThongtincoquanId =tblnhankhau.ThongtincoquanId and tblchuhodan.Mahodan=tblnhankhau.Mahodan and tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+				tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+				tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Tentinh,
+				(SELECT DATE_FORMAT(Ngaylapphieu,'%d/%m/%Y') FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb  and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Ngayvaovien,
+				(SELECT Trieuchung FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb  and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Dauhieulamsang,
+				(SELECT Chuandoan FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb  and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Chuandoan,
+				(DAY(Ngaychuyenvien)) AS Ngay, (MONTH(Ngaychuyenvien)) AS Thang, (YEAR(Ngaychuyenvien)) AS Nam,
+				Tinhtranglucchuyen,Phuongtien,Chiphivanchuyen, Nguoidua, '$dsthuoc' as Tenthuoc,'$dsxetnghiem' as Tenmucxetnghiem,
+				
+				(SELECT DATE_FORMAT(Tungay, '%d/%m/%Y') FROM tblquatrinhbaohiemnhankhau WHERE Sobaohiem = (SELECT Sobaohiem FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb)) AS Giatritu,
+
+				(SELECT DATE_FORMAT(Denngay, '%d/%m/%Y') FROM tblquatrinhbaohiemnhankhau WHERE Sobaohiem = (SELECT Sobaohiem FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb)) AS Giatriden
+				FROM tblchuyenvien WHERE tblchuyenvien.Id = '$id' AND tblchuyenvien.ThongtincoquanId = $thongtincoquanid AND tblchuyenvien.Namhoatdong <= $namhethong" );
+		return $query->fetchAll ();
+	}
+	
+	public function getdsthuocdadungFetObj($id, $thongtincoquanid, $namhethong) {
+		$query = $this->db->query ( "SELECT if(tblchitietnhapxuat.Dang=1,(select Tenthuoc from tbldm_thuoc where tbldm_thuoc.Id=tblchitietnhapxuat.DoituongId),(select Tenthietbivattu from  tbldm_thietbivattu where  tbldm_thietbivattu.Id=tblchitietnhapxuat.DoituongId)) as Tenthuoc	FROM tblchitietnhapxuat,tblnhapxuat,tblphieukhambenh,tblchuyenvien WHERE 
+tblchitietnhapxuat.Mahoadon=tblnhapxuat.Mahoadon and tblchitietnhapxuat.ThongtincoquanId=tblnhapxuat.ThongtincoquanId
+and tblnhapxuat.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and tblnhapxuat.PhieukhambenhId=tblphieukhambenh.Id and tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId   and tblchuyenvien.Id = '$id' AND tblchuyenvien.ThongtincoquanId = $thongtincoquanid AND tblchuyenvien.Namhoatdong <= $namhethong" );
+		return $query->fetchAll ();
+	}
+	
+	public function getdsxetnghiemFetObj($id, $thongtincoquanid, $namhethong) {
+		$query = $this->db->query ( "SELECT  tbldm_muckiemtra.Tenmuc as Tenmuc from   tbldm_muckiemtra,tblchitietxetnghiem,tblxetnghiem,tblphieukhambenh,tblchuyenvien WHERE
+				 tbldm_muckiemtra.Id=tblchitietxetnghiem.MucxetnghiemId and
+				 tblchitietxetnghiem.Sophieukcb =tblchitietxetnghiem.Sophieukcb  and  tblchitietxetnghiem.ThongtincoquanId=tblxetnghiem.ThongtincoquanId
+				and tblxetnghiem.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and tblxetnghiem.Sophieukcb=tblphieukhambenh.Sophieukcb and tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId   and tblchuyenvien.Id = '$id' AND tblchuyenvien.ThongtincoquanId = $thongtincoquanid AND tblchuyenvien.Namhoatdong <= $namhethong" );
+			return $query->fetchAll ();
+		}
+	
+}

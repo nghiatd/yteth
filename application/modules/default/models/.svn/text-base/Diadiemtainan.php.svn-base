@@ -1,0 +1,62 @@
+<?php
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class Model_Diadiemtainan{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get('db');
+	}
+	
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diadiemtainan" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Tendiadiemtainan FROM tbldm_diadiemtainan ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	//phadh
+	//combo diadiemtainan
+	public function getNamebyId(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tendiadiemtainan FROM tbldm_diadiemtainan ORDER BY Tendiadiemtainan ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	public function CheckValueObj($id, $varTendiadiemtainan) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diadiemtainan WHERE Tendiadiemtainan = '$varTendiadiemtainan'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_diadiemtainan WHERE Id !=$id and Tendiadiemtainan = '$varTendiadiemtainan'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($varTendiadiemtainan) {
+		$data = array (
+				'Tendiadiemtainan' => $varTendiadiemtainan
+		);
+		$Id = $this->db->insert ( 'tbldm_diadiemtainan', $data );
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id, $varTendiadiemtainan) {
+		$data = array (
+				'Tendiadiemtainan' => $varTendiadiemtainan
+		)
+		;
+		$this->db->update ( 'tbldm_diadiemtainan', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_diadiemtainan', 'Id=' . $Id );
+		return $Iddel;
+	}
+}

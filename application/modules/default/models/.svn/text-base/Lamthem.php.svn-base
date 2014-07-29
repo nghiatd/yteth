@@ -1,0 +1,152 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Lamthem{
+	
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	public function getdetailchamcongthangbyManhanvien($NhanvienId,$thang, $thongtincoquanid){
+		$query = $this->db->query("	select Id, DATE_FORMAT(Ngaythang,'%d/%m/%Y') as Ngaythanglam ,Sotieng
+				from tbllamthem where  NhanvienId =$NhanvienId
+				and ThongtincoquanId=$thongtincoquanid 	 AND Month(Ngaythang) =$thang
+				");
+		return $query->fetchAll ();
+	}
+	// hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanid){
+		/*$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbllamthem WHERE ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, NhanvienId, ThongtincoquanId, DATE_FORMAT(Ngaythang, '%d/%m/%Y') AS Ngaythang, Sotieng,
+									(SELECT Hoten FROM tblnhanvien WHERE Id = NhanvienId) AS Nhanvien
+								FROM tbllamthem WHERE ThongtincoquanId = $thongtincoquanId ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+		*/
+		
+		$date = date('Y-m-d', time());
+		$where="";
+		if($date!="")
+			$where =  ' AND Ngaythang =\'' .$date . '\' ';
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanid");
+		$row = $query->fetchAll();
+		$query = $this->db->query("
+		
+				select Id ,Manhanvien ,Hoten as Nhanvien , Hoten ,DATE_FORMAT('$date','%d/%m/%Y')  as Ngaythanglam,
+				(select IF(tbllamthem.Ngaythang,'on',null) as ck from tbllamthem where
+				tblnhanvien.Id=tbllamthem.NhanvienId and tblnhanvien.ThongtincoquanId=tbllamthem.ThongtincoquanId and tbllamthem.ThongtincoquanId=$thongtincoquanid 
+				$where
+		) as ck,
+				(select Sotieng from tbllamthem where
+				tblnhanvien.Id=tbllamthem.NhanvienId and tblnhanvien.ThongtincoquanId=tbllamthem.ThongtincoquanId and tbllamthem.ThongtincoquanId=$thongtincoquanid
+				$where
+		) as Sotieng
+				from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanid
+		
+		
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	//kiem tra trung lap du lieu
+	public function dupliObj($id, $nhanvienId, $thongtincoquanId, $ngaythang){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbllamthem WHERE NhanvienId = $nhanvienId AND ThongtincoquanId = $thongtincoquanId AND Ngaythang = '$ngaythang'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbllamthem WHERE Id != $id AND NhanvienId = $nhanvienId AND ThongtincoquanId = $thongtincoquanId AND Ngaythang = '$ngaythang'");
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function getNhanvienIdbyManhanvien($Manhanvien,$thang, $thongtincoquanid){
+		$row = array ();
+		$query = $this->db->query(" select '$thang' as Thang ,Id as NhanvienId from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanid and Manhanvien='$Manhanvien' 	");
+		$row = $query->fetchAll ();
+		return $row;
+	}
+		
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tbllamthem', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbllamthem', $data, 'Id='.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete("tbllamthem", "Id=".$id);
+		return $Id;
+	}
+	
+	// xoa du lieu theo ngay thang lam them
+	public function deleteObj($ngaythang, $thongtincoquanId){
+		$where = array(
+				'Ngaythang = ?' => $ngaythang,
+				'ThongtincoquanId = ?' => $thongtincoquanId
+				);
+		$Id = $this->db->delete('tbllamthem', $where);
+		return $Id;
+	}
+	
+	//sera lam them
+	public function  searObj($sNhanvien, $sNgaythang, $sSotieng, $sort, $order, $offset, $rows, $thongtincoquanId){
+		$result = array();
+		$where = " ";
+		if($sNgaythang != '')
+			$where = $where." AND Ngaythang = '$sNgaythang'";
+		if($sSotieng != '')
+			$where = $where." AND Sotieng = $sSotieng";
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbllamthem WHERE ThongtincoquanId = $thongtincoquanId  $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("
+				select Id ,Manhanvien ,Hoten as Nhanvien , Hoten ,DATE_FORMAT('$sNgaythang','%d/%m/%Y')  as Ngaythang,
+				(select IF(tbllamthem.Ngaythang,'on',null) as ck from tbllamthem where
+				tblnhanvien.Id=tbllamthem.NhanvienId and tblnhanvien.ThongtincoquanId=tbllamthem.ThongtincoquanId and tbllamthem.ThongtincoquanId=$thongtincoquanId 
+				$where
+		) as ck,
+				(select Sotieng from tbllamthem where
+				tblnhanvien.Id=tbllamthem.NhanvienId and tblnhanvien.ThongtincoquanId=tbllamthem.ThongtincoquanId and tbllamthem.ThongtincoquanId=$thongtincoquanId
+				$where
+		) as Sotieng
+				from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanId and Hoten LIKE '%$sNhanvien%'
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// get du lieu danh sach nhan vien lam them gio
+	public function getdanhsach($sNhanvien, $sNgaythang, $sSotieng, $thongtincoquanId, $mang){
+		$result = array();
+		$where = "NhanvienId IN (SELECT Id FROM tblnhanvien WHERE Hoten LIKE '%$sNhanvien%')";
+		if($sNgaythang != '')
+			$where = $where."AND Ngaythang = '$sNgaythang'";
+		if($sSotieng != '')
+			$where = $where."AND Sotieng = $sSotieng";
+		if($mang != 0)
+			$where = $where."AND Id IN ($mang)";
+		$query = $this->db->query("SELECT Id, NhanvienId, ThongtincoquanId, Sotieng,
+				DATE_FORMAT(Ngaythang, '%d/%m/%Y') As Ngaythang,
+				(SELECT Manhanvien FROM tblnhanvien WHERE Id = NhanvienId) AS Manhanvien,
+				(SELECT Hoten FROM tblnhanvien WHERE Id = NhanvienId) AS Nhanvien
+				FROM tbllamthem WHERE ThongtincoquanId = $thongtincoquanId AND $where");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+}

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+
+<head>
+<base href="<?php //echo BASEURL;?>" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description"
+	content="News - Clean HTML5 and CSS3 responsive template">
+	
+<meta name="author" content="MyPassion">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<title>Trạm y tế xã Tân Thanh Huyện Kim Sơn Tỉnh Ninh Bình</title>
+
+<link rel="shortcut icon"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/img/sms-4.ico" />
+	
+	<link rel="stylesheet" href="<?php echo $this->baseUrl();?>/public/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+
+<!-- STYLES -->
+	<?php /*?>
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/superfish.css"
+	media="screen" />
+	
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/fontello/fontello.css" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/flexslider.css"
+	media="screen" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/ui.css" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/base.css" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/style.css" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/960.css" />
+	<?php */ ?>
+	<?php echo $this->minifyHeadLink()
+	
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/superfish.css')
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/fontello/fontello.css')
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/ui.css')
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/base.css')
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/style.css')
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/960.css')
+	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/flexslider.css')
+	?>
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/devices/1000.css"
+	media="only screen and (min-width: 768px) and (max-width: 1000px)" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/devices/767.css"
+	media="only screen and (min-width: 480px) and (max-width: 767px)" />
+<link rel="stylesheet" type="text/css"
+	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/devices/479.css"
+	media="only screen and (min-width: 200px) and (max-width: 479px)" />
+<link
+	href='http://fonts.googleapis.com/css?family=Merriweather+Sans:400,300,700,800'
+	rel='stylesheet' type='text/css'>
+<!--[if lt IE 9]> <script type="text/javascript" src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/customM.js"></script> <![endif]-->
+
+	
+	
+	<style type="text/css">
+		
+		body
+		{
+			font-family: Helvetica, Arial;
+		}
+		
+		.backdrop
+		{
+			position:absolute;
+			top:0px;
+			left:0px;
+			width:100%;
+			height:100%;
+			background:#000;
+			opacity: .0;
+			filter:alpha(opacity=0);
+			z-index:50;
+			display:none;
+		}
+
+
+		.box
+		{
+			position:absolute;
+			top:20%;
+			left:30%;
+			width:500px;
+			height:300px;
+			background:#ffffff;
+			z-index:51;
+			padding:10px;
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+			-moz-box-shadow:0px 0px 5px #444444;
+			-webkit-box-shadow:0px 0px 5px #444444;
+			box-shadow:0px 0px 5px #444444;
+			display:none;
+		}
+
+		.close
+		{
+			float:right;
+			margin-right:6px;
+			cursor:pointer;
+		}
+		
+		</style>
+		
+
+</head>
+
+<body>
+
+	<!-- Body Wrapper -->
+	<div class="body-wrapper">
+		<div class="controller">
+			<div class="controller2">
+
+				<!-- Header -->
+				<header id="header">
+					<div class="quick-nav">
+					<form method="POST" >
+						<div class="gmt">
+							<script language="javascript" type="text/javascript">  
+                  		dayName = new Array ("Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy")  
+		                monName = new Array ("1","2","3","4","5","6","7","8","9","10","11","12")  
+		                now = new Date();  
+		                document.write("<font color=#FFFFFF></b>" +dayName[now.getDay()]+ ", " +now.getDate()+ "/" +monName[now.getMonth()]+ "/" +now.getFullYear() + " , "+now.getHours()+ ":" +now.getMinutes()+ "</b></font>")                                      
+					</script>					
+					<?php if($this->LienKettrangchu):?>
+							<select name="coquanId" style="width: 400px" onchange="this.form.submit()">
+							<?php foreach ($this->LienKettrangchu as $value):?>								
+								<option value="<?php echo $value['Id']; ?>" <?php echo ($this->CoQuanId == $value['Id'])?'selected':''?>><?php echo $value['Tencoquan'];?></option>								
+								<?php endforeach;?>	
+							</select>				
+					<?php endif;?>		
+						</div>
+						</form>
+						<div class="top-links">
+							<ul id="top-link">
+								<li class="first"><a href="<?php echo $this->baseUrl ().'/websitefront'; ?>" title="Trang chủ">TRANG CHỦ</a></li>
+								<li class=""><a href="#" title="Thư điện tử">HÒM THƯ</a></li>
+								<li class=""><a href="<?php echo $this->baseUrl ().'/websitefront/bando'; ?>" title="Vị trí địa lý">BẢN ĐỒ</a></li>
+								<li class=""><a href="<?php echo $this->baseUrl ().'/index/login'; ?>" title="Đăng nhập phần mềm">ĐĂNG NHẬP</a></li>
+
+							</ul>
+						</div>
+					</div>
+					<div class="banner">
+					
+					<?php if($this->Banner && Websitefront_Model_Tintuc::checkImage($this->baseUrl ().Websitefront_Model_Lienket::getImage($this->Banner[0]['Id']))):?>
+						<a href="index.html"><img src="<?php echo $this->baseUrl ().Websitefront_Model_Lienket::getImage($this->Banner[0]['Id'])?>" /></a>
+					<?php else :?>
+						<a href="index.html"><img src="<?php echo $this->baseUrl()?>/public/uploads/news/banner.jpg" /></a>
+					<?php endif;?>	
+					</div>
+					<!-- Nav -->
+					<nav id="nav">
+                                                    
+							 
+			                    <ul class="sf-menu">
+			                    	<?php foreach ($this->DanhMuc as $value):?>
+			                        <li><a
+											href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Danhmuc::getLink($value['Alias'])?>"><?php echo $value['TieuDe'];?></a></li>
+			                        <?php endforeach;?>
+			                    </ul>
+			                  
+                        
+
+					</nav>
+					<!-- /Nav -->
+
+
+				</header>
+				<!-- /Header -->
+
+				<!-- Slider -->
+				
+				<!-- / Slider -->
+
+				<!-- Content -->
+				<?php echo $this->layout()->content;?>
+				<!-- / Content -->
+
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="container">
+						<div class="column-one-fourth">
+							<h5 class="line">
+								<span>Liên hệ</span>
+							</h5>
+							<ul class="footnav">
+								<li class="foot-address"><strong>Công ty cổ phần giải pháp công nghệ Nidi JSC
+										607 Nguyễn Văn Linh - Long biên - Hà Nội </strong></li>
+								<li class="foot-phone"><strong>Điện thoại: </strong>
+									04.3667.57396/04.36830717 </li>
+								<li class="foot-fax"><strong>Fax: </strong> 043.6830717</li>
+								<li class="foot-email"><strong>E-mail: </strong>
+									contact@nidi.com.vn</li>
+							</ul>
+						</div>
+						<div class="column-one-fourth">
+							<?php if($this->LienKetDuoi):?>
+							<h5 class="line">
+								<span>Liên kết</span>
+							</h5>
+							<ul class="footnav">
+							<?php foreach ($this->LienKetDuoi as $value):?>
+								<li><a href="<?php echo $value['Link']?>"><i class="icon-right-open"></i><?php echo $value['TieuDe']?></a></li>
+							<?php endforeach;?>	
+							</ul>
+							<?php endif;?> 
+						</div>
+						
+                
+                   
+                 
+						<div class="column-one-fourth">
+						<?php if($this->Thuvien):?>
+							<h5 class="line">
+								<span>Thư viện ảnh</span>
+							</h5>
+							<div class="">
+								<ul id="basicuse" class="thumbs">
+								<li class="hide"></li>
+								<?php foreach ($this->LienKet as $value):?>
+									<li><img src="<?php echo $this->baseUrl ().Websitefront_Model_Lienket::getImage($value['Id'])?>" /></li>
+								<?php endforeach;?>		
+								</ul>
+							</div>
+						<?php endif;?> 	
+						</div>
+						<div class="column-one-fourth">
+							<h5 class="line">
+								<span>Thống kê truy cập</span>
+							</h5>
+							<p>Blandit rutrum, erat et egestas ultricies, dolor tortor
+								egestas enim, quiste rhon cus sem purus eu sapien. Lorem ipsum
+								dolor sit amet adipcising elit. Elit norem simuls tortor lorem
+								adipcising purus mosteu dsapien egestas.</p>
+						</div>
+						<p class="copyright">Copyright © 2014 TungNS. All Rights Reserved</p>
+					</div>
+				</footer>
+				<!-- / Footer -->
+
+			</div>
+		</div>
+	</div>
+	<!-- / Body Wrapper -->
+
+
+	<!-- SCRIPTS -->
+	<?php /*?>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/jquery.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/easing.min.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/1.8.2.min.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/ui.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/carouFredSel.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/superfish.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/customM.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/flexslider-min.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/tweetable.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/timeago.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/jflickrfeed.min.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/mobilemenu.js"></script>
+	<?php */ ?>	
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/1.8.2.min.js"></script>
+		
+		
+		
+	<?php echo $this->minifyHeadScript()
+	->appendFile($this->baseUrl().'/public/websiteyte/js/jquery.js')
+	
+	->appendFile($this->baseUrl().'/public/websiteyte/js/easing.min.js')
+	
+	->appendFile($this->baseUrl().'/public/websiteyte/js/timeago.js')
+	
+	->appendFile($this->baseUrl().'/public/websiteyte/js/ui.js')
+	
+	->appendFile($this->baseUrl().'/public/websiteyte/js/carouFredSel.js')
+	
+	->appendFile($this->baseUrl().'/public/websiteyte/js/superfish.js')
+	->appendFile($this->baseUrl().'/public/websiteyte/js/customM.js')
+	
+	//->appendFile($this->baseUrl().'/public/websiteyte/js/flexslider-min.js')
+	->appendFile($this->baseUrl().'/public/websiteyte/js/tweetable.js')
+	
+	//->appendFile($this->baseUrl().'/public/websiteyte/js/timeago.js')
+	
+	//->appendFile($this->baseUrl().'/public/websiteyte/js/jflickrfeed.min.js')
+	
+	->appendFile($this->baseUrl().'/public/websiteyte/js/mobilemenu.js');
+	
+	
+	
+	?>
+	
+	
+	
+	
+	<?php //echo $this->minifyHeadScript()->appendFile($this->baseUrl().'/public/websiteyte/js/mobilemenu.js')
+	//->appendFile($this->baseUrl().'/public/websiteyte/js/jflickrfeed.min.js')
+	?>
+	<?php //$this->javascriptHelper()?>
+	<?php //echo $this->headScript();?>
+	
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/flexslider-min.js"></script>
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/jflickrfeed.min.js"></script>	
+	<!--[if lt IE 9]> <script type="text/javascript" src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/html5.js"></script> <![endif]-->
+	<script type="text/javascript"
+		src="<?php echo $this->baseUrl ();?>/public/websiteyte/js/mypassion.js"></script>
+
+ <script>
+ $('.comment-reply-link').click(function(){
+		var Id = $(this).attr('id');
+		 Id = Id.split('_');
+		 Id = parseInt(Id[1]);
+		 var PostUrl='<?php echo $this->baseUrl()?>/websitefront/tintuc/formreply';
+	   	 getForm(Id, PostUrl);
+	 });
+ function getForm(ParentId,  PostUrl){
+	 $.get('<?php echo $this->baseUrl();?>/websitefront/tintuc/formreply?ParentId='+ParentId+'&PostUrl='+PostUrl+'&getForm=true', function (data){
+ 	 	$('.form_bl').html('');
+				$('#div_'+ParentId).append(data);
+ 	 });
+ }	 
+
+ $('.form_bl').on('click', '.submit_reply',function(){
+	 
+	 
+	  var url = "<?php echo $this->baseUrl()?>/websitefront/tintuc/formreply";
+	  var form = $('#binhluan_reply').serializeArray();
+	  $('.error_reply').html('');
+	  
+	$.post(url, form , function(data){
+		data = $.parseJSON(data);
+		
+		if(data.error_status ==  true){
+			alert ('Bạn đăng thành công');
+			window.location.reload();
+		}else{
+			var html = '';
+			$.each(data.error, function(index, value){
+				//console.log(data.error);
+				$.each(value, function (i, v){
+					if(i != 'badCaptcha'){
+						html = html + '<span style="color:red;font-size: 14px;">'+v+'</span></br>';
+					}else{
+						html = html + '<span style="color:red;font-size: 14px;">'+v['badCaptcha']+'</span></br>';
+					}		
+				});	
+			});
+			 f = form[0];
+			 
+			getForm(f.value, url);
+			
+			$('#error_'+f.value).append(html);
+			
+		};		
+	});
+	return false;
+});
+
+    	 
+     </script>
+</body>
+</html>

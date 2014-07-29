@@ -1,0 +1,104 @@
+<?php
+/**
+ * 
+ * @author Lê văn kiên
+ *
+ */
+class Model_Tiemchung {
+	/**
+	 * - Kết nối DB
+	 * 
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 * 
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, Tenmuctiemchung ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muctiemchung" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muctiemchung ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tendangthuoc        	
+	 * @return String
+	 */
+	public function dupliObj($id, $tenmuctiemchung) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muctiemchung WHERE Tenmuctiemchung = '$tenmuctiemchung'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muctiemchung WHERE Id != $id AND Tenmuctiemchung = '$tenmuctiemchung'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 * 
+	 * @return Array item
+	 */
+	public function getIdName() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muctiemchung" );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Lấy thông tin về Id bởi Tên đối tượng.
+	 * 
+	 * @return Array item
+	 */
+	public function getIdByName($name) {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%$name%'" );
+		$rows = $query->fetchAll ();
+		return $rows[0]['Id'];
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_muctiemchung', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_muctiemchung', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_muctiemchung', 'Id = ' . $id );
+		return $Id;
+	}
+}
+?>

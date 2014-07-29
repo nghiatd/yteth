@@ -1,0 +1,320 @@
+<?php
+class Model_Tiemchungmiendich {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT DISTINCT NhankhauId, ThongtincoquanId,
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) AS Gioitinh,
+				(SELECT Diachi FROM tblnhankhau WHERE Id = NhankhauId) AS Diachi,
+				(SELECT DATE_FORMAT(Ngaysinh,'%d/%m/%Y')  FROM tblnhankhau WHERE Id = NhankhauId) AS Ngaysinh,
+				(SELECT Mahodan FROM tblnhankhau WHERE Id = NhankhauId) AS Mahodan,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten	";
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanid, $namhethong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(DISTINCT NhankhauId) AS Total FROM tbltiemchungmiendich WHERE 
+					ThongtincoquanId = $thongtincoquanid AND Namhoatdong <= $namhethong " );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "
+				
+				
+				
+				SELECT Id as NhankhauId,
+				
+				(select Tenthonto from tbldm_thonto where Id in 
+				(select ThontoId from tblchuhodan where tblchuhodan.ThongtincoquanId=tblnhankhau.ThongtincoquanId  
+
+			and tblchuhodan.Mahodan =tblnhankhau.Mahodan
+			))
+			 as Tenthonto,
+			(SELECT tblchuhodan.Diachi FROM tblchuhodan,tblnhankhau WHERE tblchuhodan.ThongtincoquanId=$thongtincoquanid
+AND tblchuhodan.mahodan=tblnhankhau.mahodan AND tblnhankhau.thongtincoquanId=$thongtincoquanid
+AND tblnhankhau.Id= NhankhauId)
+AS Diachi
+				
+				,Mahodan,ThongtincoquanId,Hoten,Gioitinh,DATE_FORMAT(Ngaysinh,'%d/%m/%Y')  as Ngaysinh
+									from tblnhankhau
+					where
+					ThongtincoquanId = $thongtincoquanid and Id in ( select DISTINCT  NhankhauId from tbltiemchungmiendich  where tbltiemchungmiendich.thongtincoquanId=tblnhankhau.ThongtincoquanId and tbltiemchungmiendich.Namhoatdong <= $namhethong 
+				
+				
+				)
+					and Namhoatdong <= $namhethong
+
+				and 
+				Mahodan in
+				(select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanid)
+				
+				 
+				
+				
+				 ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ['total'] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	// BEGIN EDIT Daitk
+	public function getObjByNhankhauId($NhankhauId, $thongtincoquanid, $namhoatdong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT DISTINCT  NhankhauId, NhankhauId AS O_NhankhauId, ThongtincoquanId,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Nhankhau,
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) AS Gioitinh,
+				(SELECT Diachi FROM tblnhankhau WHERE Id = NhankhauId) AS Diachi,
+				(SELECT DATE_FORMAT(Ngaysinh,'%d/%m/%Y')  FROM tblnhankhau WHERE Id = NhankhauId) AS Ngaysinh,
+				(SELECT Mahodan FROM tblnhankhau WHERE Id = NhankhauId) AS Mahodan,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,
+				Ghichu, SolieuUV AS uvme, 
+				(
+					SELECT DATE_FORMAT(tblLao1.Ngaytiem_BCG,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblLao1 WHERE
+					tblLao1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblLao1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Lao%')
+					AND tblLao1.Lan = 1 AND tblLao1.ThongtincoquanId = $thongtincoquanid
+					AND tblLao1.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_laol1, 
+				(
+					IF((SELECT tblLao1.Lan FROM tbltiemchungmiendich AS tblLao1 WHERE
+					tblLao1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblLao1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Lao%')
+					AND tblLao1.Lan = 1 AND tblLao1.ThongtincoquanId = $thongtincoquanid
+					AND tblLao1.Namhoatdong <= $namhoatdong) = 1, 'on', '')
+				) AS lao_l1, 
+				(
+					IF((SELECT tblLao1.Seo_BCG FROM tbltiemchungmiendich AS tblLao1 WHERE
+					tblLao1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblLao1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Lao%')
+					AND tblLao1.Lan = 1 AND tblLao1.ThongtincoquanId = $thongtincoquanid
+					AND tblLao1.Namhoatdong <= $namhoatdong) = 1, 'on', '')
+				) AS seo_laol1, 
+				(
+					SELECT DATE_FORMAT(tblBailiet1.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblBailiet1 WHERE
+					tblBailiet1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBailiet1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Bại liệt%')
+					AND tblBailiet1.Lan = 1 AND tblBailiet1.ThongtincoquanId = $thongtincoquanid
+					AND tblBailiet1.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_bailiet_l1, 
+				(
+					IF((SELECT tblBailiet1.Lan FROM tbltiemchungmiendich AS tblBailiet1 WHERE
+					tblBailiet1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBailiet1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Bại liệt%')
+					AND tblBailiet1.Lan = 1 AND tblBailiet1.ThongtincoquanId = $thongtincoquanid
+					AND tblBailiet1.Namhoatdong <= $namhoatdong) = 1, 'on', '')
+				) AS bailiet_l1, 
+				(
+					SELECT DATE_FORMAT(tblBailiet2.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblBailiet2 WHERE
+					tblBailiet2.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBailiet2.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Bại liệt%')
+					AND tblBailiet2.Lan = 2 AND tblBailiet2.ThongtincoquanId = $thongtincoquanid
+					AND tblBailiet2.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_bailiet_l2, 
+				(
+					IF((SELECT tblBailiet2.Lan FROM tbltiemchungmiendich AS tblBailiet2 WHERE
+					tblBailiet2.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBailiet2.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Bại liệt%')
+					AND tblBailiet2.Lan = 2 AND tblBailiet2.ThongtincoquanId = $thongtincoquanid
+					AND tblBailiet2.Namhoatdong <= $namhoatdong) = 2, 'on', '')
+				) AS bailiet_l2, 
+				(
+					SELECT DATE_FORMAT(tblBailiet3.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblBailiet3 WHERE
+					tblBailiet3.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBailiet3.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Bại liệt%')
+					AND tblBailiet3.Lan = 3 AND tblBailiet3.ThongtincoquanId = $thongtincoquanid
+					AND tblBailiet3.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_bailiet_l3, 
+				(
+					IF((SELECT tblBailiet3.Lan FROM tbltiemchungmiendich AS tblBailiet3 WHERE
+					tblBailiet3.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBailiet3.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Bại liệt%')
+					AND tblBailiet3.Lan = 3 AND tblBailiet3.ThongtincoquanId = $thongtincoquanid
+					AND tblBailiet3.Namhoatdong <= $namhoatdong) = 3, 'on', '')
+				) AS bailiet_l3, 
+				(
+					SELECT DATE_FORMAT(tblBhHgUv1.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblBhHgUv1 WHERE
+					tblBhHgUv1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBhHgUv1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%BH-HG-UV%')
+					AND tblBhHgUv1.Lan = 1 AND tblBhHgUv1.ThongtincoquanId = $thongtincoquanid
+					AND tblBhHgUv1.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_BhHgUv_l1, 
+				(
+					IF((SELECT tblBhHgUv1.Lan FROM tbltiemchungmiendich AS tblBhHgUv1 WHERE
+					tblBhHgUv1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBhHgUv1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%BH-HG-UV%')
+					AND tblBhHgUv1.Lan = 1 AND tblBhHgUv1.ThongtincoquanId = $thongtincoquanid
+					AND tblBhHgUv1.Namhoatdong <= $namhoatdong) = 1, 'on', '')
+				) AS BhHgUv_l1, 
+				(
+					SELECT DATE_FORMAT(tblBhHgUv2.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblBhHgUv2 WHERE
+					tblBhHgUv2.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBhHgUv2.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%BH-HG-UV%')
+					AND tblBhHgUv2.Lan = 2 AND tblBhHgUv2.ThongtincoquanId = $thongtincoquanid
+					AND tblBhHgUv2.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_BhHgUv_l2, 
+				(
+					IF((SELECT tblBhHgUv2.Lan FROM tbltiemchungmiendich AS tblBhHgUv2 WHERE
+					tblBhHgUv2.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBhHgUv2.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%BH-HG-UV%')
+					AND tblBhHgUv2.Lan = 2 AND tblBhHgUv2.ThongtincoquanId = $thongtincoquanid
+					AND tblBhHgUv2.Namhoatdong <= $namhoatdong) = 2, 'on', '')
+				) AS BhHgUv_l2, 
+				(
+					SELECT DATE_FORMAT(tblBhHgUv3.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblBhHgUv3 WHERE
+					tblBhHgUv3.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBhHgUv3.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%BH-HG-UV%')
+					AND tblBhHgUv3.Lan = 3 AND tblBhHgUv3.ThongtincoquanId = $thongtincoquanid
+					AND tblBhHgUv3.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_BhHgUv_l3, 
+				(
+					IF((SELECT tblBhHgUv3.Lan FROM tbltiemchungmiendich AS tblBhHgUv3 WHERE
+					tblBhHgUv3.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblBhHgUv3.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%BH-HG-UV%')
+					AND tblBhHgUv3.Lan = 3 AND tblBhHgUv3.ThongtincoquanId = $thongtincoquanid
+					AND tblBhHgUv3.Namhoatdong <= $namhoatdong) = 3, 'on', '')
+				) AS BhHgUv_l3, 
+				(
+					SELECT DATE_FORMAT(tblsoi1.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblsoi1 WHERE
+					tblsoi1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblsoi1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Sởi%')
+					AND tblsoi1.Lan = 1 AND tblsoi1.ThongtincoquanId = $thongtincoquanid
+					AND tblsoi1.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_soil1, 
+				(
+					IF((SELECT tblsoi1.Lan FROM tbltiemchungmiendich AS tblsoi1 WHERE
+					tblsoi1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblsoi1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Sởi%')
+					AND tblsoi1.Lan = 1 AND tblsoi1.ThongtincoquanId = $thongtincoquanid
+					AND tblsoi1.Namhoatdong <= $namhoatdong) = 1, 'on', '')
+				) AS soi_l1, 
+				(
+					SELECT DATE_FORMAT(tblviemganb1.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblviemganb1 WHERE
+					tblviemganb1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb1.Lan IN (1, 2) AND tblviemganb1.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb1.Namhoatdong <= $namhoatdong GROUP BY tblviemganb1.NhankhauId
+				) AS ngaytiem_viemganb_l1, 
+				(
+					IF((SELECT tblviemganb1.Lan FROM tbltiemchungmiendich AS tblviemganb1 WHERE
+					tblviemganb1.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb1.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb1.Lan = 1 AND tblviemganb1.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb1.Namhoatdong <= $namhoatdong) = 1, 'on', '')
+				) AS viemganb_l1t24, 
+				(
+					IF((SELECT tblviemganb2.Lan FROM tbltiemchungmiendich AS tblviemganb2 WHERE
+					tblviemganb2.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb2.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb2.Lan = 2 AND tblviemganb2.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb2.Namhoatdong <= $namhoatdong) = 2, 'on', '')
+				) AS viemganb_l1s24, 
+				(
+					SELECT DATE_FORMAT(tblviemganb2.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblviemganb2 WHERE
+					tblviemganb2.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb2.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb2.Lan = 3 AND tblviemganb2.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb2.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_viemganb_l2, 
+				(
+					IF((SELECT tblviemganb3.Lan FROM tbltiemchungmiendich AS tblviemganb3 WHERE
+					tblviemganb3.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb3.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb3.Lan = 3 AND tblviemganb3.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb3.Namhoatdong <= $namhoatdong) = 3, 'on', '')
+				) AS viemganb_l2, 
+				(
+					SELECT DATE_FORMAT(tblviemganb3.Ngayvaoso,'%d/%m/%Y') FROM tbltiemchungmiendich AS tblviemganb3 WHERE
+					tblviemganb3.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb3.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb3.Lan = 4 AND tblviemganb3.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb3.Namhoatdong <= $namhoatdong
+				) AS ngaytiem_viemganb_l3, 
+				(
+					IF((SELECT tblviemganb4.Lan FROM tbltiemchungmiendich AS tblviemganb4 WHERE
+					tblviemganb4.NhankhauId = tbltiemchungmiendich.NhankhauId AND
+					tblviemganb4.MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE '%Viêm gan B%')
+					AND tblviemganb4.Lan = 4 AND tblviemganb4.ThongtincoquanId = $thongtincoquanid
+					AND tblviemganb4.Namhoatdong <= $namhoatdong) = 4, 'on', '')
+				) AS viemganb_l3 								
+				FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong <= $namhoatdong AND NhankhauId = $NhankhauId" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function delObjByNhankhauId($Id) {
+		$Id = $this->db->delete ( 'tbltiemchungmiendich', 'NhankhauId = ' . $Id );
+		return $Id;
+	}
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbltiemchungmiendich', $data );
+		return $Id;
+	}
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbltiemchungmiendich', $data, 'Id =' . $id );
+		return $Id;
+	}
+	public function dupliObj($nhankhauId) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbltiemchungmiendich WHERE NhankhauId = $nhankhauId" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	//
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbltiemchungmiendich', 'Id =' . $id );
+		return $Id;
+	}
+	public function getdstcmd($Hoten, $Muctiemchung, $Ngaytiembcg, $sgioitinh, $sThonto, $thongtincoquanid, $namhethong) {
+		$wheregioitinh = " and Gioitinh like '%$sgioitinh%' ";
+		$wherethonto = "";
+		if ($sThonto != "")
+			$wherethonto = " and Mahodan in (select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.ThontoId =$sThonto) ";
+		if ($sgioitinh == "Tatca")
+			$wheregioitinh = "";
+		$where = "";
+		if ($Muctiemchung != '')
+			$where = $where . " AND MuctiemchungId IN(SELECT Id from tbldm_muctiemchung where tbldm_muctiemchung.Tenmuctiemchung LIKE '%$Muctiemchung%' )";
+		
+		if ($Ngaytiembcg != '')
+			$where = $where . " AND ( Ngaytiem_BCG = '$Ngaytiembcg' or  Ngayvaoso = '$Ngaytiembcg') ";
+		$query = $this->db->query ( "SELECT Id as NhankhauId,				
+				(select Tenthonto from tbldm_thonto where Id in 
+				(select ThontoId from tblchuhodan where tblchuhodan.ThongtincoquanId=tblnhankhau.ThongtincoquanId
+				and tblchuhodan.Mahodan =tblnhankhau.Mahodan)) as Tenthonto,Diachi,Mahodan,ThongtincoquanId,Hoten,Gioitinh,Diachi,DATE_FORMAT(Ngaysinh,'%d/%m/%Y')  as Ngaysinh
+				from tblnhankhau where tblnhankhau.Hoten LIKE '%$Hoten%' and ThongtincoquanId = $thongtincoquanid and Id in 
+				( select DISTINCT  NhankhauId from tbltiemchungmiendich  where tbltiemchungmiendich.thongtincoquanId=tblnhankhau.ThongtincoquanId and tbltiemchungmiendich.Namhoatdong <=$namhethong 
+				$where ) and Namhoatdong <= $namhethong $wherethonto	$wheregioitinh" );
+		return $query->fetchAll ();
+	}
+	public function searObj($Hoten, $Muctiemchung, $Ngaytiembcg, $sgioitinh, $sThonto, $thongtincoquanid, $namhethong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		
+		$wheregioitinh = " and Gioitinh like '%$sgioitinh%' ";
+		$wherethonto = "";
+		if ($sThonto != "")
+			$wherethonto = " and Mahodan in (select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.ThontoId =$sThonto) ";
+		if ($sgioitinh == "Tatca")
+			$wheregioitinh = "";
+		$where = "";
+		if ($Muctiemchung != '')
+			$where = $where . " AND MuctiemchungId IN(SELECT Id from tbldm_muctiemchung where tbldm_muctiemchung.Tenmuctiemchung LIKE '%$Muctiemchung%' )";
+		
+		if ($Ngaytiembcg != '')
+			$where = $where . " AND ( Ngaytiem_BCG = '$Ngaytiembcg' or  Ngayvaoso = '$Ngaytiembcg') ";
+		$query = $this->db->query ( "SELECT Id as NhankhauId,				
+				(select Tenthonto from tbldm_thonto where Id in 
+				(select ThontoId from tblchuhodan where tblchuhodan.ThongtincoquanId=tblnhankhau.ThongtincoquanId
+				and tblchuhodan.Mahodan =tblnhankhau.Mahodan)) as Tenthonto,Diachi,Mahodan,ThongtincoquanId,Hoten,Gioitinh,Diachi,DATE_FORMAT(Ngaysinh,'%d/%m/%Y')  as Ngaysinh
+				from tblnhankhau where tblnhankhau.Hoten LIKE '%$Hoten%' and ThongtincoquanId = $thongtincoquanid and Id in 
+				( select DISTINCT  NhankhauId from tbltiemchungmiendich  where tbltiemchungmiendich.thongtincoquanId=tblnhankhau.ThongtincoquanId and tbltiemchungmiendich.Namhoatdong <= $namhethong 
+				$where ) and Namhoatdong <= $namhethong $wherethonto $wheregioitinh ORDER BY $sort $order LIMIT $offset, $rows " );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * Phadh
+	 * Kiem tra tinh trang cua nhan khau
+	 */
+	public function duplicate($nhankhauId, $thongtincoquanId, $namhoatdong) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblgiaykhaitu WHERE NhankhauId = $nhankhauId AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+}

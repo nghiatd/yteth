@@ -1,0 +1,117 @@
+<style>
+a {
+	text-decoration: none;
+	text-shadow: none
+}
+</style>
+<div id="tiemchungtt" class="easyui-tree">
+	<li>
+		<div class="tree-node" node-id="10" style="cursor: pointer;">
+			<span class="tree-hit tree-expanded"></span> <span
+				class="tree-icon tree-folder tree-folder-open"></span> <span
+				class="tree-title"><?php echo $this->Tencoquan;?></span>
+		</div>
+		<ul>
+			
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Nghiệp vụ</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/Lendanhsach">Nhắc lịch - giấy báo</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/tiemchungmorong">Tiêm chủng mở rộng</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/tiemchungmiendich">Tiêm chủng miễn dịch</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/uonvan">Uốn ván</a></span>
+						</div></li>
+				
+					
+				</ul></li>
+			
+			
+		<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Quá trình giám sát</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="4" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="">Chu trình</a></span>
+						</div></li>
+				
+					
+				</ul></li>
+				
+				
+			
+		
+			<!--  -->
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Báo cáo</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/bctiemchunguonvan/expxlstcuv">Sổ tiêm vác xin phòng uốn ván cho phụ nữ</a></span>
+						</div></li>
+					
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/Bctiemchung2/tiemchung2">Mẫu sổ tiêm chủng(Viêm não, tả, thương hàn)</a></span>
+						</div></li>
+						
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/Bctiemchung1/bctiemchung">Sổ tiêm chủng miễn dịch cho trẻ em</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/bcketquatiemchungtreem">Báo cáo kết quả tiêm chủng cho trẻ em</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/bcketquatiemchungchotreem">Báo cáo kết quả tiêm chủng cho trẻ em (tiếp)</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/bcketquatiemchunguonvan">Báo cáo kết quả tiêm chủng uốn ván cho trẻ em</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/tiemchung/bctinhhinhsudungvsdctc">Báo cáo tình hình sử dụng vắc xin và dụng cụ tiêm chủng</a></span>
+						</div></li>
+				</ul></li>
+				<!--  -->
+				
+		</ul>
+	</li>
+</div>

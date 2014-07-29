@@ -1,0 +1,77 @@
+<?php 
+class Model_Dutruthuocbaohiem{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// hien hien thi du lieu theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldutruthuocbaohiem WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, ThuocId, Soluong, Soluongduyet, DATE_FORMAT(Ngaydutru, '%d/%m/%Y') AS Ngaydutru, 
+									NuocsanxuatId, Ghichu, Namhoatdong,
+									(SELECT Tenthuoc FROM tbldm_thuoc WHERE Id = ThuocId) AS Thuoc,
+									(SELECT Tennuocsanxuat FROM tbldm_nuocsanxuat WHERE Id = NuocsanxuatId) AS Nuocsanxuat
+									FROM tbldutruthuocbaohiem WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tbldutruthuocbaohiem', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbldutruthuocbaohiem', $data, 'Id= '.$id);
+		return $Id;
+	}
+	
+	// xao du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tbldutruthuocbaohiem', 'Id= '.$id);
+		return $Id;
+	}
+	
+	// tim kiem
+	public function searObj($sort, $order, $offset, $rows, $sTenthuoc, $sNgaydutru, $sNuocsanxuat, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$where = "ThuocId IN (SELECT Id FROM tbldm_thuoc WHERE Tenthuoc LIKE '%$sTenthuoc%')";
+		if($sNgaydutru != '')
+			$where = $where."AND Ngaydutru = '$sNgaydutru'";
+		if($sNuocsanxuat != '')
+			$where = $where."AND NuocsanxuatId = $sNuocsanxuat";
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldutruthuocbaohiem WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, ThuocId, Soluong, Soluongduyet, DATE_FORMAT(Ngaydutru, '%d/%m/%Y') AS Ngaydutru, 
+									NuocsanxuatId, Ghichu, Namhoatdong,
+									(SELECT Tenthuoc FROM tbldm_thuoc WHERE Id = ThuocId) AS Thuoc,
+									(SELECT Tennuocsanxuat FROM tbldm_nuocsanxuat WHERE Id = NuocsanxuatId) AS Nuocsanxuat
+									FROM tbldutruthuocbaohiem WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// in danh sach thuoc du tru bao hiem
+	public function getds($sTenthuoc, $sNgaydutru, $sNuocsanxuat, $thongtincoquanId, $namhoatdong){
+		$where = "ThuocId IN (SELECT Id FROM tbldm_thuoc WHERE Tenthuoc LIKE '%$sTenthuoc%')";
+		if($sNgaydutru != '')
+			$where = $where."AND Ngaydutru = '$sNgaydutru'";
+		if($sNuocsanxuat != '')
+			$where = $where."AND NuocsanxuatId = $sNuocsanxuat";
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, ThuocId, Soluong, Soluongduyet, DATE_FORMAT(Ngaydutru, '%d/%m/%Y') AS Ngaydutru,
+				NuocsanxuatId, Ghichu, Namhoatdong,
+				(SELECT Tenthuoc FROM tbldm_thuoc WHERE Id = ThuocId) AS Thuoc,
+				(SELECT Tennuocsanxuat FROM tbldm_nuocsanxuat WHERE Id = NuocsanxuatId) AS Nuocsanxuat
+				FROM tbldutruthuocbaohiem WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where");
+				return $query->fetchAll();
+	}
+}
+?>

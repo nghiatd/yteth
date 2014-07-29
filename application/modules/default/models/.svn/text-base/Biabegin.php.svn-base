@@ -1,0 +1,22 @@
+<?php
+class Model_Biabegin{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	public function gethuyenObj($thongtincoquanid,$Phuluc){
+		$str ="";
+		if($Phuluc==1)
+			$str ="SELECT Id, CoquanId, 
+					(SELECT Tenhuyen FROM tbldm_huyen WHERE Id  in (select HuyenId from tbldm_xa where Id=CoquanId)) AS Huyen
+					FROM tblthongtincoquan WHERE  Id = $thongtincoquanid";
+		else 
+			$str =$str ="SELECT Id, CoquanId, 
+					(SELECT Tenhuyen FROM tbldm_huyen WHERE Id = CoquanId) AS Huyen
+					FROM tblthongtincoquan WHERE  Id = $thongtincoquanid";
+		$query = $this->db->query($str);
+		return $query->fetchAll();
+	}
+}

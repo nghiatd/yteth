@@ -1,0 +1,56 @@
+<?php
+//Giangnl
+class Model_Quoctich extends Zend_Db_Table_Abstract
+{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	private $str_query = "SELECT Id, Tenquoctich ";
+	
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_quoctich" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_quoctich ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	} 
+	
+	public function getIdNameObj(){
+		$query = $this->db->query($this->str_query."FROM tbldm_quoctich");
+		return $query->fetchALl();
+	}
+	
+	public function dupliObj($id, $tenquoctich) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_quoctich WHERE md5(Tenquoctich) = md5('$tenquoctich')" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_quoctich WHERE Id != $id AND md5(Tenquoctich) = md5('$tenquoctich')" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function addObj($data){
+		$id = $this->db->insert('tbldm_quoctich', $data);
+		return $id;
+	}
+	
+	/* public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_quoctich', $data, 'Id = ' . $id );
+		return $Id;
+	} */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_quoctich', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	public function delObj($id){
+		$id = $this->db->delete('tbldm_quoctich', 'Id = '.$id);
+		return $id;
+	}
+	
+}

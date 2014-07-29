@@ -1,0 +1,121 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class TrinhdolyluanchinhtriController extends PublicdetailController{
+	
+	private $_MTrinhdolyluanchinhtri;
+	private $_Trinhdolyluanchinhtri = array();
+	private $_Tentrinhdolyluan;
+	private $_MHistory;
+	
+	public function init(){
+		$this->initValue();
+		$this->_MTrinhdolyluanchinhtri = new Model_Trinhdolyluanchinhtri();
+		$this->_MHistory = new Model_History();
+		
+		if(isset($_REQUEST['Tentrinhdolyluan']) && $_REQUEST['Tentrinhdolyluan'] != ''){
+			$this->_Tentrinhdolyluan = $_REQUEST['Tentrinhdolyluan'];
+			$this->_Trinhdolyluanchinhtri = array(
+					'Tentrinhdolyluan' => $this->_Tentrinhdolyluan
+					);
+		}
+	}
+	
+
+	
+	public function indexAction(){
+		
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function jsonAction(){
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_MTrinhdolyluanchinhtri->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	//combobox
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MTrinhdolyluanchinhtri->getIdbyName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi du lieu
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MTrinhdolyluanchinhtri->dupliObj(0, $this->_Tentrinhdolyluan);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MTrinhdolyluanchinhtri -> addObj($this->_Trinhdolyluanchinhtri);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// cap nhat du lieu
+	public function updateAction(){
+		$id = $this->_getParam('id');
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		$dup = $this->_MTrinhdolyluanchinhtri->dupliObj($id, $this->_Tentrinhdolyluan);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MTrinhdolyluanchinhtri->updateObj($id, $this->_Trinhdolyluanchinhtri);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+		
+	}
+	
+	// xoa du lieu
+	public function delAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MTrinhdolyluanchinhtri->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	
+}

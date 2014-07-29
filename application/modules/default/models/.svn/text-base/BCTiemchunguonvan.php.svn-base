@@ -1,0 +1,73 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+class Model_BCTiemchunguonvan{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	/**
+	 * - Tiêm chủng uốn ván
+	 * @param $thongtincoquanId
+	 */
+	public function getTCUV($thongtincoquanId,$Namhoatdong){
+		$str_query = "
+				select Hoten, 
+					DATE_FORMAT(Ngaysinh,'%d/%m/%Y') AS Ngaysinh ,	 Nghenghiep,	(select concat(Diachi,', ', (select Tenthonto from tbldm_thonto where Id=tblchuhodan.ThontoId) )  from tblchuhodan where Mahodan =tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanId) as Diachi,
+				(
+select DATE_FORMAT(Ngaythangtiem,'%d/%m/%Y') from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=1 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV1_Ngaythangtiem,
+
+				
+				(
+select DATE_FORMAT(Ngaythangtiem,'%d/%m/%Y') from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=2 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV2_Ngaythangtiem,
+				
+(
+select DATE_FORMAT(Ngaythangtiem,'%d/%m/%Y') from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=3 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV3_Ngaythangtiem,
+
+(
+select DATE_FORMAT(Ngaythangtiem,'%d/%m/%Y') from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=4 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV4_Ngaythangtiem,
+(
+select DATE_FORMAT(Ngaythangtiem,'%d/%m/%Y') from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=5 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV5_Ngaythangtiem,
+
+(
+select Thangthai from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=1 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV1_Thangthai,
+
+				(
+select Thangthai from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=2 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV2_Thangthai,
+
+(
+select Thangthai from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=3 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV3_Thangthai,
+(
+select Thangthai from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=4 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV4_Thangthai,
+(
+select Thangthai from tbluonvan  where 
+ tblnhankhau.Id= tbluonvan.NhankhauId  and tbluonvan.Muc=5 and  tbluonvan.ThongtincoquanId=$thongtincoquanId 
+) as UV5_Thangthai
+				
+		FROM tblnhankhau where  Id in 
+				(select distinct NhankhauId from tbluonvan where ThongtincoquanId=$thongtincoquanId and Namhoatdong=$Namhoatdong)
+					";
+		$query = $this->db->query( $str_query );
+		return $query -> fetchAll();
+	}
+}

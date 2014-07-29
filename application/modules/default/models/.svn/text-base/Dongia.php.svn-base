@@ -1,0 +1,52 @@
+<?php
+class Model_Dongia{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	// hien thi du lieu theo phan trang
+	public function getFetObj($thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_dongia WHERE ThongtincoquanId = $thongtincoquanId
+									AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tendongia, Giatien, ThongtincoquanId, Tienthuthuat, Tientruc, Luongcoban, Namhoatdong
+									FROM tbldm_dongia WHERE THongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+									ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $tendongia, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_dongia WHERE Tendongia = '$tendongia'
+									AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		if($id > 0){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_dongia WHERE Tendongia = '$tendongia'
+					AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Id != $id");
+		}
+		$result = $query->fetchAll();
+		$total = $result[0]['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert("tbldm_dongia", $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update("tbldm_dongia", $data, "Id=".$id);
+		return $Id;
+	}
+	
+	// xoa du lieu 
+	public function delObj($id){
+		$Id = $this->db->delete("tbldm_dongia", "Id=".$id);
+		return $Id;
+	}
+}

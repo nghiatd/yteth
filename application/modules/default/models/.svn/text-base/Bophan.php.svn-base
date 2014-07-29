@@ -1,0 +1,113 @@
+<?php
+class Model_Bophan extends Zend_Db_Table_Abstract {
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT Id, Tenbophan, Diengiai, Nhakho,ThongtincoquanId,
+						(SELECT Tencoquan FROM tblthongtincoquan WHERE Id = ThongtincoquanId) AS Tencoquan 
+					 ";
+	private $str_querynhansu = "SELECT Id, Hoten, Gioitinh,(DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh, Cmnd,Gioitinh,(DATE_FORMAT(Ngaycap,'%d/%m/%Y')) AS Ngaycap, Noicap, Diachi, ChucvuId, BophanId, Dienthoai, Email, Chandung, Kynang, TrinhdohocvanId, ThongtincoquanId,Ghichu";
+	
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($sort, $order, $offset, $rows, $CoquanId, $Namhoatdong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_bophan where Namhoatdong <= $Namhoatdong AND ThongtincoquanId = $CoquanId" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_bophan where  Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	// thomnd
+	public function getIdandNameObj($Trangthai, $CoquanId, $Namhoatdong) {
+		
+		// $Trangthai=1 -> chi hiển thị kho, $Trangthai=2-> hien thi không phải
+		// là kho
+		// $Trangthai=3-> Hiển thị tất cả
+		$str = "";
+		if ($Trangthai == 1)
+			$str = "SELECT Id,Tenbophan FROM tbldm_bophan where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId and Nhakho=1";
+		if ($Trangthai == 2)
+			$str = "SELECT Id,Tenbophan   FROM tbldm_bophan where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId and Nhakho =0";
+		if ($Trangthai == 3)
+			$str = "SELECT Id,Tenbophan  FROM tbldm_bophan where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId";
+		$query = $this->db->query ( $str );
+		return $query->fetchAll ();
+	}
+	
+	//
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tendangthuoc        	
+	 * @return String
+	 */
+	public function dupliObj($id, $tenbophan, $ThongtincoquanId, $Namhoatdong) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_bophan WHERE Namhoatdong<=$Namhoatdong and ThongtincoquanId=$ThongtincoquanId and Tenbophan = '$tenbophan'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_bophan WHERE Namhoatdong<=$Namhoatdong and ThongtincoquanId=$ThongtincoquanId and Id != $id AND Tenbophan = '$tenbophan'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function getIdName($ThongtincoquanId, $Namhoatdong) {
+		$query = $this->db->query ( "SELECT Id, Tenbophan FROM tbldm_bophan where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_bophan', $data );
+		return $Id;
+	}
+	
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_bophan', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_bophan', 'Id = ' . $id );
+		return $Id;
+	}
+	public function getFetbpObj($CoquanId, $Tencoquan, $Namhoatdong) {
+		$doituong = array ();
+		$query = $this->db->query ( "SELECT Id AS id, Tenbophan AS text FROM tbldm_bophan WHERE Namhoatdong<=$Namhoatdong and ThongtincoquanId  = $CoquanId" );
+		$doituong = $query->fetchAll ();
+		$data [0] ['children'] = $doituong;
+		return $doituong;
+	}
+	/**
+	 * Lấy dữ liệu đẩy lên huyện cho báo cáo huyện mẫu 3.1
+	 */
+	public function getForReport3_1($ThongtincoquanId, $Namhoatdong) {
+		$query = $this->db->query ( "SELECT COUNT(Id),
+		(SELECT COUNT(Id) FROM tbldm_bophan WHERE Namhoatdong <= $Namhoatdong AND ThongtincoquanId = $ThongtincoquanId AND Nhakho = 2) AS CoYHCT,
+		(SELECT COUNT(Id) FROM tbldm_bophan WHERE Namhoatdong <= $Namhoatdong AND ThongtincoquanId = $ThongtincoquanId AND Nhakho = 3) AS CoNHS,
+		(SELECT COUNT(Id) FROM tblthongtincoquan WHERE Namhoatdong = $Namhoatdong AND Id = $ThongtincoquanId AND Datchuan = 1) AS CoDatchuan,
+		(SELECT COUNT(Id) FROM tblnhansu WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong <= $Namhoatdong AND BophanId != 0 AND ChucvuId IN (SELECT Id FROM tbldm_chucvu WHERE Tenchucvu = 'Bác sỹ')) AS CoBacsy,
+		(SELECT COUNT(Id) FROM tblnhansu WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong <= $Namhoatdong AND BophanId != 0 AND ChucvuId IN (SELECT Id FROM tbldm_chucvu WHERE Tenchucvu = 'Y sỹ sản nhi')) AS CoYSSN
+		FROM tbldm_bophan WHERE Namhoatdong = $Namhoatdong AND ThongtincoquanId = $ThongtincoquanId" );
+		$row = $query->fetchAll ();
+		return $row [0];
+	}
+}
+?>

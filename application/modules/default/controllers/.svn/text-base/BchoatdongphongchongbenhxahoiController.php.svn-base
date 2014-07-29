@@ -1,0 +1,280 @@
+<?php
+/**
+ * lê văn kiên
+ */
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+require_once 'library/PHPExcel/PHPExcel.php';
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BchoatdongphongchongbenhxahoiController extends PublicdetailController {
+	private $_MBCHoatdongpcbxh;
+	private $_Tencoquan;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_TinhId;
+	public function init() {
+		$this->initValue ();
+		$this->_MBCHoatdongpcbxh = new Model_Bchoatdongphongchongbenhxahoi();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_TinhId = $this->TblTinhbytramId [0] ['Id'];
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - HOẠT ĐỘNG PHÒNG CHỐNG BỆNH XÃ HỘI
+	 */
+	public function phongchongbenhxahoiAction() {
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != "") ? $_REQUEST ['Thang'] : "";
+		if ($thang != "") {
+			$this->_helper->layout ()->disableLayout ();
+			$thangnamBatdau = $this->_Namhoatdong . '01';
+			$thangnamKetthuc = $this->_Namhoatdong . $thang;
+			$helpExport = new HelpFuncExportExcel ();
+			$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+			$colIndex = '';
+			$rowIndex = 0;
+			try {
+				$objPHPExcel = new PHPExcel ();
+				$sheet = $objPHPExcel->getActiveSheet ();
+				/*
+				 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+				 * tĩnh.
+				 */
+				$sheet->setCellValue ( 'A1', $this->TblThongtincoquanbyId[0]['Tencoquan']);
+				$sheet->mergeCellsByColumnAndRow ( 0, 1, 2, 1 );
+				$helpExport->setStyle_13_TNR_B_L( $sheet, 'A1', 'A1' );
+				$sheet->setCellValue ( 'A3', 'HOẠT ĐỘNG PHÒNG CHỐNG BỆNH XÃ HỘI' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 3, 2, 3 );
+				$sheet->setCellValue ( 'A4', $thang . '/' . $this->_Namhoatdong );
+				$sheet->mergeCellsByColumnAndRow ( 0, 4, 2, 4 );
+				$helpExport->setStyle_15_TNR_B_C ( $sheet, 'A3', 'A4' );
+				$sheet->setCellValue ( 'A5', '' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 5, 2, 5 );
+				
+				$rowStart = 6;
+				$colStart = 'A';
+				$rowIndex = $rowStart;
+				$colIndex = $colStart;
+				$sheet = $objPHPExcel->getActiveSheet ();
+				// BEGIN set width for column
+				$sheet->getColumnDimension ( 'A' )->setWidth ( 6 );
+				$sheet->getColumnDimension ( 'B' )->setWidth ( 55 );
+				$sheet->getColumnDimension ( 'C' )->setWidth ( 24.43 );
+				$sheet->getRowDimension('1')->setRowHeight(19.5);
+				$sheet->getRowDimension('3')->setRowHeight(23.25);
+				
+				// END set width for column
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 0, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Nội dung', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 1, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số lượng', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 2, ($rowIndex + 1) );
+				$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . ($rowIndex + 1) );
+				$rowIndex += 2;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				// Lấy dữ liệu
+				$sotret = $this->_MBCHoatdongpcbxh->getSotret ( $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong, $this->_TinhId );
+				$hiv_aids = $this->_MBCHoatdongpcbxh->getHIV_AIDS ( $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong );
+				$tamthan = $this->_MBCHoatdongpcbxh->getTamthan( $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong );
+				
+				$data_sotret = array ();
+				$data_tamthan = array();
+				$data_hiv = array();
+				if (count ( $sotret ) > 0) {
+					$data_sotret[0] = array('1','Số bệnh nhân được xét nghiệm sốt rét',$sotret[0]['TSXetnghiem']);
+					$data_sotret[1] = array('','Trđ: Số có KSTRT',$sotret[0]['TSXetnghiemCoKSTRT']);
+					$data_sotret[2] = array('2','Tổng số bệnh nhân sốt rét',$sotret[0]['TSSR']);
+					$data_sotret[3] = array('','- Số BNSR được xét nghiệm',$sotret[0]['TSBNXetnghiem']);
+					$data_sotret[4] = array('','- Số bệnh nhân sốt rét ngoại tỉnh',$sotret[0]['TSSRNgoaitinh']);
+					$data_sotret[5] = array('3','Số bệnh nhân sốt rét thường',$sotret[0]['TSSRThuong']);
+					$data_sotret[6] = array('3.1','Số bệnh nhân sốt rét lâm sàng',$sotret[0]['TSSRLamsang']);
+					$data_sotret[7] = array('','Trđ: - Trẻ em < 5 tuổi',$sotret[0]['TSSRLamsang5']);
+					$data_sotret[8] = array('','         - Trẻ em từ 5 - 14 tuổi',$sotret[0]['TSSRLamsang5_14']);
+					$data_sotret[9] = array('','         - Phụ nữ có thai',$sotret[0]['TSSRLamsangCothai']);
+					$data_sotret[10] = array('3.2','Số BNSR có KST',$sotret[0]['TSSRKST']);
+					$data_sotret[11] = array('','Trđ: - Trẻ em < 5 tuổi',$sotret[0]['TSSRKST5']);
+					$data_sotret[12] = array('','        - Trẻ em từ 5 - 14 tuổi',$sotret[0]['TSSRKST5_14']);
+					$data_sotret[13] = array('','        - Phụ nữ có thai',$sotret[0]['TSSRKSTCothai']);
+					$data_sotret[14] = array('4','Số BNSRAT',$sotret[0]['TSSRActinh']);
+					$data_sotret[15] = array('','*Trđ: - Trẻ em < 5 tuổi',$sotret[0]['TSSRActinh5']);
+					$data_sotret[16] = array('','           - Trẻ em từ 5 - 14 tuổi',$sotret[0]['TSSRActinh5_14']);
+					$data_sotret[17] = array('','           - Phụ nữ có thai',$sotret[0]['TSSRActinhCothai']);
+					$data_sotret[18] = array('','*Số BNSRAT có KST',$sotret[0]['TSSRActinhKST']);
+					$data_sotret[19] = array('5','Tổng số bệnh nhân chết do SR',$sotret[0]['TSChetSR']);
+					$data_sotret[20] = array('','Trđ: - Trẻ em < 5 tuổi',$sotret[0]['TSChetSR5']);
+					$data_sotret[21] = array('','         - Trẻ em từ 5 - 14 tuổi',$sotret[0]['TSChetSR5_14']);
+					$data_sotret[22] = array('','         - Phụ nữ có thai',$sotret[0]['TSChetSRCothai']);
+					$data_sotret[23] = array('6','Số vụ sốt rét','');
+				} else {
+					$data_sotret[0] = array('1','Số bệnh nhân được xét nghiệm sốt rét','');
+					$data_sotret[1] = array('','Trđ: Số có KSTRT','');
+					$data_sotret[2] = array('2','Tổng số bệnh nhân sốt rét','');
+					$data_sotret[3] = array('','- Số BNSR được xét nghiệm','');
+					$data_sotret[4] = array('','- Số bệnh nhân sốt rét ngoại tỉnh','');
+					$data_sotret[5] = array('3','Số bệnh nhân sốt rét thường','');
+					$data_sotret[6] = array('3.1','Số bệnh nhân sốt rét lâm sàng','');
+					$data_sotret[7] = array('','Trđ: - Trẻ em < 5 tuổi','');
+					$data_sotret[8] = array('','        - Trẻ em từ 5 - 14 tuổi','');
+					$data_sotret[9] = array('','        - Phụ nữ có thai','');
+					$data_sotret[10] = array('3.2','Số BNSR có KST','');
+					$data_sotret[11] = array('','Trđ: - Trẻ em < 5 tuổi','');
+					$data_sotret[12] = array('','       - Trẻ em từ 5 - 14 tuổi','');
+					$data_sotret[13] = array('','        - Phụ nữ có thai','');
+					$data_sotret[14] = array('4','Số BNSRAT','');
+					$data_sotret[15] = array('','*Trđ: - Trẻ em < 5 tuổi','');
+					$data_sotret[16] = array('','        - Trẻ em từ 5 - 14 tuổi','');
+					$data_sotret[17] = array('','         - Phụ nữ có thai','');
+					$data_sotret[18] = array('','*Số BNSRAT có KST','');
+					$data_sotret[19] = array('5','Tổng số bệnh nhân chết do SR','');
+					$data_sotret[20] = array('','Trđ: - Trẻ em < 5 tuổi','');
+					$data_sotret[21] = array('','       - Trẻ em từ 5 - 14 tuổi','');
+					$data_sotret[22] = array('','        - Phụ nữ có thai','');
+					$data_sotret[23] = array('6','Số vụ sốt rét','');
+				}
+				if (count ( $hiv_aids ) > 0) {
+					$data_hiv[0] = array('1','Số hiện mắc HIV',$hiv_aids[0]['TSHivHienmac']);
+					$data_hiv[1] = array('','Trđ: Nữ',$hiv_aids[0]['TSHivHienmacNu']);
+					$data_hiv[2] = array('','     Số mới phát hiện HIV',$hiv_aids[0]['TSHivHienmacMPH']);
+					$data_hiv[3] = array('2','Số hiện mắc AIDS',$hiv_aids[0]['TSAidsHienmac']);
+					$data_hiv[4] = array('','Trđ: Nữ',$hiv_aids[0]['TSAidsHienmacNu']);
+					$data_hiv[5] = array('','     Số mới phát hiện AIDS',$hiv_aids[0]['TSAidsHienmacMPH']);
+					$data_hiv[6] = array('3','Số chết do bị AIDS',$hiv_aids[0]['TSChetAids']);
+				} else {
+					$data_hiv[0] = array('1','Số hiện mắc HIV','');
+					$data_hiv[1] = array('','Trđ: Nữ','');
+					$data_hiv[2] = array('','     Số mới phát hiện HIV','');
+					$data_hiv[3] = array('2','Số hiện mắc AIDS','');
+					$data_hiv[4] = array('','Trđ: Nữ','');
+					$data_hiv[5] = array('','     Số mới phát hiện AIDS','');
+					$data_hiv[6] = array('3','Số chết do bị AIDS','');
+				}
+				if (count ( $tamthan ) > 0) {
+					$data_tamthan[0] = array('1','Số hiện mắc động kinh',$tamthan[0]['TSTTDongkinh']);
+					$data_tamthan[1] = array('','Số được quản lý',$tamthan[0]['TSTTDongkinhQL']);
+					$data_tamthan[2] = array('','Trđ: Số mới phát hiện',$tamthan[0]['TSTTDongkinhMPH']);
+					$data_tamthan[3] = array('','     Số đang điều trị',$tamthan[0]['TSTTDongkinhDDT']);
+					$data_tamthan[4] = array('','     Số tử vong',$tamthan[0]['TSTTDongkinhChet']);
+					$data_tamthan[5] = array('2','Số hiện mắc TTPL',$tamthan[0]['TSTTPhanliet']);
+					$data_tamthan[6] = array('','Số được quản lý',$tamthan[0]['TSTTPhanlietQL']);
+					$data_tamthan[7] = array('','Trđ: Số mới phát hiện',$tamthan[0]['TSTTPhanlietMPH']);
+					$data_tamthan[8] = array('','     Số đang điều trị',$tamthan[0]['TSTTPhanlietDDT']);
+					$data_tamthan[9] = array('','     Số tử vong',$tamthan[0]['TSTTPhanlietChet']);
+					$data_tamthan[10] = array('3','Số hiện mắc trầm cảm',$tamthan[0]['TSTTTramcam']);
+					$data_tamthan[11] = array('','Số được quản lý',$tamthan[0]['TSTTTramcamQL']);
+					$data_tamthan[12] = array('','Trđ: Số mới phát hiện',$tamthan[0]['TSTTTramcamMPH']);
+					$data_tamthan[13] = array('','     Số đang điều trị',$tamthan[0]['TSTTTramcamDDT']);
+					$data_tamthan[14] = array('','     Số tử vong',$tamthan[0]['TSTTTramcamChet']);
+				} else {
+					$data_tamthan[0] = array('1','Số hiện mắc động kinh','');
+					$data_tamthan[1] = array('','Số được quản lý','');
+					$data_tamthan[2] = array('','Trđ: Số mới phát hiện','');
+					$data_tamthan[3] = array('','     Số đang điều trị','');
+					$data_tamthan[4] = array('','     Số tử vong','');
+					$data_tamthan[5] = array('2','Số hiện mắc TTPL','');
+					$data_tamthan[6] = array('','Số được quản lý','');
+					$data_tamthan[7] = array('','Trđ: Số mới phát hiện','');
+					$data_tamthan[8] = array('','     Số đang điều trị','');
+					$data_tamthan[9] = array('','     Số tử vong','');
+					$data_tamthan[10] = array('3','Số hiện mắc trầm cảm','');
+					$data_tamthan[11] = array('','Số được quản lý','');
+					$data_tamthan[12] = array('','Trđ: Số mới phát hiện','');
+					$data_tamthan[13] = array('','     Số đang điều trị','');
+					$data_tamthan[14] = array('','     Số tử vong','');
+				}
+				
+				$rowIndex += 1;
+				$formatIndex = $rowIndex;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'I', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Phòng chống sốt rét', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_sotret, $rowIndex, 3 );
+				$helpExport->setStyle_11_TNR_N_L ( $sheet, 'A' . ($rowIndex - 23), 'C' . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'II', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Phòng chống HIV/AIDS', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_hiv, $rowIndex, 3 );
+				$helpExport->setStyle_11_TNR_N_L ( $sheet, 'A' . ($rowIndex - 6), 'C' . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'III', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Sức khỏe tâm thần', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_tamthan, $rowIndex, 3 );
+				$helpExport->setStyle_11_TNR_N_L ( $sheet, 'A' . ($rowIndex - 14), 'C' . $rowIndex );
+				
+				$helpExport->setStyle_Align_Center ( $sheet, $colStart . $rowStart, $colStart . $rowIndex );
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'C' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'C' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+				/*
+				 * Set active sheet index to the first sheet, so Excel opens this as
+				 * the first sheet
+				 */
+				$objPHPExcel->setActiveSheetIndex ( 0 );
+				/* Redirect output to a clientâ€™s web browser (Excel5) */
+				$objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
+				$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+				$pageMargin = $sheet->getPageMargins();
+				$pageMargin->setTop(.5);
+				$pageMargin->setLeft(.7);
+				$pageMargin->setRight(.7);
+				header ( 'Content-Type: application/vnd.ms-excel' );
+				header ( 'Content-Disposition: attachment;filename="Hoatdongphongchongbenhxahoi(' . date ( "d/m/Y" ) . ').xls"' );
+				header ( 'Cache-Control: max-age=0' );
+				$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+				$objWriter->save ( 'php://output' );
+			} catch ( Exception $e ) {
+				echo "<script type=\"text/javascript\">
+						alert('Exception: Export Excel!');
+						</script>";
+			}
+		}
+	}
+	/**
+	 * - Khởi tạo các dòng trong sheet Excel với dữ liệu được đưa vào.
+	 * 
+	 * @param PHPExcel_Worksheet $_sheet        	
+	 * @param HelpFuncExportExcel $_helpExport        	
+	 * @param Array $_data        	
+	 * @param Number $_rowIndex        	
+	 * @param Number $_numCol        	
+	 * @return Number
+	 */
+	public function initRow($_sheet, $_helpExport, $_data, $_rowIndex, $_numCol) {
+		$helpExport = $_helpExport;
+		$sheet = $_sheet;
+		$rowIndex = $_rowIndex;
+		$data = $_data;
+		$numCol = $_numCol;
+		foreach ( $data as $item ) {
+			$rowIndex += 1;
+			$colIndex = 'A';
+			for($i = 0; $i < $numCol; $i ++) {
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, (isset ( $item [$i] ) ? $item [$i] : ""), $colIndex );
+			}
+		}
+		return $rowIndex;
+	}
+}
+
+
+
+
+
+
+
+

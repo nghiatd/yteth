@@ -1,0 +1,580 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ *
+ * phadh
+ *        
+ */
+class BchoatdongchamsocController extends PublicdetailController {
+	private $_MBCHoatdongchamsoc;
+	private $_Tencoquan;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	public function init() {
+		$this->initValue ();
+		$this->_MBCHoatdongchamsoc = new Model_BCHoatdongchamsoc();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - HOẠT ĐỘNG CHĂM SÓC BÀ MẸ, TRẺ EM VÀ KẾ HOẠCH HÓA GIA ĐÌNH
+	 */
+	public function hoatdongchamsocAction() {
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != "") ? $_REQUEST ['Thang'] : "";
+		if ($thang != '') {
+			$this->_helper->layout ()->disableLayout ();
+			$thangnamBatdau = $this->_Namhoatdong . '01';
+			$thangnamKetthuc = $this->_Namhoatdong . $thang;
+			$helpExport = new HelpFuncExportExcel ();
+			$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+			$colIndex = '';
+			$rowIndex = 0;
+			try{
+				$objPHPExcel = new PHPExcel ();
+				$sheet = $objPHPExcel->getActiveSheet ();
+				/*
+				 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+				 * tĩnh.
+				 */
+				$sheet->setCellValue ( 'A1', $this->TblThongtincoquanbyId[0]['Tencoquan'] );
+				$sheet->mergeCellsByColumnAndRow ( 0, 1, 2, 1 );
+				$helpExport->setStyle_13_TNR_B_L ( $sheet, 'A1', 'A1' );
+				$sheet->setCellValue ( 'A3', 'HOẠT ĐỘNG CHĂM SÓC BÀ MẸ, TRẺ EM VÀ KẾ HOẠCH HÓA GIA ĐÌNH' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 3, 9, 3 );
+				$sheet->setCellValue ( 'A4', $thang . '/' . $this->_Namhoatdong );
+				$sheet->mergeCellsByColumnAndRow ( 0, 4, 9, 4 );
+				$helpExport->setStyle_12_TNR_B_C ( $sheet, 'A3', 'A4' );
+				$sheet->setCellValue ( 'A5', '' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 5, 9, 5 );
+				
+				$rowStart = 6;
+				$colStart = 'A';
+				$rowIndex = $rowStart;
+				$colIndex = $colStart;
+				$sheet = $objPHPExcel->getActiveSheet ();
+				// BEGIN set width for column
+				$sheet->getRowDimension('6') -> setRowHeight(15);
+				$sheet->getRowDimension('7') -> setRowHeight(25);
+				$sheet->getColumnDimension ( 'A' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'B' )->setWidth ( 43 );
+				$sheet->getColumnDimension ( 'C' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'D' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'E' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'F' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'G' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'H' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'I' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'J' )->setWidth ( 5 );
+				$sheet->getRowDimension('65')->setRowHeight(33.75);
+				// END set width for column
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 0, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tên chỉ tiêu', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 1, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tổng số', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 3, ($rowIndex + 1) );
+				$sheet->setCellValue ( 'E6', 'Trong đó' );
+				$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 9, $rowIndex );
+				$helpExport->setStyle_10_TNR_B_C ( $sheet, 'E6', 'E6' );
+				
+				$sheet->setCellValue ( 'E7', 'Tại TYT' );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+1), 5, ($rowIndex+1) );
+				$helpExport->setStyle_10_TNR_B_C ( $sheet, 'E7', 'E7' );
+				$sheet->setCellValue ( 'G7', 'Tại nhà' );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+1), 7, ($rowIndex+1) );
+				$helpExport->setStyle_10_TNR_B_C ( $sheet, 'G7', 'G7' );
+				$sheet->setCellValue ( 'I7', 'Tại CSYTK' );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+1), 9, ($rowIndex+1) );
+				$helpExport->setStyle_10_TNR_B_C ( $sheet, 'I7', 'I7' );
+				
+				$helpExport->setStyleTitleTable ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$rowIndex += 2;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 3, $rowIndex );
+				$sheet->setCellValue ( 'E8', '4' );
+				$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 5, $rowIndex );
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, 'E8', 'E8' );
+				$sheet->setCellValue ( 'G8', '5' );;
+				$sheet->mergeCellsByColumnAndRow ( 6, $rowIndex, 7, $rowIndex );
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, 'G8', 'G8' );
+				$sheet->setCellValue ( 'I8', '6' );
+				$sheet->mergeCellsByColumnAndRow ( 8, $rowIndex, 9, $rowIndex );
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, 'I8', 'I8' );
+				
+				
+				$data_khamthai = array ();
+				$data_tbsk = array ();
+				$data_khhgd = array ();
+				$data_csskte = array ();
+				$data_phathai = array ();
+				$formatIndex = $rowIndex + 1;
+				
+				// Lấy dữ liệu
+				$jsonObj = $this->_MBCHoatdongchamsoc->getData(1, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+							
+				if(count($jsonObj) > 0){
+					$data_khamthai[0] = array('1', 'Phụ nữ có thai', $jsonObj[0]['TSSSQL']);
+					$data_khamthai[1] = array('', '      Trđ: Vị thành niên', $jsonObj[0]['TSSSQL']);
+					$data_khamthai[2] = array('2', 'Tổng số lần khám thai', $jsonObj[0]['TS_Khamthai'], $jsonObj[0]['TS_Khamthai_TYT'], $jsonObj[0]['TS_Khamthai_TN']);
+					$data_khamthai[3] = array('3', 'Phụ nữ đẻ được quản lý thai', $jsonObj[0]['TSSSQL'], $jsonObj[0]['TSSSQL_TYT'], $jsonObj[0]['TSSSQL_Tainha'], $jsonObj[0]['TSSSQL_CSK']);
+					$data_khamthai[4] = array('4', 'Số phụ nữ đẻ được tiêm UV đủ liều liều', $jsonObj[0]['TSSSUV'], $jsonObj[0]['TSSSUV_TYT'], $jsonObj[0]['TSSSUV_Tainha'], $jsonObj[0]['TSSSUV_CSK']);
+					$data_khamthai[5] = array('5', 'Số người đẻ', $jsonObj[0]['TSSSDe'], $jsonObj[0]['TSSSDe_TYT'], $jsonObj[0]['TSSSDe_Tainha'], $jsonObj[0]['TSSSDe_CSK']);
+					$data_khamthai[6] = array('', '    Trđ:');
+					$data_khamthai[7] = array('', '    - PNđẻ được KT >= 3 lần trong 3 thời kỳ', $jsonObj[0]['TSSSDe_KT3'], $jsonObj[0]['TSSSDe_TYT_KT3'], $jsonObj[0]['TSSSDe_Tainha_KT3'], $jsonObj[0]['TSSSDe_CSK_KT3']);
+					$data_khamthai[8] = array('', '    - Đẻ con thứ 3 trở lên', $jsonObj[0]['TSSSDe_CT3'], $jsonObj[0]['TSSSDe_TYT_CT3'], $jsonObj[0]['TSSSDe_Tainha_CT3'], $jsonObj[0]['TSSSDe_CSK_CT3']);
+					$data_khamthai[9] = array('', '    - Đẻ do CBYT đỡ', $jsonObj[0]['TSSSDe_CBYT'], $jsonObj[0]['TSSSDe_CBYT_TYT'], $jsonObj[0]['TSSSDe_CBYT_Tainha'], $jsonObj[0]['TSSSDe_CBYT_CSK']);
+					$data_khamthai[10] = array('', '    - Đẻ tại cơ sở y tế', $jsonObj[0]['TSSSDe_CSYT'], $jsonObj[0]['TSSSDe_CSYT_TYT'], $jsonObj[0]['TSSSDe_CSYT_CSK']);
+					$data_khamthai[11] = array('6', 'TS Bà mẹ/trẻ SS được chăm sóc sau sinh', $jsonObj[0]['TSSSDe_CSSS'], $jsonObj[0]['TSSSDe_CSSS_TYT'], $jsonObj[0]['TSSSDe_CSSS_Tainha'], $jsonObj[0]['TSSSDe_CSSS_CSK']);
+					$data_khamthai[12] = array('', '     Trđ: chăm sóc tuần đầu', $jsonObj[0]['TSSSDe_CSSS_Tuandau'], $jsonObj[0]['TSSSDe_CSSS_Tuandau_TYT'], $jsonObj[0]['TSSSDe_CSSS_Tuandau_Tainha'], $jsonObj[0]['TSSSDe_CSSS_Tuandau_CSK']);
+				} else {
+					$data_khamthai[0] = array('1', 'Phụ nữ có thai');
+					$data_khamthai[1] = array('', '      Trđ: Vị thành niên');
+					$data_khamthai[2] = array('2', 'Tổng số lần khám thai');
+					$data_khamthai[3] = array('3', 'Phụ nữ đẻ được quản lý thai');
+					$data_khamthai[4] = array('4', 'Số phụ nữ đẻ được tiêm UV đủ liều liều');
+					$data_khamthai[5] = array('5', 'Số người đẻ');
+					$data_khamthai[6] = array('', '    Trđ:');
+					$data_khamthai[7] = array('', '    - PN đẻ được KT >= 3 lần trong 3 thời kỳ');
+					$data_khamthai[8] = array('', '    - Đẻ con thứ 3 trở lên');
+					$data_khamthai[9] = array('', '    - Đẻ do CBYT đỡ');
+					$data_khamthai[10] = array('', '   - Đẻ tại cơ sở y tế');
+					$data_khamthai[11] = array('6', 'TS Bà mẹ/trẻ SS được chăm sóc sau sinh');
+					$data_khamthai[12] = array('', '    Trđ: chăm sóc tuần đầu');
+				}	
+				$jsonObj = $this->_MBCHoatdongchamsoc->getData(2, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				$jsonObj1 = $this->_MBCHoatdongchamsoc->getData(3, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				if(count($jsonObj) > 0 && count($jsonObj1) > 0){
+					$data_tbsk[0] = array('7', 'Tai biến sản khoa', 'Mắc', 'Chết', 'Mắc', 'Chết', 'Mắc', 'Chết', 'Mắc', 'Chết');
+					$data_tbsk[1] = array('', '     Băng huyết', $jsonObj[0]['TSSS_Mac_Banghuyet'], $jsonObj1[0]['TSSS_Chet_Banghuyet'], $jsonObj[0]['TSSS_Mac_Banghuyet_TYT'], $jsonObj1[0]['TSSS_Chet_Banghuyet_TYT'], $jsonObj[0]['TSSS_Mac_Banghuyet_TN'], $jsonObj1[0]['TSSS_Chet_Banghuyet_TN']);
+					$data_tbsk[2] = array('', '     Sản giật', $jsonObj[0]['TSSS_Mac_Sangiat'], $jsonObj1[0]['TSSS_Chet_Sangiat'], $jsonObj[0]['TSSS_Mac_Sangiat_TYT'], $jsonObj1[0]['TSSS_Chet_Sangiat_TYT'], $jsonObj[0]['TSSS_Mac_Sangiat_TN'], $jsonObj1[0]['TSSS_Chet_Sangiat_TN']);
+					$data_tbsk[3] = array('', '     Uốn ván Sơ sinh', $jsonObj[0]['TSSS_Mac_UVSS'], $jsonObj1[0]['TSSS_Chet_UVSS'], $jsonObj[0]['TSSS_Mac_UVSS_TYT'], $jsonObj1[0]['TSSS_Chet_UVSS_TYT'], $jsonObj[0]['TSSS_Mac_UVSS_TN'], $jsonObj1[0]['TSSS_Chet_UVSS_TN']);
+					$data_tbsk[4] = array('', '     Vỡ tử cung', $jsonObj[0]['TSSS_Mac_VTC'], $jsonObj1[0]['TSSS_Chet_VTC'], $jsonObj[0]['TSSS_Mac_VTC_TYT'], $jsonObj1[0]['TSSS_Chet_VTC_TYT'], $jsonObj[0]['TSSS_Mac_VTC_TN'], $jsonObj1[0]['TSSS_Chet_VTC_TN']);
+					$data_tbsk[5] = array('', '     Nhiễm trùng sau đẻ', $jsonObj[0]['TSSS_Mac_NTSD'], $jsonObj1[0]['TSSS_Chet_NTSD'], $jsonObj[0]['TSSS_Mac_NTSD_TYT'], $jsonObj1[0]['TSSS_Chet_NTSD_TYT'], $jsonObj[0]['TSSS_Mac_NTSD_TN'], $jsonObj1[0]['TSSS_Chet_NTSD_TN']);
+				} else {
+					$data_tbsk[0] = array('7', 'Tai biến sản khoa');
+					$data_tbsk[1] = array('', '    Băng huyết');
+					$data_tbsk[2] = array('', '    Sản giật');
+					$data_tbsk[3] = array('', '    Uốn ván sơ sinh');
+					$data_tbsk[4] = array('', '    Vỡ tử cung');
+					$data_tbsk[5] = array('', '    Nhiễm trùng sau đẻ');
+				}
+
+				$jsonObj = $this->_MBCHoatdongchamsoc->getData(4, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				if(count($jsonObj) > 0) {
+					$data_phathai[0] = array('8', 'Tổng số chết mẹ*', $jsonObj[0]['TS_Chetme'], $jsonObj[0]['TS_Chetme_TYT'], $jsonObj[0]['TS_Chetme_TN'], $jsonObj[0]['TS_Chetme_CSK']);
+					$data_phathai[1] = array('9', 'Phá thai', $jsonObj[0]['TSPT'], $jsonObj[0]['TSPT_TYT'], $jsonObj[0]['TSPT_TN']);
+					$data_phathai[2] = array('', '   Trđ:- Phá thai =< 7 tuần', $jsonObj[0]['TSPT_7'], $jsonObj[0]['TSPT_TYT_7'], $jsonObj[0]['TSPT_TN_7']);
+					$data_phathai[3] = array('', '       - Vị thành niên', $jsonObj[0]['TSPT_VTN'], $jsonObj[0]['TSPT_TYT_VTN'], $jsonObj[0]['TSPT_TN_VTN']);
+					$data_phathai[4] = array('', '   Mắc tai biến do phá thai', $jsonObj[0]['TSPT_TB'], $jsonObj[0]['TSPT_TYT_TB'], $jsonObj[0]['TSPT_TN_TB']);
+					$data_phathai[5] = array('', '   Chết do tai biến phá thai', $jsonObj[0]['TSPT_Chet_TB'], $jsonObj[0]['TSPT_Chet_TB_TYT'], $jsonObj[0]['TSPT_Chet_TB_TN']);
+					$data_phathai[6] = array('10', 'Tổng số lượt khám phụ khoa', $jsonObj[0]['TSKB_Phukhoa'], $jsonObj[0]['TSKB_Phukhoa_TYT'], $jsonObj[0]['TSKB_Phukhoa_TN']);
+					$data_phathai[7] = array('11', 'Tổng số lượt chữa phụ khoa', $jsonObj[0]['TSKB_Phukhoa_Chua'], $jsonObj[0]['TSKB_Phukhoa_Chua_TYT'], $jsonObj[0]['TSKB_Phukhoa_Chua_TN']);
+				} else {
+					$data_phathai[0] = array('8', 'Tổng số chết mẹ*');
+					$data_phathai[1] = array('9', 'Phá thai');
+					$data_phathai[2] = array('', '   Trđ:- Phá thai =< 7 tuần');
+					$data_phathai[3] = array('', '       - Vị thành niên');
+					$data_phathai[4] = array('', '   Mắc tai biến do phá thai');
+					$data_phathai[5] = array('', '   Chết do tai biến phá thai');
+					$data_phathai[6] = array('10', 'Tổng số lượt khám phụ khoa');
+					$data_phathai[7] = array('11', 'Tổng số lượt chữa phụ khoa');
+				}
+				
+				$jsonObj = $this->_MBCHoatdongchamsoc->getData(5, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				if(count($jsonObj) > 0) {
+					$data_khhgd[0] = array('1', 'Tổng số người mới thực hiện các BPTT', $jsonObj[0]['TS_BPTT'], $jsonObj[0]['TS_BPTT_TYT'], $jsonObj[0]['TS_BPTT_TN']);
+					$data_khhgd[1] = array('1.1', 'Số mới đặt DCTC', $jsonObj[0]['TS_DCTC'], $jsonObj[0]['TS_DCTC_TYT'], $jsonObj[0]['TS_DCTC_TN']);
+					$data_khhgd[2] = array('1.2', 'Số người dùng thuốc tránh thai', $jsonObj[0]['TS_Dungthuoc_TT'], $jsonObj[0]['TS_Dungthuoc_TT_TYT'], $jsonObj[0]['TS_Dungthuoc_TT_TN']);
+					$data_khhgd[3] = array('', '      Trđ:');
+					$data_khhgd[4] = array('', '      + Thuốc viên', $jsonObj[0]['TS_Dungthuoc_TT_Vien'], $jsonObj[0]['TS_Dungthuoc_TT_Vien_TYT'], $jsonObj[0]['TS_Dungthuoc_TT_Vien_TN']);
+					$data_khhgd[5] = array('', '      + Thuốc tiêm', $jsonObj[0]['TS_Dungthuoc_TT_Tiem'], $jsonObj[0]['TS_Dungthuoc_TT_Tiem_TYT'], $jsonObj[0]['TS_Dungthuoc_TT_Tiem_TN']);
+					$data_khhgd[6] = array('', '      + Thuốc cấy', $jsonObj[0]['TS_Dungthuoc_TT_Cay'], $jsonObj[0]['TS_Dungthuoc_TT_Cay_TYT'], $jsonObj[0]['TS_Dungthuoc_TT_Cay_TN']);
+					$data_khhgd[7] = array('1.3', 'Bao cao su', $jsonObj[0]['TS_BKC'], $jsonObj[0]['TS_BKC_TYT'], $jsonObj[0]['TS_BKC_TN']);
+					$data_khhgd[8] = array('1.4', 'Số mới triệt sản', $jsonObj[0]['TS_Trietsan'], $jsonObj[0]['TS_Trietsan_TYT']);
+					$data_khhgd[9] = array('', '      Trđ: Nam', $jsonObj[0]['TS_Trietsan_Nam'], $jsonObj[0]['TS_Trietsan_Nam_TYT']);
+					$data_khhgd[10] = array('1.5', 'Khác', $jsonObj[0]['TS_Khac'], $jsonObj[0]['TS_Khac_TYT'], $jsonObj[0]['TS_Khac_TN']);
+					$data_khhgd[11] = array('2', 'Tai biến do KHHGD', $jsonObj[0]['TS_Taibien'], $jsonObj[0]['TS_Taibien_TYT'], $jsonObj[0]['TS_Taibien_TN']);
+					$data_khhgd[12] = array('2.1', 'Mắc', $jsonObj[0]['TS_Taibien_Mac'], $jsonObj[0]['TS_Taibien_Mac_TYT'], $jsonObj[0]['TS_Taibien_Mac_TN']);
+					$data_khhgd[13] = array('2.1', 'Chết', $jsonObj[0]['TS_Taibien_Chet'], $jsonObj[0]['TS_Taibien_Chet_TYT'], $jsonObj[0]['TS_Taibien_Chet_TN']);
+				} else {
+					$data_khhgd[0] = array('1', 'Tổng số người mới thực hiện các BPTT');
+					$data_khhgd[1] = array('1.1', 'Số mới đặt DCTC');
+					$data_khhgd[2] = array('1.2', 'Số người dùng thuốc tránh thai');
+					$data_khhgd[3] = array('', '      Trđ:');
+					$data_khhgd[4] = array('', '      + Thuốc viên');
+					$data_khhgd[5] = array('', '      + Thuốc tiêm');
+					$data_khhgd[6] = array('', '      + Thuốc cấy');
+					$data_khhgd[7] = array('1.3', 'Bao cao su');
+					$data_khhgd[8] = array('1.4', 'Số mới triệt sản');
+					$data_khhgd[9] = array('', '      Trđ: Nam');
+					$data_khhgd[10] = array('1.5', 'Khác');
+					$data_khhgd[11] = array('2', 'Tai biến do KHHGD');
+					$data_khhgd[12] = array('2.1', 'Mắc');
+					$data_khhgd[13] = array('2.1', 'Chết');
+				}
+				
+				$jsonObj = $this->_MBCHoatdongchamsoc->getData(6, $this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				if(count($jsonObj) > 0) {
+					$data_csskte[0] = array('1', 'Trẻ đang sống', $jsonObj[0]['TS_Desong'], $jsonObj[0]['TS_Desong_TYT'], $jsonObj[0]['TS_Desong_TN']);
+					$data_csskte[1] = array('', '    Trđ: Nữ', $jsonObj[0]['TS_Desong_Nu'], $jsonObj[0]['TS_Desong_Nu_TYT'], $jsonObj[0]['TS_Desong_Nu_TN']);
+					$data_csskte[2] = array('2', 'Trẻ sơ sinh được cân', $jsonObj[0]['TS_Duoccan'], $jsonObj[0]['TS_Duoccan_TYT'], $jsonObj[0]['TS_Duoccan_TN']);
+					$data_csskte[3] = array('', '    Trđ: Trẻ =< 2500 gram', $jsonObj[0]['TS_Duoccan_T25'], $jsonObj[0]['TS_Duoccan_T25_TYT'], $jsonObj[0]['TS_Duoccan_T25_TN']);
+					$data_csskte[4] = array('3', 'Chết thai nhi và chết trẻ em', $jsonObj[0]['Chet_thainhi_Treem'], $jsonObj[0]['Chet_thainhi_Treem_TYT'], $jsonObj[0]['Chet_thainhi_Treem_TN']);
+					$data_csskte[5] = array('', ' - Chết thai nhi từ khi 22 tuần đến khi đẻ', $jsonObj[0]['Chet_22tuan'], $jsonObj[0]['Chet_22tuan_TYT'], $jsonObj[0]['Chet_22tuan_TN']);
+					$data_csskte[6] = array('', ' - Chết =< 7 ngày', $jsonObj[0]['Chet_7ngay'], $jsonObj[0]['Chet_7ngay_TYT'], $jsonObj[0]['Chet_7ngay_TN']);
+					$data_csskte[7] = array('', ' - Chết sơ sinh (=< 28 ngày)', $jsonObj[0]['Chet_28ngay'], $jsonObj[0]['Chet_28ngay_TYT'], $jsonObj[0]['Chet_28ngay_TN']);
+					$data_csskte[8] = array('', ' - Chết < 1 tuổi', $jsonObj[0]['Chet_1tuoi'], $jsonObj[0]['Chet_1tuoi_TYT'], $jsonObj[0]['Chet_1tuoi_TN']);
+					$data_csskte[9] = array('', ' - Chết dưới 5 tuổi', $jsonObj[0]['Chet_5tuoi'], $jsonObj[0]['Chet_5tuoi_TYT'], $jsonObj[0]['Chet_5tuoi_TN']);
+					$data_csskte[10] = array('4', 'Tỷ lệ trẻ em SDD <5 tuổi(nặng/tuổi)');
+				} else {
+					$data_csskte[0] = array('1', 'Trẻ đang sống');
+					$data_csskte[1] = array('', '    Trđ: Nữ');
+					$data_csskte[2] = array('2', 'Trẻ sơ sinh được cân');
+					$data_csskte[3] = array('', '    Trđ: Trẻ =< 2500 gram');
+					$data_csskte[4] = array('3', 'Chết thai nhi và chết trẻ em');
+					$data_csskte[5] = array('', ' - Chết thai nhi từ khi 22 tuần đến khi đẻ');
+					$data_csskte[6] = array('', ' - Chết =< 7 ngày');
+					$data_csskte[7] = array('', ' - Chết sơ sinh (=< 28 ngày)');
+					$data_csskte[8] = array('', ' - Chết < 1 tuổi');
+					$data_csskte[9] = array('', ' - Chết dưới 5 tuổi');
+					$data_csskte[10] = array('4', 'Tỷ lệ trẻ em SDD < 5 tuổi(nặng/tuổi)');
+				}
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+28), 3, ($rowIndex+28) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+28), 5, ($rowIndex+28) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+28), 7, ($rowIndex+28) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+28), 9, ($rowIndex+28) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+2), 3, ($rowIndex+2) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+2), 5, ($rowIndex+2) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+2), 7, ($rowIndex+2) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+2), 9, ($rowIndex+2) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+3), 3, ($rowIndex+3) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+3), 5, ($rowIndex+3) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+3), 7, ($rowIndex+3) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+3), 9, ($rowIndex+3) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+4), 3, ($rowIndex+4) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+4), 5, ($rowIndex+4) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+4), 7, ($rowIndex+4) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+4), 9, ($rowIndex+4) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+5), 3, ($rowIndex+5) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+5), 5, ($rowIndex+5) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+5), 7, ($rowIndex+5) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+5), 9, ($rowIndex+5) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+6), 3, ($rowIndex+6) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+6), 5, ($rowIndex+6) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+6), 7, ($rowIndex+6) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+6), 9, ($rowIndex+6) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+7), 3, ($rowIndex+7) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+7), 5, ($rowIndex+7) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+7), 7, ($rowIndex+7) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+7), 9, ($rowIndex+7) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+8), 3, ($rowIndex+8) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+8), 5, ($rowIndex+8) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+8), 7, ($rowIndex+8) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+8), 9, ($rowIndex+8) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+9), 3, ($rowIndex+9) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+9), 5, ($rowIndex+9) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+9), 7, ($rowIndex+9) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+9), 9, ($rowIndex+9) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+10), 3, ($rowIndex+10) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+10), 5, ($rowIndex+10) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+10), 7, ($rowIndex+10) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+10), 9, ($rowIndex+10) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+11), 3, ($rowIndex+11) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+11), 5, ($rowIndex+11) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+11), 7, ($rowIndex+11) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+11), 9, ($rowIndex+11) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+12), 3, ($rowIndex+12) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+12), 5, ($rowIndex+12) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+12), 7, ($rowIndex+12) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+12), 9, ($rowIndex+12) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+13), 3, ($rowIndex+13) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+13), 5, ($rowIndex+13) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+13), 7, ($rowIndex+13) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+13), 9, ($rowIndex+13) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+14), 3, ($rowIndex+14) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+14), 5, ($rowIndex+14) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+14), 7, ($rowIndex+14) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+14), 9, ($rowIndex+14) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+21), 3, ($rowIndex+21) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+21), 5, ($rowIndex+21) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+21), 7, ($rowIndex+21) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+21), 9, ($rowIndex+21) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+22), 3, ($rowIndex+22) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+22), 5, ($rowIndex+22) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+22), 7, ($rowIndex+22) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+22), 9, ($rowIndex+22) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+23), 3, ($rowIndex+23) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+23), 5, ($rowIndex+23) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+23), 7, ($rowIndex+23) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+23), 9, ($rowIndex+23) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+24), 3, ($rowIndex+24) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+24), 5, ($rowIndex+24) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+24), 7, ($rowIndex+24) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+24), 9, ($rowIndex+24) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+25), 3, ($rowIndex+25) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+25), 5, ($rowIndex+25) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+25), 7, ($rowIndex+25) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+25), 9, ($rowIndex+25) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+26), 3, ($rowIndex+26) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+26), 5, ($rowIndex+26) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+26), 7, ($rowIndex+26) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+26), 9, ($rowIndex+26) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+27), 3, ($rowIndex+27) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+27), 5, ($rowIndex+27) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+27), 7, ($rowIndex+27) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+27), 9, ($rowIndex+27) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+29), 3, ($rowIndex+29) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+29), 5, ($rowIndex+29) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+29), 7, ($rowIndex+29) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+29), 9, ($rowIndex+29) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+30), 3, ($rowIndex+30) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+30), 5, ($rowIndex+30) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+30), 7, ($rowIndex+30) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+30), 9, ($rowIndex+30) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+31), 3, ($rowIndex+31) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+31), 5, ($rowIndex+31) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+31), 7, ($rowIndex+31) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+31), 9, ($rowIndex+31) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+32), 3, ($rowIndex+32) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+32), 5, ($rowIndex+32) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+32), 7, ($rowIndex+32) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+32), 9, ($rowIndex+32) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+33), 3, ($rowIndex+33) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+33), 5, ($rowIndex+33) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+33), 7, ($rowIndex+33) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+33), 9, ($rowIndex+33) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+34), 3, ($rowIndex+34) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+34), 5, ($rowIndex+34) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+34), 7, ($rowIndex+34) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+34), 9, ($rowIndex+34) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+35), 3, ($rowIndex+35) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+35), 5, ($rowIndex+35) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+35), 7, ($rowIndex+35) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+35), 9, ($rowIndex+35) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+36), 3, ($rowIndex+36) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+36), 5, ($rowIndex+36) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+36), 7, ($rowIndex+36) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+36), 9, ($rowIndex+36) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+37), 3, ($rowIndex+37) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+37), 5, ($rowIndex+37) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+37), 7, ($rowIndex+37) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+37), 9, ($rowIndex+37) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+38), 3, ($rowIndex+38) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+38), 5, ($rowIndex+38) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+38), 7, ($rowIndex+38) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+38), 9, ($rowIndex+38) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+39), 3, ($rowIndex+39) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+39), 5, ($rowIndex+39) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+39), 7, ($rowIndex+39) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+39), 9, ($rowIndex+39) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+40), 3, ($rowIndex+40) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+40), 5, ($rowIndex+40) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+40), 7, ($rowIndex+40) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+40), 9, ($rowIndex+40) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+41), 3, ($rowIndex+41) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+41), 5, ($rowIndex+41) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+41), 7, ($rowIndex+41) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+41), 9, ($rowIndex+41) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+42), 3, ($rowIndex+42) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+42), 5, ($rowIndex+42) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+42), 7, ($rowIndex+42) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+42), 9, ($rowIndex+42) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+43), 3, ($rowIndex+43) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+43), 5, ($rowIndex+43) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+43), 7, ($rowIndex+43) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+43), 9, ($rowIndex+43) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+44), 3, ($rowIndex+44) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+44), 5, ($rowIndex+44) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+44), 7, ($rowIndex+44) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+44), 9, ($rowIndex+44) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+45), 3, ($rowIndex+45) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+45), 5, ($rowIndex+45) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+45), 7, ($rowIndex+45) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+45), 9, ($rowIndex+45) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+46), 3, ($rowIndex+46) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+46), 5, ($rowIndex+46) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+46), 7, ($rowIndex+46) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+46), 9, ($rowIndex+46) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+47), 3, ($rowIndex+47) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+47), 5, ($rowIndex+47) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+47), 7, ($rowIndex+47) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+47), 9, ($rowIndex+47) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+48), 3, ($rowIndex+48) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+48), 5, ($rowIndex+48) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+48), 7, ($rowIndex+48) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+48), 9, ($rowIndex+48) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+49), 3, ($rowIndex+49) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+49), 5, ($rowIndex+49) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+49), 7, ($rowIndex+49) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+49), 9, ($rowIndex+49) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+50), 3, ($rowIndex+50) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+50), 5, ($rowIndex+50) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+50), 7, ($rowIndex+50) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+50), 9, ($rowIndex+50) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+51), 3, ($rowIndex+51) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+51), 5, ($rowIndex+51) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+51), 7, ($rowIndex+51) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+51), 9, ($rowIndex+51) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+52), 3, ($rowIndex+52) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+52), 5, ($rowIndex+52) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+52), 7, ($rowIndex+52) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+52), 9, ($rowIndex+52) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+53), 3, ($rowIndex+53) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+53), 5, ($rowIndex+53) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+53), 7, ($rowIndex+53) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+53), 9, ($rowIndex+53) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+54), 3, ($rowIndex+54) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+54), 5, ($rowIndex+54) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+54), 7, ($rowIndex+54) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+54), 9, ($rowIndex+54) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+55), 3, ($rowIndex+55) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+55), 5, ($rowIndex+55) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+55), 7, ($rowIndex+55) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+55), 9, ($rowIndex+55) );
+				$sheet->mergeCellsByColumnAndRow ( 2, ($rowIndex+56), 3, ($rowIndex+56) );
+				$sheet->mergeCellsByColumnAndRow ( 4, ($rowIndex+56), 5, ($rowIndex+56) );
+				$sheet->mergeCellsByColumnAndRow ( 6, ($rowIndex+56), 7, ($rowIndex+56) );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex+56), 9, ($rowIndex+56) );
+				$rowIndex += 1;
+				$formatIndex = $rowIndex;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'I', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chăm sóc bà mẹ', $colIndex );
+				$helpExport->setStyle_10_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 3, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 5, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 6, $rowIndex, 7, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 8, $rowIndex, 9, $rowIndex );
+				
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_khamthai, $rowIndex, 6 );
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_tbsk, $rowIndex, 10 );
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_phathai, $rowIndex, 6 );
+				$helpExport->setStyleRowDataTable ( $sheet, 'A' . ($rowIndex-26), 'J' . $rowIndex );
+			
+				$rowIndex += 2;
+				$formatIndex = $rowIndex;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'II', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'KHHGD', $colIndex );
+				$helpExport->setStyle_10_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 3, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 5, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 6, $rowIndex, 7, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 8, $rowIndex, 9, $rowIndex );
+				
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_khhgd, $rowIndex, 6 );
+				$helpExport->setStyleRowDataTable ( $sheet, 'A' . ($rowIndex-13), 'J' . $rowIndex );
+				
+				$rowIndex += 2;
+				$formatIndex = $rowIndex;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'III', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chăm sóc sức khỏe trẻ em', $colIndex );
+				$helpExport->setStyle_10_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 3, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 5, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 6, $rowIndex, 7, $rowIndex );
+				$sheet->mergeCellsByColumnAndRow ( 8, $rowIndex, 9, $rowIndex );
+				
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_csskte, $rowIndex, 6 );
+				$helpExport->setStyleRowDataTable ( $sheet, 'A' . ($rowIndex-10), 'J' . $rowIndex );
+				
+				$sheet->setCellValue ( 'A65', 'Ghi chú: Chết mẹ là chết từ khi mang thai đến 42 ngày sau đẻ do bất kỳ nguyên nhân nào trừ tai nạn, ngộ độc, tự tử' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 65, 9, 65 );
+				$helpExport->setStyle_10_TNR_I_L ( $sheet, 'A65', 'J65' );
+				
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'J' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'J' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+				/*
+				 * Set active sheet index to the first sheet, so Excel opens this as
+				 * the first sheet
+				 */
+				$objPHPExcel->setActiveSheetIndex ( 0 );
+				/* Redirect output to a clientâ€™s web browser (Excel5) */
+				$objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
+				$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+				$pageMargin = $sheet->getPageMargins();
+				$pageMargin->setTop(.65);
+				$pageMargin->setLeft(.6);
+				$pageMargin->setRight(.58);
+				header ( 'Content-Type: application/vnd.ms-excel' );
+				header ( 'Content-Disposition: attachment;filename="Hoatdongchamsockhhgd(' . date ( "d/m/Y" ) . ').xls"' );
+				header ( 'Cache-Control: max-age=0' );
+				$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+				$objWriter->save ( 'php://output' );
+			} catch ( Exception $e ) {
+				echo "<script type=\"text/javascript\">
+						alert('Exception: Export Excel!');
+						</script>";
+			}
+		}
+	}
+	/**
+	 * - Khởi tạo các dòng trong sheet Excel với dữ liệu được đưa vào.
+	 * 
+	 * @param PHPExcel_Worksheet $_sheet        	
+	 * @param HelpFuncExportExcel $_helpExport        	
+	 * @param Array $_data        	
+	 * @param Number $_rowIndex        	
+	 * @param Number $_numCol        	
+	 * @return Number
+	 */
+	public function initRow($_sheet, $_helpExport, $_data, $_rowIndex, $_numCol) {
+		$helpExport = $_helpExport;
+		$sheet = $_sheet;
+		$rowIndex = $_rowIndex;
+		$data = $_data;
+		$numCol = $_numCol;
+		if ($_numCol == 6) {
+			foreach ( $data as $item ) {
+				$rowIndex += 1;
+				$colIndex = 'A';
+				for($i = 0; $i < $numCol; $i ++) {
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, (isset ( $item [$i] ) ? $item [$i] : ""), $colIndex );
+					if ($colIndex == 'D')
+						$colIndex = 'E';
+					elseif ($colIndex == 'F')
+						$colIndex = 'G';
+					elseif ($colIndex == 'H')
+						$colIndex = 'I';
+				}
+			}
+		} else {
+			foreach ( $data as $item ) {
+				$rowIndex += 1;
+				$colIndex = 'A';
+				for($i = 0; $i < $numCol; $i ++) {
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, (isset ( $item [$i] ) ? $item [$i] : ""), $colIndex );
+				}
+			}
+		}
+		return $rowIndex;
+	}
+}
+
+
+
+
+
+
+
+

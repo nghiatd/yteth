@@ -1,0 +1,63 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Mangach{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	public function dupliObj($id, $Tenmangach) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_mangach WHERE Tenmangach = '$Tenmangach'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_mangach WHERE Id != $id AND Tenmangach = '$Tenmangach'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	// hien thi combogrid
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_mangach', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_mangach', 'Id = ' . $id );
+		return $Id;
+	}
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_mangach");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenmangach, Mangach FROM tbldm_mangach ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	// thomnd 
+	public function getIdandNameforCbogridObj($sTenmangach){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tenmangach, Mangach FROM tbldm_mangach where Tenmangach like '%$sTenmangach%'");
+		return $query->fetchAll();
+	}
+	
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_mangach', $data );
+		return $Id;
+	}
+	
+	
+	// tim kiem trong combogrid
+	public function searObj($sTenmangach, $sMaso, $sort, $order, $offset, $rows){
+		$result = array();
+		$where = "Tenmangach LIKE '%$sTenmangach%'";
+		if($sMaso != '')
+			$where = $where."AND Mangach = $sMaso";
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_mangach WHERE $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenmangach, Mangach FROM tbldm_mangach WHERE $where");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}

@@ -1,0 +1,176 @@
+<?php
+include 'PublicdetailController.php';
+class BiendongbaohiemController extends PublicdetailController{
+	private $_MBiendong;
+	private $_NhanvienId;
+	private $_BiendongId;
+	private $_Biendong = array();
+	private $_ThongtincoquanId;
+	public function init(){
+		$this->initValue();
+		$this->_MBiendong = new Model_Biendongbaohiem();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		if (isset ( $_REQUEST ['NhanvienId'] ) && $_REQUEST ['NhanvienId'] != ''){
+			$this->_NhanvienId = $_REQUEST['NhanvienId'];
+			$this->_BiendongId = $_REQUEST['BiendongId'];
+		}
+	}
+
+	public function jsonAction(){
+		$this->_helper->layout()->disableLayout();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = $this->_MBiendong->getFetObj($this->_ThongtincoquanId, $sort, $order, $offset, $rows);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// detail bien dong bao hiem cua nhan vien
+	public function detailAction(){
+		$this->_helper->layout()->disableLayout();
+		$nhanvienId = $this->_getParam('NhanvienId');
+		$jsonObj = $this->_MBiendong->detail($nhanvienId, $this->_ThongtincoquanId);
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// thong tin bang cap cua nhan vien
+	public function infoAction(){
+		$this->_helper->layout()->disableLayout();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$id = $this->_getParam ( 'nhanvienId' );
+		$jsonObj = $this->_MBiendong->getInfobyId($id, $this->_ThongtincoquanId, $sort, $order, $offset, $rows);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// them moi du lieu
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		$nhanvienid = $this->_NhanvienId;
+		$bhxh = isset ( $_REQUEST ['BHXH'] ) ? $_REQUEST ['BHXH'] : '';
+		if($bhxh == 'on'){
+			$biendongid = $this->_BiendongId;
+			$tungay = $this->convertDate($_REQUEST['Tungay']);
+			$denngay = $this->convertDate($_REQUEST['Denngay']);
+			$sotien = $_REQUEST['Sotien'];
+			$xahoi = 1;
+		}else{
+			$biendongid = '';
+			$tungay = '';
+			$denngay = '';
+			$sotien = '';
+			$xahoi = 0;
+		}
+		$bhyt = isset ( $_REQUEST ['BHYT'] ) ? $_REQUEST ['BHYT'] : '';
+		if($bhyt == 'on'){
+			$noidungdenghi = $_REQUEST['Noidungdenghi'];
+			$yte = 1;
+		}else{
+			$noidungdenghi = '';
+			$yte = 0;
+		}
+		$this->_Biendong = array(
+				'NhanvienId' => $this->_NhanvienId,
+				'BiendongId' => $biendongid,
+				'Tungay' => $tungay,
+				'Denngay' =>$denngay,
+				'Sotien' => $sotien,
+				'Noidungdenghi' => $noidungdenghi,
+				'BHXH' => $xahoi,
+				'BHYT' => $yte,
+				'ThongtincoquanId' => $this->_ThongtincoquanId
+				);
+		$this->_MBiendong->addObj($this->_Biendong);
+		$jsonObj["success"] = true;
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// cap nhat du lieu
+	public function updateAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('id');
+		$jsonObj = array();
+		$nhanvienid = $this->_NhanvienId;
+		$bhxh = isset ( $_REQUEST ['BHXH'] ) ? $_REQUEST ['BHXH'] : '';
+		if($bhxh == 'on'){
+			$biendongid = $this->_BiendongId;
+			$tungay = $this->convertDate($_REQUEST['Tungay']);
+			$denngay = $this->convertDate($_REQUEST['Denngay']);
+			$sotien = $_REQUEST['Sotien'];
+			$xahoi = 1;
+		}else{
+			$biendongid = '';
+			$tungay = '';
+			$denngay = '';
+			$sotien = '';
+			$xahoi = 0;
+		}
+		$bhyt = isset ( $_REQUEST ['BHYT'] ) ? $_REQUEST ['BHYT'] : '';
+		if($bhyt == 'on'){
+			$noidungdenghi = $_REQUEST['Noidungdenghi'];
+			$yte = 1;
+		}else{
+			$noidungdenghi = '';
+			$yte = 0;
+		}
+		$this->_Biendong = array(
+				'NhanvienId' => $this->_NhanvienId,
+				'BiendongId' => $biendongid,
+				'Tungay' => $tungay,
+				'Denngay' =>$denngay,
+				'Sotien' => $sotien,
+				'Noidungdenghi' => $noidungdenghi,
+				'BHXH' => $xahoi,
+				'BHYT' => $yte,
+				'ThongtincoquanId' => $this->_ThongtincoquanId
+		);
+		$this->_MBiendong->updateObj($id, $this->_Biendong);
+		$jsonObj["success"] = true;
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	// xoa du lieu
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		if (isset ( $items ) && $items > 0) {
+			foreach ( $items as $item ) {
+				if ($item ['Id'] != null) {
+					$this->_MBiendong->delObj ( $item ['Id'] );
+					$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+					$jsonObj = array (
+							'success' => true
+					);
+				}
+			}
+		} else {
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu không thành công!';
+			$jsonObj ["success"] = false;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function searAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$sManhanvien = $this->_getParam('sManhanvien');
+		$sNhanvien = $this->_getParam('sNhanvien');
+		$sNgaysinh = $this->_getParam('sNgaysinh');
+		$sGioitinh = $this->_getParam('sGioitinh');
+		$sChucvu = $this->_getParam('sChucvu');
+		if($sNgaysinh != ''){
+			$sNgaysinh = $this->convertDateSearch($sNgaysinh);
+		}
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = json_encode ( $this->_MBiendong->searObj($sManhanvien, $sNhanvien, $sNgaysinh, $sGioitinh, $sChucvu, $sort, $order, $offset, $rows, $this->_ThongtincoquanId));
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

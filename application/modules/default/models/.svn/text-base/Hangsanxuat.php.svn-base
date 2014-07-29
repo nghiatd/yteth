@@ -1,0 +1,61 @@
+<?php
+class Model_Hangsanxuat
+{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	private $str_query = "SELECT Id, Tenhang, Nguoilienhe, Chucvu, Diachi, Dienthoai, Fax, Email, Website, Ghichu, Logo  ";
+	
+	public function getFetObj($sort, $order, $offset, $rows){
+		$resutl = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_hangsanxuat");
+		$row = $query->fetchAll();
+		$query = $this->db->query($this->str_query ." FROM tbldm_hangsanxuat ORDER BY $sort $order LIMIT $offset, $rows" );
+		$resutl["total"] = $row[0]['Total'];
+		$resutl["rows"] = $query->fetchAll();
+		return $resutl;
+	}
+	
+	public function getNameObj(){
+		$query = $this->db->query('SELECT Id, Tenhang FROM tbldm_hangsanxuat');
+		return $query->fetchAll();	
+	}
+	
+	public function getNamebyIdObj($id){
+		$row = array();
+		$query = $this->db->query($this->str_query." FROM tbldm_hangsanxuat WHERE Id = $id");
+		$row = $query->fetchAll();
+		return $row;
+	}
+	
+	public function dupObj($id, $tenhang) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hangsanxuat WHERE Tenhang = '$tenhang'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hangsanxuat WHERE Id != $id AND Tenhang = '$tenhang'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	
+	public function addObj($data){
+		$id = $this->db->insert('tbldm_hangsanxuat', $data);
+		return $id;
+	}
+	
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbldm_hangsanxuat', $data, 'Id ='.$id);
+		return $Id;
+	}
+	
+	public function delObj($id){
+		$Id = $this->db->delete('tbldm_hangsanxuat', 'Id ='.$id);
+		return $Id;
+	}
+	
+	
+	
+}

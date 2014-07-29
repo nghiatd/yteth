@@ -1,0 +1,135 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class DangthuocController extends PublicdetailController {
+	private $_MDangthuoc;
+	private $_Tendangthuoc;
+	private $_Dangthuoc = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MDangthuoc = new Model_Dangthuoc ();
+		
+		if (isset ( $_REQUEST ['Tendangthuoc'] ) && $_REQUEST ['Tendangthuoc'] != '') {
+			$this->_Tendangthuoc = $_REQUEST ['Tendangthuoc'];
+			$this->_Dangthuoc = array (
+					'Tendangthuoc' => $_REQUEST ['Tendangthuoc'] 
+			);
+		}
+	}
+	/**
+	 * - Check Login
+	 * @see Zend_Controller_Action::preDispatch()
+	 */
+	
+	public function indexAction() {
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDangthuoc->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra về Id và Tên của đối tượng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout ()->disableLayout ();
+		$sdangthuoc = $this->_getParam('sdangthuoc');
+		$q = isset ( $_POST ['q'] ) ? strval ( $_POST ['q'] ) : '';
+		$jsonObj = json_encode ( $this->_MDangthuoc->getIdName ($sdangthuoc, $q, $sort, $order, $offset, $rows) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MDangthuoc->dupliObj ( 0, $this->_Tendangthuoc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên dạng thuốc này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MDangthuoc->addObj ( $this->_Dangthuoc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MDangthuoc->dupliObj ( $id, $this->_Tendangthuoc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên dạng thuốc này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MDangthuoc->updateObj ( $id, $this->_Dangthuoc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MDangthuoc->delObj ( $id );
+		} else {
+			return; 
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

@@ -1,0 +1,108 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author GiangKuteo
+ *
+ */
+ class QuoctichController extends PublicdetailController
+{
+	private $_MQuoctich;
+	private $_Tenquoctich;
+	private $_Quoctich = array();
+	
+	public function init(){
+		$this->initValue();
+		$this->_MQuoctich = new Model_Quoctich();
+		
+		if (isset ( $_REQUEST ['Tenquoctich'] ) && $_REQUEST ['Tenquoctich'] != '') {
+			$this->_Tenquoctich = $_REQUEST['Tenquoctich'];
+			$this->_Quoctich = array(
+					'Tenquoctich' => $_REQUEST['Tenquoctich']);
+		}
+	}
+	
+	
+	
+	public function indexAction(){
+	}
+	
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MQuoctich->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = null;
+		$jsonObj = json_encode($this->_MQuoctich->getIdNameObj());
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+	
+		$dup = $this->_MQuoctich->dupliObj(0, $this->_Tenquoctich);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên quốc tịch này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MQuoctich->addObj($this->_Quoctich);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MQuoctich->dupliObj($id, $this->_Tenquoctich);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên quốc tịch này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MQuoctich->updateObj($id, $this->_Quoctich);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MQuoctich->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

@@ -1,0 +1,747 @@
+<?php
+class AddBaocao {
+	public static function Add($_tenmucbaocao, $_file, $_kynopid, $_namhoatdong, $_thongtincoquan) {
+		$_MBaocao = new Model_Baocao ();
+		try {
+			$objPHPExcel = PHPExcel_IOFactory::load ( $_file );
+		} catch ( Exception $e ) {
+			die ( 'Error loading file : ' . $e->getMessage () );
+		}
+		// Get worksheet dimensions
+		$sheet = $objPHPExcel->getSheet ( 0 );
+		$highestRow = $sheet->getHighestRow ();
+		$highestColumn = $sheet->getHighestColumn ();
+		
+		$data = array ();
+		$jsonObj = false;
+		$tmp = 0;
+		$rowData = array ();
+		if ($_tenmucbaocao == 'Đơn vị hành chính, dân số và tình hình sinh tử') {
+			// Báo cáo 1, 3.1
+			// Xóa các dữ liệu cũ nếu tồn tại.
+			$_MBaocao->delObj ( 'tbl_bch_1', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_3_1', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			// Lặp các dòng dữ liệu lấy được từ file excel
+			$data_bc1 = array (
+					'Sothonban' => '',
+					'Sothonban_CNVYT' => '',
+					'DS_17' => '',
+					'DS_Nu' => '',
+					'DS_Nu15' => '',
+					'DS_5' => '',
+					'DS_6' => '',
+					'DS_15' => '',
+					'Desong' => '',
+					'Desong_Nu' => '',
+					'Sochet' => '',
+					'Sochet_TYT' => '',
+					'Sochet_Nu' => '',
+					'Sochet_1' => '',
+					'Sochet_1_Nu' => '',
+					'Sochet_5' => '',
+					'Sochet_5_Nu' => '',
+					'Chetme' => '' 
+			);
+			$data_bc3_1 = array ();
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Đọc dữ liệu ra mảng
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Thực hiện đưa dữ liệu vào db
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) == '2') {
+					$tmp = 1;
+					continue;
+				} elseif ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} else {
+					// Bắt đầu lấy dữ liệu từ các dòng và cột tương ứng.
+					if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) != '') {
+						$data_bc1 = array (
+								'Sothonban' => ('Số thôn, bản' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['Sothonban']),
+								'Sothonban_CNVYT' => ('Số thôn, bản có NVYT hoạt động' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['Sothonban_CNVYT']),
+								'DS_17' => ('Dân số của xã đến 1/7' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['DS_17']),
+								'DS_Nu' => ('Trđ: Nữ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['DS_Nu']),
+								'DS_Nu15' => ('Phụ nữ >= 15' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['DS_Nu15']),
+								'DS_5' => ('Trẻ em < 5 tuổi' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['DS_5']),
+								'DS_6' => ('Trẻ em < 6 tuổi' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['DS_6']),
+								'DS_15' => ('Trẻ em < 15 tuổi' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc1 ['DS_15']),
+								'Desong' => ('Tổng số sơ sinh sống' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [5] : $data_bc1 ['Desong']),
+								'Desong_Nu' => ('Tổng số sơ sinh sống' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [6] : $data_bc1 ['Desong_Nu']),
+								'Sochet' => ('Tổng số chết' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [5] : $data_bc1 ['Sochet']),
+								'Sochet_TYT' => ('Trđ: Chết tại trạm' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [5] : $data_bc1 ['Sochet_TYT']),
+								'Sochet_Nu' => ('Tổng số chết' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [6] : $data_bc1 ['Sochet_Nu']),
+								'Sochet_1' => ('Chết < 1 tuổi' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [5] : $data_bc1 ['Sochet_1']),
+								'Sochet_1_Nu' => ('Chết < 1 tuổi' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [6] : $data_bc1 ['Sochet_1_Nu']),
+								'Sochet_5' => ('Chết < 5 tuổi' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [5] : $data_bc1 ['Sochet_5']),
+								'Sochet_5_Nu' => ('Chết < 5 tuổi' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [6] : $data_bc1 ['Sochet_5_Nu']),
+								'Chetme' => ('Chết mẹ' == trim ( $rowData [$i] [4] ) ? $rowData [$i] [5] : $data_bc1 ['Chetme']) 
+						);
+						$jsonObj = true;
+					}
+				}
+			}
+			if ($jsonObj) {
+				$_MBophan = new Model_Bophan ();
+				$_MThongtincoquan = new Model_Thongtincoquan ();
+				$_Infor = $_MThongtincoquan->getInfoForReport ( $_thongtincoquan );
+				$_Bophan = $_MBophan->getForReport3_1 ( $_thongtincoquan, $_namhoatdong );
+				$data_bc1 ['Tendonvi'] = $_Infor ['Tenxa'];
+				$data_bc1 ['Phanloaixa'] = isset ( $_Infor ['Loaixa'] ) ? $_Infor ['Loaixa'] : '';
+				$data_bc1 ['KynopId'] = $_kynopid;
+				$data_bc1 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc1 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc1 ['Pheduyet'] = 0;
+				$_MBaocao->addObj ( 'tbl_bch_1', $data_bc1 );
+				$data_bc3_1 ['Tendonvi'] = $_Infor ['Tenxa'];
+				$data_bc3_1 ['ToYHCT'] = ($_Bophan ['CoYHCT'] > 0) ? 1 : 0;
+				$data_bc3_1 ['Bacsy'] = ($_Bophan ['CoBacsy'] > 0) ? 1 : 0;
+				$data_bc3_1 ['NHS_YSSN'] = ($_Bophan ['CoNHS'] > 0 || $_Bophan ['CoYSSN'] > 0) ? 1 : 0;
+				$data_bc3_1 ['Chuanquocgia'] = ($_Bophan ['CoDatchuan'] > 0) ? 1 : 0;
+				$data_bc3_1 ['Thonban_NVYT'] = $data_bc1 ['Sothonban_CNVYT'];
+				$data_bc3_1 ['KynopId'] = $_kynopid;
+				$data_bc3_1 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc3_1 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc3_1 ['Pheduyet'] = 0;
+				$_MBaocao->addObj ( 'tbl_bch_3_1', $data_bc3_1 );
+			}
+			unset ( $sheet );
+			unset ( $data_bc1 );
+			unset ( $data_bc3_1 );
+			unset ( $rowData );
+			unset ( $_MBaocao );
+			return $jsonObj;
+		} elseif ($_tenmucbaocao == 'Tình hình thu chi ngân sách y tế') {
+			// Báo cáo 2
+			// Xóa các dữ liệu cũ nếu tồn tại.
+			$_MBaocao->delObj ( 'tbl_bch_2', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			// Lặp các dòng dữ liệu lấy được từ file excel
+			$data = array (
+					'TST_Tongso' => '',
+					'TST_Trunguong' => '',
+					'TST_Diaphuong' => '',
+					'TST_BHYT' => '',
+					'TST_Vienphi' => '',
+					'TST_Vientro' => '',
+					'TST_Khac' => '',
+					'TSC_Tongso' => '',
+					'TSC_GDDT' => '',
+					'TSC_Phongbenh' => '',
+					'TSC_Chuabenh' => '',
+					'TSC_DSKHHGD' => '',
+					'TSC_QLNN' => '',
+					'TSC_YTQG' => '',
+					'TSC_Khac' => '',
+					'TSC_DTPT' => '' 
+			);
+			$TSC_Muasam = 0;
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Đọc dữ liệu ra mảng
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Thực hiện đưa dữ liệu vào db
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) == '2') {
+					$tmp = 1;
+					continue;
+				} elseif ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} else {
+					// Bắt đầu lấy dữ liệu từ các dòng và cột tương ứng.
+					if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) != '') {
+						$data = array (
+								'TST_Trunguong' => ('Ngân sách nhà nước cấp' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TST_Trunguong']),
+								'TST_Diaphuong' => ('Trong đó: UBND xã' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TST_Diaphuong']),
+								'TST_BHYT' => ('Thu BHYT' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TST_BHYT']),
+								'TST_Vienphi' => ('Thu dịch vụ khám chữa bệnh' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TST_Vienphi']),
+								'TST_Khac' => ('Thu khác' == trim ( $rowData [$i] [1] ) ? ($rowData [$i] [2] + $TSC_Muasam) : $data ['TST_Khac']),
+								'TSC_QLNN' => ('Chi lương cho cán bộ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TSC_QLNN']),
+								'TSC_Khac' => ('Chi khác' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TSC_Khac']),
+								'TSC_DTPT' => ('Chi đầu tư phát triển' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data ['TSC_DTPT']) 
+						);
+						$TSC_Muasam = ('Chi mua sắm phục vụ chuyên môn' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $TSC_Muasam);
+						$jsonObj = true;
+					}
+				}
+			}
+			if ($jsonObj) {
+				$_MNgansachmotnam = new Model_Ngansachmotnam ();
+				$_MThongtincoquan = new Model_Thongtincoquan ();
+				// Lấy ra các trường thiếu.
+				$_Infor = $_MThongtincoquan->getInfoForReport ( $_thongtincoquan );
+				$_Ngansach = $_MNgansachmotnam->getFetObj ( $_thongtincoquan, $_namhoatdong );
+				$data ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data ['TST_Vientro'] = $_Ngansach [0] ['Vientro'];
+				$data ['TSC_GDDT'] = $_Ngansach [0] ['Chigiaoducvadaotao'];
+				$data ['TSC_Phongbenh'] = $_Ngansach [0] ['Chiphongbenh'];
+				$data ['TSC_Chuabenh'] = $_Ngansach [0] ['Chichuabenh'];
+				$data ['TSC_DSKHHGD'] = $_Ngansach [0] ['Chidskhhgd'];
+				$data ['TSC_YTQG'] = $_Ngansach [0] ['Chiytequocgia'];
+				$data ['TST_Trunguong'] = ($data ['TST_Trunguong'] - $data ['TST_Diaphuong']);
+				$data ['TST_Tongso'] = ($data ['TST_Trunguong'] + $data ['TST_Diaphuong'] + $data ['TST_BHYT'] + $data ['TST_Vienphi'] + $data ['TST_Khac'] + $data ['TST_Vientro']);
+				$data ['TSC_Tongso'] = ($data ['TSC_QLNN'] + $data ['TSC_Khac'] + $data ['TSC_DTPT'] + $data ['TSC_GDDT'] + $data ['TSC_Phongbenh'] + $data ['TSC_Chuabenh'] + $data ['TSC_DSKHHGD'] + $data ['TSC_YTQG']);
+				$data ['KynopId'] = $_kynopid;
+				$data ['ThongtincoquanId'] = $_thongtincoquan;
+				$data ['Namhoatdong'] = $_namhoatdong;
+				$data ['Loaicosoyte'] = 'Trạm Y tế';
+				$data ['Pheduyet'] = 0;
+				$_MBaocao->addObj ( 'tbl_bch_2', $data );
+			}
+			unset ( $_MNgansachmotnam );
+			unset ( $_MThongtincoquan );
+			unset ( $sheet );
+			unset ( $data );
+			unset ( $rowData );
+			unset ( $_Ngansach );
+			unset ( $_Infor );
+			unset ( $_MBaocao );
+			return $jsonObj;
+		} elseif ($_tenmucbaocao == 'Tình hình nhân lực y tế Xã/Phường') {
+			// Báo cáo 4
+			// Xóa các dữ liệu cũ nếu tồn tại.
+			$_MBaocao->delObj ( 'tbl_bch_4', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			// Lặp các dòng dữ liệu lấy được từ file excel
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Đọc dữ liệu ra mảng
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Thực hiện đưa dữ liệu vào db
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) == '2') {
+					$tmp = 1;
+					continue;
+				} elseif ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} else {
+					if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) != '') {
+						$parentId = $_MBaocao->getParentId_BCH_4 ( 'Trạm y tế' );
+						$data = array (
+								'Tencot' => trim ( $rowData [$i] [1] ),
+								'TS' => $rowData [$i] [4],
+								'TS_Nu' => $rowData [$i] [5],
+								'ParentId' => $parentId,
+								'KynopId' => $_kynopid,
+								'Namhoatdong' => $_namhoatdong,
+								'ThongtincoquanId' => $_thongtincoquan,
+								'Pheduyet' => 0 
+						);
+						$_MBaocao->addObj ( 'tbl_bch_4', $data );
+						$parentId = $_MBaocao->getParentId_BCH_4 ( 'Thôn bản' );
+						$data = array (
+								'Tencot' => trim ( $rowData [$i] [1] ),
+								'TS' => $rowData [$i] [6],
+								'TS_Nu' => $rowData [$i] [7],
+								'ParentId' => $parentId,
+								'KynopId' => $_kynopid,
+								'Namhoatdong' => $_namhoatdong,
+								'ThongtincoquanId' => $_thongtincoquan,
+								'Pheduyet' => 0 
+						);
+						$_MBaocao->addObj ( 'tbl_bch_4', $data );
+						$jsonObj = true;
+					}
+				}
+			}
+			unset ( $sheet );
+			unset ( $data );
+			unset ( $rowData );
+			unset ( $_MBaocao );
+			return $jsonObj;
+		} elseif ($_tenmucbaocao == 'Hoạt động khám chữa bệnh') {
+			// Báo cáo 3, 12, 12.1
+			// Xóa các dữ liệu cũ nếu tồn tại.
+			$_MBaocao->delObj ( 'tbl_bch_3', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_12', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_12_1', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			// Lặp các dòng dữ liệu lấy được từ file excel
+			// Khai báo mảng dữ liệu báo cáo mẫu 3, 12, 12.1
+			$data_bc3 = array (
+					'TYT_Giuongbenh' => '' 
+			);
+			$data_bc12 = array (
+					'TS_KB' => '',
+					'TS_KB_YHCT' => '',
+					'TS_KB_6' => '',
+					'TS_KB_DP' => '',
+					'TS_DTNT' => '',
+					'TS_DTNT_YHCT' => '',
+					'TS_DTNT_6' => '',
+					'TS_NDTNT' => '' 
+			);
+			$data_bc12_1 = array (
+					'TS_DTNT' => '',
+					'TS_DTNT_YHCT' => '',
+					'TS_DTNT_6' => '',
+					'TS_XN' => '',
+					'TS_SA' => '' 
+			);
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Đọc dữ liệu ra mảng
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Thực hiện đưa dữ liệu vào db
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) == '2') {
+					$tmp = 1;
+					continue;
+				} elseif ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} else {
+					// Bắt đầu lấy dữ liệu từ các dòng và cột tương ứng.
+					if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) != '') {
+						// Đọc và đưa dữ liệu vào mảng
+						$data_bc3 ['TYT_Giuongbenh'] = ('Tổng số giường' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc3 ['TYT_Giuongbenh']);
+						$data_bc12 ['TS_KB'] = ('Tổng số lần khám bệnh' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12 ['TS_KB']);
+						$data_bc12 ['TS_KB_YHCT'] = ((('2,1' == trim ( $rowData [$i] [0] )) && ('Trđ: YHCT' == trim ( $rowData [$i] [1] ))) ? $rowData [$i] [2] : $data_bc12 ['TS_KB_YHCT']);
+						$data_bc12 ['TS_KB_6'] = ((('2,2' == trim ( $rowData [$i] [0] )) && ('Trẻ em < 6 tuổi' == trim ( $rowData [$i] [1] ))) ? $rowData [$i] [2] : $data_bc12 ['TS_KB_6']);
+						$data_bc12 ['TS_KB_DP'] = ('Tổng số lần khám bệnh dự phòng' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12 ['TS_KB_DP']);
+						$data_bc12 ['TS_DTNT'] = ('Tổng số lượt điều trị nội trú' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12 ['TS_DTNT']);
+						$data_bc12 ['TS_DTNT_YHCT'] = ((('3,1' == trim ( $rowData [$i] [0] )) && ('Trđ: YHCT' == trim ( $rowData [$i] [1] ))) ? $rowData [$i] [2] : $data_bc12 ['TS_DTNT_YHCT']);
+						$data_bc12 ['TS_DTNT_6'] = ((('3,2' == trim ( $rowData [$i] [0] )) && ('Trẻ em < 6 tuổi' == trim ( $rowData [$i] [1] ))) ? $rowData [$i] [2] : $data_bc12 ['TS_DTNT_6']);
+						$data_bc12 ['TS_NDTNT'] = ('Tổng số ngày điều trị nội trú' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12 ['TS_NDTNT']);
+						$data_bc12_1 ['TS_DTNT'] = ('Tổng số lượt điều trị ngoại trú' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12_1 ['TS_DTNT']);
+						$data_bc12_1 ['TS_DTNT_YHCT'] = ((('5,1' == trim ( $rowData [$i] [0] )) && ('Trđ: YHCT' == trim ( $rowData [$i] [1] ))) ? $rowData [$i] [2] : $data_bc12_1 ['TS_DTNT_YHCT']);
+						$data_bc12_1 ['TS_DTNT_6'] = ((('5,2' == trim ( $rowData [$i] [0] )) && ('Trẻ em < 6 tuổi' == trim ( $rowData [$i] [1] ))) ? $rowData [$i] [2] : $data_bc12_1 ['TS_DTNT_6']);
+						$data_bc12_1 ['TS_XN'] = ('Số lần xét nghiệm' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12_1 ['TS_XN']);
+						$data_bc12_1 ['TS_SA'] = ('Số lần siêu âm' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc12_1 ['TS_SA']);
+						$jsonObj = true;
+					}
+				}
+				if (trim ( $rowData [$i] [1] ) == 'Cơ sở y tế tư nhân')
+					break;
+			}
+			if ($jsonObj) {
+				$_MThongtincoquan = new Model_Thongtincoquan ();
+				$_MNgansachmotnam = new Model_Ngansachmotnam ();
+				// Lấy ra các trường thiếu.
+				$_Infor = $_MThongtincoquan->getInfoForReport ( $_thongtincoquan );
+				$_Socoso = $_MNgansachmotnam->getFetObj ( $_thongtincoquan, $_namhoatdong );
+				// Đưa dữ liệ vào các trường còn thiếu.
+				$data_bc3 ['Cosoyte'] = $_Infor ['Tencoquan'];
+				$data_bc3 ['TYT_Coso'] = $_Socoso [0] ['socoso'];
+				$data_bc3 ['Linhvuc'] = 'Thuộc lĩnh vực Y tế quản lý';
+				$data_bc3 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc3 ['KynopId'] = $_kynopid;
+				$data_bc3 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc3 ['Pheduyet'] = 0;
+				$data_bc12 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc12 ['Loaicosoyte'] = 'Tuyến xã';
+				$data_bc12 ['KynopId'] = $_kynopid;
+				$data_bc12 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc12 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc12 ['Pheduyet'] = 0;
+				$data_bc12_1 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc12_1 ['Loaicosoyte'] = 'Tuyến xã';
+				$data_bc12_1 ['KynopId'] = $_kynopid;
+				$data_bc12_1 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc12_1 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc12_1 ['Pheduyet'] = 0;
+				// Thêm dữ liệu vào db
+				$_MBaocao->addObj ( 'tbl_bch_3', $data_bc3 );
+				$_MBaocao->addObj ( 'tbl_bch_12', $data_bc12 );
+				$_MBaocao->addObj ( 'tbl_bch_12_1', $data_bc12_1 );
+			}
+			unset ( $_MNgansachmotnam );
+			unset ( $_MThongtincoquan );
+			unset ( $sheet );
+			unset ( $data_bc3 );
+			unset ( $data_bc12 );
+			unset ( $data_bc12_1 );
+			unset ( $rowData );
+			unset ( $_Socoso );
+			unset ( $_Infor );
+			unset ( $_MBaocao );
+			return $jsonObj;
+		} elseif ($_tenmucbaocao == 'Hoạt động tiêm chủng mở rộng') {
+			// Báo cáo 10, 11
+			// Xóa các dữ liệu cũ nếu tồn tại.
+			$_MBaocao->delObj ( 'tbl_bch_10', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_11', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			// Lặp các dòng dữ liệu lấy được từ file excel
+			// Khai báo mảng dữ liệu báo cáo mẫu 10, 11
+			$data_bc10 = array (
+					'TS_T1' => '',
+					'TS_TCDD_7' => '',
+					'TS_BCG' => '',
+					'TS_DPT' => '',
+					'TS_OPV' => '',
+					'TS_VGB' => '',
+					'TS_S' => '',
+					'TS_VNNB' => '',
+					'TS_T' => '',
+					'TS_TH' => '',
+					'TS_PN_UV2' => '' 
+			);
+			$data_bc11 = array (
+					'Tenbenh' => '',
+					'TS_Mac' => '',
+					'TS_Chet' => '' 
+			);
+			$macbenh = false;
+			$_MThongtincoquan = new Model_Thongtincoquan ();
+			// Lấy ra các trường thiếu.
+			$_Infor = $_MThongtincoquan->getInfoForReport ( $_thongtincoquan );
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Đọc dữ liệu ra mảng
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Thực hiện đưa dữ liệu vào db
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) == '2') {
+					$tmp = 1;
+					continue;
+				} elseif ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} else {
+					// Bắt đầu lấy dữ liệu từ các dòng và cột tương ứng.
+					if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) != '') {
+						// Đọc và đưa dữ liệu vào mảng
+						$data_bc10 ['TS_T1'] = ('Số trẻ em trong diện tiêm' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_T1']);
+						$data_bc10 ['TS_TCDD_7'] = ('Số tiêm đầy đủ 7 bệnh' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_TCDD_7']);
+						$data_bc10 ['TS_BCG'] = ('Số tiêm BCG' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_BCG']);
+						$data_bc10 ['TS_DPT'] = ('Số tiêm DPT3' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_DPT']);
+						$data_bc10 ['TS_OPV'] = ('Số tiêm OPV3' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_OPV']);
+						$data_bc10 ['TS_VGB'] = ('Số tiêm viêm gan B' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_VGB']);
+						$data_bc10 ['TS_S'] = ('Số tiêm phòng sởi' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_S']);
+						$data_bc10 ['TS_VNNB'] = (('Viêm màng não' == trim ( $rowData [$i] [1] ) && $data_bc10 ['TS_VNNB'] == '') ? $rowData [$i] [2] : $data_bc10 ['TS_VNNB']);
+						$data_bc10 ['TS_T'] = (('Tả' == trim ( $rowData [$i] [1] ) && $data_bc10 ['TS_T'] == '') ? $rowData [$i] [2] : $data_bc10 ['TS_T']);
+						$data_bc10 ['TS_TH'] = (('Thương hàn' == trim ( $rowData [$i] [1] ) && $data_bc10 ['TS_TH'] == '') ? $rowData [$i] [2] : $data_bc10 ['TS_TH']);
+						$data_bc10 ['TS_PN_UV2'] = ('Số phụ nữ có thai được tiêm UV2+' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc10 ['TS_PN_UV2']);
+						if (trim ( $rowData [$i] [1] ) == 'Mắc chết các bệnh có vacin phòng ngừa') {
+							$macbenh = true;
+							continue;
+						}
+						if ($macbenh) {
+							$data_bc11 ['Tenbenh'] = trim ( $rowData [$i] [1] );
+							$data_bc11 ['TS_Mac'] = $rowData [$i] [2];
+							$data_bc11 ['TS_Chet'] = $rowData [$i] [3];
+							$data_bc11 ['Tendonvi'] = $_Infor ['Tencoquan'];
+							$data_bc11 ['KynopId'] = $_kynopid;
+							$data_bc11 ['Namhoatdong'] = $_namhoatdong;
+							$data_bc11 ['ThongtincoquanId'] = $_thongtincoquan;
+							$data_bc11 ['Pheduyet'] = 0;
+							$_MBaocao->addObj ( 'tbl_bch_11', $data_bc11 );
+						}
+						$jsonObj = true;
+					}
+				}
+			}
+			// unset ( $macbenh );
+			if ($jsonObj) {
+				// Đưa dữ liệu vào các trường còn thiếu.
+				$data_bc10 ['Tendonvi'] = $_Infor ['Tenxa'];
+				$data_bc10 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc10 ['KynopId'] = $_kynopid;
+				$data_bc10 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc10 ['Pheduyet'] = 0;
+				// Thêm dữ liệu vào db
+				$_MBaocao->addObj ( 'tbl_bch_10', $data_bc10 );
+			}
+			unset ( $_MThongtincoquan );
+			unset ( $sheet );
+			unset ( $data_bc10 );
+			unset ( $data_bc11 );
+			unset ( $rowData );
+			unset ( $_Infor );
+			unset ( $_MBaocao );
+			return $jsonObj;
+		} elseif ($_tenmucbaocao == 'Hoạt động chăm sóc bà mẹ, trẻ em và kế hoạch hóa gia đình') {
+			// Báo cáo 5, 6, 7, 8, 9
+			// Xóa các dữ liệu cũ nếu tồn tại.
+			$_MBaocao->delObj ( 'tbl_bch_5', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_6', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_7', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_8', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_9', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			// Lặp các dòng dữ liệu lấy được từ file excel
+			// Khai báo mảng dữ liệu báo cáo mẫu 3, 12, 12.1
+			$data_bc5 = array (
+					'TS_PNCT' => '',
+					'TS_VTNCT' => '',
+					'TS_Khamthai' => '',
+					'TS_DeQL' => '',
+					'TS_DeUVDD' => '',
+					'TS_De' => '',
+					'TS_De_3TK' => '',
+					'FXGH' => '',
+					'TS_De_MLT' => '',
+					'TS_De_CT3' => '',
+					'TS_De_CBYT' => '',
+					'TS_De_CSYT' => '',
+					'TS_CSSS' => '',
+					'TS_CSSS_TD' => '',
+					'TS_C1T_TYT' => '',
+					'TS_C5T_TYT' => '' 
+			);
+			$data_bc6 = array (
+					'BH_Mac' => '',
+					'BH_Chet' => '',
+					'SG_Mac' => '',
+					'SG_Chet' => '',
+					'UVSS_Mac' => '',
+					'UVSS_Chet' => '',
+					'VTC_Mac' => '',
+					'VTC_Chet' => '',
+					'NTSD_Mac' => '',
+					'NTSD_Chet' => '' 
+			);
+			$data_bc7 = array (
+					'TS_Phathai_7t' => '',
+					'TS_Khamphukhoa' => '',
+					'TS_Chuaphukhoa' => '',
+					'TS_Phathai_VTN' => '',
+					'TBPT_Mac' => '',
+					'TBPT_Chet' => '' 
+			);
+			$data_bc8 = array (
+					'TS_BPTT' => '',
+					'TS_DCTC' => '',
+					'TS_TTTV' => '',
+					'TS_TTTT' => '',
+					'TS_TTTC' => '',
+					'TS_BCS' => '',
+					'TS_MTS' => '',
+					'TS_MTS_Nu' => '',
+					'TS_MTB_KHHGD' => '',
+					'TS_CTB_KHHGD' => '' 
+			);
+			$data_bc9 = array (
+					'TS_TDS' => '',
+					'TS_TDS_Nu' => '',
+					'TS_TDC' => '',
+					'TS_TDC_2500' => '',
+					'CTNCTE_22' => '',
+					'CTNCTE_7' => '',
+					'CTNCTE_28' => '',
+					'TS_SDD_5' => '' 
+			);
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Đọc dữ liệu ra mảng
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Thực hiện đưa dữ liệu vào db
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) == '2') {
+					$tmp = 1;
+					continue;
+				} elseif ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} else {
+					// Bắt đầu lấy dữ liệu từ các dòng và cột tương ứng.
+					if (isset ( $rowData [$i] [1] ) && trim ( $rowData [$i] [1] ) != '') {
+						// Đọc và đưa dữ liệu vào mảng
+						$data_bc5 ['TS_PNCT'] = ('Phụ nữ có thai' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc5 ['TS_PNCT']);
+						$data_bc5 ['TS_VTNCT'] = ('Trđ: Vị thành niên' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [2] : $data_bc5 ['TS_VTNCT']);
+						$data_bc5 ['TS_Khamthai'] = ('Tổng số lần khám thai' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_Khamthai']);
+						$data_bc5 ['TS_DeQL'] = ('Phụ nữ đẻ được quản lý thai' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_DeQL']);
+						$data_bc5 ['TS_DeUVDD'] = ('Số phụ nữ đẻ được tiêm UV đủ liều liều' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_DeUVDD']);
+						$data_bc5 ['TS_De'] = ('Số người đẻ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_De']);
+						$data_bc5 ['TS_De_3TK'] = ('- PNđẻ được KT >= 3 lần trong 3 thời kỳ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_De_3TK']);
+						$data_bc5 ['TS_De_CT3'] = ('- Đẻ con thứ 3 trở lên' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_De_CT3']);
+						$data_bc5 ['TS_De_CBYT'] = ('- Đẻ do CBYT đỡ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_De_CBYT']);
+						$data_bc5 ['TS_De_CSYT'] = ('- Đẻ tại cơ sở y tế' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_De_CSYT']);
+						$data_bc5 ['TS_CSSS'] = ('TS Bà mẹ/trẻ SS được chăm sóc sau sinh' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_CSSS']);
+						$data_bc5 ['TS_CSSS_TD'] = ('Trđ: chăm sóc tuần đầu' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_CSSS_TD']);
+						$data_bc5 ['TS_C1T_TYT'] = ('- Chết < 1 tuổi' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_C1T_TYT']);
+						$data_bc5 ['TS_C5T_TYT'] = ('- Chết dưới 5 tuổi' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc5 ['TS_C5T_TYT']);
+						
+						$data_bc6 ['BH_Mac'] = ('Băng huyết' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc6 ['BH_Mac']);
+						$data_bc6 ['BH_Chet'] = ('Băng huyết' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [5] : $data_bc6 ['BH_Chet']);
+						$data_bc6 ['SG_Mac'] = ('Sản giật' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc6 ['SG_Mac']);
+						$data_bc6 ['SG_Chet'] = ('Sản giật' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [5] : $data_bc6 ['SG_Chet']);
+						$data_bc6 ['UVSS_Mac'] = ('Uốn ván Sơ sinh' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc6 ['UVSS_Mac']);
+						$data_bc6 ['UVSS_Chet'] = ('Uốn ván Sơ sinh' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [5] : $data_bc6 ['UVSS_Chet']);
+						$data_bc6 ['VTC_Mac'] = ('Vỡ tử cung' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc6 ['VTC_Mac']);
+						$data_bc6 ['VTC_Chet'] = ('Vỡ tử cung' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [5] : $data_bc6 ['VTC_Chet']);
+						$data_bc6 ['NTSD_Mac'] = ('Nhiễm trùng sau đẻ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc6 ['NTSD_Mac']);
+						$data_bc6 ['NTSD_Chet'] = ('Nhiễm trùng sau đẻ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [5] : $data_bc6 ['NTSD_Chet']);
+						
+						$data_bc7 ['TS_Khamphukhoa'] = ('Tổng số lượt khám phụ khoa' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc7 ['TS_Khamphukhoa']);
+						$data_bc7 ['TS_Chuaphukhoa'] = ('Tổng số lượt chữa phụ khoa' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc7 ['TS_Chuaphukhoa']);
+						$data_bc7 ['TS_Phathai_VTN'] = ('- Vị thành niên' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc7 ['TS_Phathai_VTN']);
+						$data_bc7 ['TBPT_Mac'] = ('Mắc tai biến do phá thai' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc7 ['TBPT_Mac']);
+						$data_bc7 ['TBPT_Chet'] = ('Chết do tai biến phá thai' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc7 ['TBPT_Chet']);
+						$data_bc7 ['TS_Phathai_7t'] = ('Trđ:- Phá thai =< 7 tuần' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc7 ['TS_Phathai_7t']);
+						
+						$data_bc8 ['TS_BPTT'] = ('Tổng số người mới thực hiện các BPTT' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_BPTT']);
+						$data_bc8 ['TS_DCTC'] = ('Số mới đặt DCTC' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_DCTC']);
+						$data_bc8 ['TS_TTTV'] = ('+ Thuốc viên' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_TTTV']);
+						$data_bc8 ['TS_TTTT'] = ('+ Thuốc tiêm' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_TTTT']);
+						$data_bc8 ['TS_TTTC'] = ('+ Thuốc cấy' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_TTTC']);
+						$data_bc8 ['TS_BCS'] = ('Bao cao su' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_BCS']);
+						$data_bc8 ['TS_MTS'] = ('Số mới triệt sản' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_MTS']);
+						$data_bc8 ['TS_MTS_Nu'] = ('Trđ: Nam' == trim ( $rowData [$i] [1] ) ? (( int ) $data_bc8 ['TS_MTS'] - ( int ) $rowData [$i] [4]) : $data_bc8 ['TS_MTS_Nu']);
+						$data_bc8 ['TS_MTB_KHHGD'] = ('Mắc' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_MTB_KHHGD']);
+						$data_bc8 ['TS_CTB_KHHGD'] = ('Chết' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc8 ['TS_CTB_KHHGD']);
+						
+						$data_bc9 ['TS_TDS'] = ('Trẻ đang sống' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['TS_TDS']);
+						$data_bc9 ['TS_TDS_Nu'] = ('Trđ: Nữ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['TS_TDS_Nu']);
+						$data_bc9 ['TS_TDC'] = ('Trẻ sơ sinh được cân' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['TS_TDC']);
+						$data_bc9 ['TS_TDC_2500'] = ('Trđ: Trẻ =< 2500 gram' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['TS_TDC_2500']);
+						$data_bc9 ['CTNCTE_22'] = ('- Chết thai nhi từ khi 22 tuần đến khi đẻ' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['CTNCTE_22']);
+						$data_bc9 ['CTNCTE_7'] = ('- Chết =< 7 ngày' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['CTNCTE_7']);
+						$data_bc9 ['CTNCTE_28'] = ('- Chết sơ sinh (=< 28 ngày)' == trim ( $rowData [$i] [1] ) ? $rowData [$i] [4] : $data_bc9 ['CTNCTE_28']);
+						$jsonObj = true;
+					}
+				}
+				if (trim ( $rowData [$i] [1] ) == 'Cơ sở y tế tư nhân')
+					break;
+			}
+			if ($jsonObj) {
+				$_MPhathai = new Model_Phathai();
+				$_MThongtincoquan = new Model_Thongtincoquan ();
+				// Lấy ra các trường thiếu.
+				$_Infor = $_MThongtincoquan->getInfoForReport ( $_thongtincoquan );
+				$_Phathai = $_MPhathai->getInfoForReport($_kynopid, $_namhoatdong, $_thongtincoquan);
+				// Đưa dữ liệ vào các trường còn thiếu.
+				$data_bc5 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc5 ['Loaicosoyte'] = 'Trạm y tế';
+				$data_bc5 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc5 ['KynopId'] = $_kynopid;
+				$data_bc5 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc5 ['Pheduyet'] = 0;
+				
+				$data_bc6 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc6 ['Loaicosoyte'] = 'Trạm y tế';
+				$data_bc6 ['KynopId'] = $_kynopid;
+				$data_bc6 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc6 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc6 ['Pheduyet'] = 0;
+				
+				$data_bc7 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc7 ['TS_Phathai_7t_12t'] = $_Phathai ['TS_PT_7_12'];
+				$data_bc7 ['TS_Phathai_12t'] = $_Phathai ['TS_PT_12'];
+				$data_bc7 ['Loaicosoyte'] = 'Trạm y tế';
+				$data_bc7 ['KynopId'] = $_kynopid;
+				$data_bc7 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc7 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc7 ['Pheduyet'] = 0;
+				
+				$data_bc8 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc8 ['Loaicosoyte'] = 'Trạm y tế';
+				$data_bc8 ['KynopId'] = $_kynopid;
+				$data_bc8 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc8 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc8 ['Pheduyet'] = 0;
+				
+				$data_bc9 ['Tendonvi'] = $_Infor ['Tencoquan'];
+				$data_bc9 ['Loaicosoyte'] = 'Trạm y tế';
+				$data_bc9 ['KynopId'] = $_kynopid;
+				$data_bc9 ['Namhoatdong'] = $_namhoatdong;
+				$data_bc9 ['ThongtincoquanId'] = $_thongtincoquan;
+				$data_bc9 ['Pheduyet'] = 0;
+				
+				// Thêm dữ liệu vào db
+				$_MBaocao->addObj ( 'tbl_bch_5', $data_bc5 );
+				$_MBaocao->addObj ( 'tbl_bch_6', $data_bc6 );
+				$_MBaocao->addObj ( 'tbl_bch_7', $data_bc7 );
+				$_MBaocao->addObj ( 'tbl_bch_8', $data_bc8 );
+				$_MBaocao->addObj ( 'tbl_bch_9', $data_bc9 );
+			}
+			unset ( $_MThongtincoquan );
+			unset ( $sheet );
+			unset ( $data_bc5 );
+			unset ( $data_bc6 );
+			unset ( $data_bc7 );
+			unset ( $data_bc8 );
+			unset ( $data_bc9 );
+			unset ( $rowData );
+			unset ( $_Infor );
+			unset ( $_MBaocao );
+			return $jsonObj;
+		} else {
+			// Báo cáo 3.1
+			// Loop through each row of the worksheet in turn
+			for($row = 1; $row <= $highestRow; $row ++) {
+				// Read a row of data into an array
+				$rowData = $sheet->rangeToArray ( 'A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE );
+				// Insert row data array into your database of choice here
+				$i = $row - 1;
+				if (isset ( $rowData [$i] [1] ) && $rowData [$i] [1] == 'Thuộc lĩnh vực Y tế quản lý') {
+					$tmp = 1;
+					continue;
+				} elseif (isset ( $rowData [$i] [1] ) && $rowData [$i] [1] == 'Y tế các ngành') {
+					$tmp = 2;
+					continue;
+				} elseif (isset ( $rowData [$i] [1] ) && $rowData [$i] [1] == 'Y tế tư nhân') {
+					$tmp = 3;
+					continue;
+				}
+				if ($tmp == 0) {
+					$jsonObj = false;
+					continue;
+				} elseif ($tmp == 1) {
+					if (isset ( $rowData [$i] [1] ) && $rowData [$i] [1] != '') {
+						$data = array (
+								'Cosoyte' => $rowData [$i] [1],
+								'BV_Coso' => $rowData [$i] [2],
+								'BV_KH' => $rowData [$i] [3],
+								'BV_Thucke' => $rowData [$i] [4],
+								'PK_Coso' => $rowData [$i] [5],
+								'PK_Giuongbenh' => $rowData [$i] [6],
+								'NHS_Coso' => $rowData [$i] [7],
+								'NHS_Giuongbenh' => $rowData [$i] [8],
+								'TYT_Coso' => $rowData [$i] [9],
+								'TYT_Giuongbenh' => $rowData [$i] [10],
+								'CSK_Coso' => $rowData [$i] [11],
+								'CSK_Giuongbenh' => $rowData [$i] [12],
+								'Linhvuc' => 'Thuộc lĩnh vực Y tế quản lý',
+								'KynopId' => $_kynopid,
+								'Namhoatdong' => $_namhoatdong 
+						);
+						$_MBaocao->addObj ( 'tbl_bch_3', $data );
+						$jsonObj = true;
+					}
+				} elseif ($tmp == 2) {
+					if (isset ( $rowData [$i] [1] ) && $rowData [$i] [1] != '') {
+						$data = array (
+								'Cosoyte' => $rowData [$i] [1],
+								'BV_Coso' => $rowData [$i] [2],
+								'BV_KH' => $rowData [$i] [3],
+								'BV_Thucke' => $rowData [$i] [4],
+								'PK_Coso' => $rowData [$i] [5],
+								'PK_Giuongbenh' => $rowData [$i] [6],
+								'NHS_Coso' => $rowData [$i] [7],
+								'NHS_Giuongbenh' => $rowData [$i] [8],
+								'TYT_Coso' => $rowData [$i] [9],
+								'TYT_Giuongbenh' => $rowData [$i] [10],
+								'CSK_Coso' => $rowData [$i] [11],
+								'CSK_Giuongbenh' => $rowData [$i] [12],
+								'Linhvuc' => 'Y tế các ngành',
+								'KynopId' => $_kynopid,
+								'Namhoatdong' => $_namhoatdong 
+						);
+						$_MBaocao->addObj ( 'tbl_bch_3', $data );
+						$jsonObj = true;
+					}
+				} elseif ($tmp == 3) {
+					if (isset ( $rowData [$i] [1] ) && $rowData [$i] [1] != '') {
+						$data = array (
+								'Cosoyte' => $rowData [$i] [1],
+								'BV_Coso' => $rowData [$i] [2],
+								'BV_KH' => $rowData [$i] [3],
+								'BV_Thucke' => $rowData [$i] [4],
+								'PK_Coso' => $rowData [$i] [5],
+								'PK_Giuongbenh' => $rowData [$i] [6],
+								'NHS_Coso' => $rowData [$i] [7],
+								'NHS_Giuongbenh' => $rowData [$i] [8],
+								'TYT_Coso' => $rowData [$i] [9],
+								'TYT_Giuongbenh' => $rowData [$i] [10],
+								'CSK_Coso' => $rowData [$i] [11],
+								'CSK_Giuongbenh' => $rowData [$i] [12],
+								'Linhvuc' => 'Y tế tư nhân',
+								'KynopId' => $_kynopid,
+								'Namhoatdong' => $_namhoatdong 
+						);
+						$_MBaocao->addObj ( 'tbl_bch_3', $data );
+						$jsonObj = true;
+					}
+				}
+			}
+			unset ( $sheet );
+			unset ( $data );
+			unset ( $rowData );
+			return $jsonObj;
+		}
+	}
+}

@@ -1,0 +1,118 @@
+<?php
+/************
+ * Create by Phadh
+ */
+include 'PublicdetailController.php';
+class TaibiensinhsanController extends PublicdetailController {
+	private $_MTaibiensinhsan;
+	private $_Tentaibien;
+	private $_Taibiensinhsan = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MTaibiensinhsan = new Model_Taibiensinhsan ();
+
+		if (isset ( $_REQUEST ['Tentaibien'] ) && $_REQUEST ['Tentaibien'] != '') {
+			$this->_Tentaibien = $_REQUEST ['Tentaibien'];
+			$this->_Taibiensinhsan = array (
+					'Tentaibien' => $_REQUEST ['Tentaibien']
+			);
+		}
+	}
+	     
+	// check login
+	
+	
+	
+	public function indexAction() {
+		
+	}
+	
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MTaibiensinhsan->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MTaibiensinhsan->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi tai bien sinh san
+	
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		 
+		$dup = $this->_MTaibiensinhsan->dupliObj(0,$this->_Tentaibien);
+		if($dup >0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên tai biến  này đã có!');
+			</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj=json_encode($jsonObj);
+		}else{
+			$this->_MTaibiensinhsan->addObj($this->_Taibiensinhsan);
+			$jsonObj["success"]=true;
+		return $this->view->jsonObj=json_encode($jsonObj);
+	}
+	}
+	
+	// sua tai bien sinh san
+	
+	public function updateAction(){
+		$id = $this->_getParam('id');
+		$Tentaibien = $_REQUEST ['Tentaibien'];
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MTaibiensinhsan->dupliObj($id,$Tentaibien);
+		if($dup>0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên tai biến này đã có!');
+			</script>";
+			$jsonObj["sunccess"]=false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}else{
+			$this->_MTaibiensinhsan->updateObj($id, $this->_Taibiensinhsan);
+			$jsonObj["success"]=true;
+		}
+		return $this->view->jsonObj=json_encode($jsonObj);
+	}
+	
+	// xoa du lieu tai bien sinh san
+	
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MTaibiensinhsan->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

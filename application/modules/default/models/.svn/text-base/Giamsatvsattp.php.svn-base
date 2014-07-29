@@ -1,0 +1,93 @@
+<?php
+class Model_Giamsatvsattp{
+	protected $db;
+	public function __construct(){
+		$this->db =Zend_Registry::get("db");
+	}
+	// hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order ,$offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblgiamsatvsattp WHERE ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("	SELECT Id, ThongtincoquanId, Tencoso, Diachi, Chusohuu, Loaihinhkinhdoanh, Ketqua, 
+									DATE_FORMAT(Ngaykiemtra ,'%d/%m/%Y') AS Ngaykiemtra, Phat,
+									IF(Phat = 1, 'on', '') AS Phattien, Sotienphat, Nguoiphat, Ghichu
+									FROM tblgiamsatvsattp WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	//them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tblgiamsatvsattp', $data);
+		return $Id;
+	}
+	
+	//cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tblgiamsatvsattp', $data, 'Id= '.$id);
+		return $Id;
+	}
+	
+	// xao du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tblgiamsatvsattp', 'Id= '.$id);
+		return $Id;
+	}
+	
+	// tim kiem 
+	public function searObj($sTencoso, $sLoaihinhKD, $sKetqua, $sNgaykiemtra, $sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		if($sKetqua == "Tatca"){
+			$sKetqua = '';
+			$where = "Tencoso LIKE '%$sTencoso%'";
+			if($sLoaihinhKD != '')
+				$where = $where."AND Loaihinhkinhdoaanh LIKE '%$sLoaihinhKD%'";
+			if($sNgaykiemtra != '')
+				$where = $where."AND Ngaykiemtra = '$sNgaykiemtra'";
+		}else{
+			$where = "Tencoso LIKE '%$sTencoso%'";
+			if($sLoaihinhKD != '')
+				$where = $where."AND Loaihinhkinhdoaanh LIKE '%$sLoaihinhKD%'";
+			if($sNgaykiemtra != '')
+				$where = $where."AND Ngaykiemtra = '$sNgaykiemtra'";
+			if($sKetqua != '')
+				$where = $where."AND Ketqua = '$sKetqua'";
+		}
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblgiamsatvsattp WHERE ThongtincoquanId = $thongtincoquanId AND $where AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, Tencoso, Diachi, Chusohuu, Loaihinhkinhdoanh, Ketqua, 
+									DATE_FORMAT(Ngaykiemtra ,'%d/%m/%Y') AS Ngaykiemtra, Phat,
+									IF(Phat = 1, 'on', '') AS Phattien, Sotienphat, Nguoiphat, Ghichu
+									FROM tblgiamsatvsattp WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// in danh sach giam sat ve sinh an toan thuc pham
+	public function getds($sTencoso, $sLoaihinhKD, $sKetqua, $sNgaykiemtra, $thongtincoquanId, $namhoatdong){
+		if($sKetqua == "Tatca"){
+			$sKetqua = '';
+			$where = "Tencoso LIKE '%$sTencoso%'";
+			if($sLoaihinhKD != '')
+				$where = $where."AND Loaihinhkinhdoaanh LIKE '%$sLoaihinhKD%'";
+			if($sNgaykiemtra != '')
+				$where = $where."AND Ngaykiemtra = '$sNgaykiemtra'";
+		}else{
+			$where = "Tencoso LIKE '%$sTencoso%'";
+			if($sLoaihinhKD != '')
+				$where = $where."AND Loaihinhkinhdoaanh LIKE '%$sLoaihinhKD%'";
+			if($sNgaykiemtra != '')
+				$where = $where."AND Ngaykiemtra = '$sNgaykiemtra'";
+			if($sKetqua != '')
+				$where = $where."AND Ketqua = '$sKetqua'";
+		}
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, Tencoso, Diachi, Chusohuu, Loaihinhkinhdoanh, Ketqua,
+				DATE_FORMAT(Ngaykiemtra ,'%d/%m/%Y') AS Ngaykiemtra, Phat,
+				IF(Phat = 1, 'X', '') AS Phattien, Sotienphat, Nguoiphat, Ghichu
+				FROM tblgiamsatvsattp WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where");
+				return $query->fetchAll();
+	}
+}

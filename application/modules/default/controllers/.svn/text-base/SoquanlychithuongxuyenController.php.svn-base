@@ -1,0 +1,113 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ * Phadh
+ */
+// Danh sách cán bộ y tế xã phường 
+class SoquanlychithuongxuyenController extends  PublicdetailController{
+	
+	private $_MDscanboytexaphuong;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	
+	public function init(){
+		$this->initValue();
+		$this->_MDscanboytexaphuong;
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+	}
+	
+	public function indexAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		
+		try {
+			$objPHPExcel = new PHPExcel ();
+			$sheet = $objPHPExcel->getActiveSheet ();
+			/*
+			 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+			* tĩnh.
+			*/
+			$sheet->setCellValue('A1', $this->TblThongtincoquanbyId[0]['Tencoquan']);
+			$sheet->mergeCellsByColumnAndRow(0, 1, 3, 1);
+			$helpExport->setStyle_13_TNR_B_L($sheet, 'A1', 'A1');
+			$sheet->setCellValue('A2', "BẢNG TỔNG HỢP CHI THƯỜNG XUYÊN (NGUỒN KP 20 TRIỆU)");
+			$sheet->mergeCellsByColumnAndRow(0, 2, 5, 2);
+			$helpExport->setStyle_15_TNR_B_C($sheet, 'A2', 'A2');
+			
+			$rowStart = 4;
+			$colStart = 'A';
+			$rowIndex = $rowStart;
+			$colIndex = $colStart;
+			$sheet = $objPHPExcel->getActiveSheet ();
+			// set kich thuc cho tung cot, dong
+			$sheet->getColumnDimension('A')->setWidth(15.38);
+			$sheet->getColumnDimension('B')->setWidth(18.13);
+			$sheet->getColumnDimension('C')->setWidth(51);
+			$sheet->getColumnDimension('D')->setWidth(16);
+			$sheet->getColumnDimension('E')->setWidth(14.50);
+			$sheet->getColumnDimension('F')->setWidth(15.25);
+			$sheet->getRowDimension('1')->setRowHeight(19.5);
+			$sheet->getRowDimension('2')->setRowHeight(22.5);
+			
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ngày tháng cấp', $colIndex );
+			$sheet->mergeCellsByColumnAndRow(0, $rowIndex, 0, ($rowIndex+1));
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số tiền được cấp', $colIndex );
+			$sheet->mergeCellsByColumnAndRow(1, $rowIndex, 1, ($rowIndex+1));
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Nội dung chi', $colIndex );
+			$sheet->mergeCellsByColumnAndRow(2, $rowIndex, 2, ($rowIndex+1));
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số chứng từ', $colIndex );
+			$sheet->mergeCellsByColumnAndRow(3, $rowIndex, 3, ($rowIndex+1));
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số tiền chi', $colIndex );
+			$sheet->mergeCellsByColumnAndRow(4, $rowIndex, 4, ($rowIndex+1));
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tồn', $colIndex );
+			$sheet->mergeCellsByColumnAndRow(5, $rowIndex, 5, ($rowIndex+1));
+			$helpExport->setStyle_11_TNR_B_C($sheet, $colStart.$rowIndex, $colIndex.$rowIndex);
+			
+			$rowIndex += 2;
+			$colIndex = $colStart;
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '4', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '5', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '6', $colIndex );
+			$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+			
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'F' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'F' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			
+			$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+			$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+			$pageMargin = $sheet->getPageMargins();
+			$pageMargin->setTop(.5);
+			$pageMargin->setLeft(.7);
+			$pageMargin->setRight(.7);
+			header ( 'Content-Type: application/vnd.ms-excel' );
+			header ( 'Content-Disposition: attachment;filename="YTXP_BTHCTX(' . date ( "d/m/Y" ) . ').xls"' );
+			header ( 'Cache-Control: max-age=0' );
+			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+			$objWriter->save ( 'php://output' );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Exception: Export Excel!');
+					</script>";
+		}
+	}
+	
+	
+}

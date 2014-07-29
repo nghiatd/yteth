@@ -1,0 +1,443 @@
+<?php 
+include 'PublicdetailController.php';
+
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class ChantaymiengController extends PublicdetailController
+{
+	private $_MChantaymieng;
+	private $_ThongtincoquanId;
+	private $_Namhethong;
+	private $_Ngaykhoiphat;
+	private $_NhansuId;
+	private $_NhankhauId;
+	private $_Codihoc;
+	private $_Laymauvakqxn;
+	private $_Loaicabenh;
+	private $_PhandoLS;
+	private $_Sophieukcb;
+	private $_Namhoatdong;
+	private $_Chantaymieng=array();
+	private $_Tenbophan;
+	private $_MHistory;
+	public function init()
+	{
+		$this->initValue ();
+		$this->_MChantaymieng = new Model_Chantaymieng();
+		$this->_MBophan = new Model_Bophan();
+		$this->_MHistory = new Model_History();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhethong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		if(isset($_REQUEST['Ngaykhoiphat']) && $_REQUEST['Ngaykhoiphat']!="")
+		{
+			$this->_PhandoLS = $_REQUEST ["PhandoLS"];
+			$this->_Sophieukcb = $_REQUEST ["Sophieukcb"];
+			$this->_Ngaykhoiphat=$_REQUEST['Ngaykhoiphat'];
+			$this->_NhansuId=$_REQUEST['NhansuId'];
+			$this->_NhankhauId=$_REQUEST['NhankhauId'];
+			$this->_Codihoc=$_REQUEST['Codihoc'];
+			$this->_Laymauvakqxn=$_REQUEST['Laymauvakqxn'];
+			$this->_Loaicabenh=$_REQUEST['Loaicabenh'];
+			$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+			$this->_ThongtincoquanId=$this->TblThongtincoquanbyId [0] ['Id'];
+		}
+		$this->_Ngaykhoiphat = (isset ( $_REQUEST ["Ngaykhoiphat"] ) && $_REQUEST ["Ngaykhoiphat"] != "") ? $_REQUEST ["Ngaykhoiphat"] : "";
+		if ($this->_Ngaykhoiphat != '') {
+			list ( $date, $month, $year ) = explode ( "/", $this->_Ngaykhoiphat );
+			$this->_Ngaykhoiphat = $year . '-' . $month . '-' . $date;
+		}
+		$this->_Chantaymieng = array (
+			'Sophieukcb' => $this->_Sophieukcb,
+			'PhandoLS' => $this->_PhandoLS,
+			'Ngaykhoiphat' => $this->_Ngaykhoiphat,
+			'NhansuId' => $this->_NhansuId,
+			'NhankhauId' => $this->_NhankhauId,
+			'Codihoc' => $this->_Codihoc,
+			'Laymauvakqxn'=>$this->_Laymauvakqxn,
+			'Loaicabenh'=>$this->_Loaicabenh,
+			'Namhoatdong' => $this->_Namhoatdong,
+			'ThongtincoquanId' => $this->_ThongtincoquanId
+		);
+	}
+
+	public function indexAction()
+	{
+		
+	}
+	public function jsonAction() {
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_MChantaymieng->getFetObj($sort, $order, $offset, $rows, $this->_ThongtincoquanId, $this->_Namhethong));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$vactm = $this->_getParam('idctm');
+		$dupli = $this->_MChantaymieng->duplibynhankhau( $this->_NhankhauId, $this->_ThongtincoquanId, $this->_Namhethong );
+		if ($dupli > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Bệnh nhân này đã chết, không thể thực hiện khám chữa bệnh!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}		
+		$dup=$this->_MChantaymieng->dupliObj($vactm,$this->_Sophieukcb,$this->_Ngaykhoiphat,$this->_ThongtincoquanId);
+		if($dup>0)
+		{
+			echo "<script type=\"text/javascript\">
+			    alert('Phiếu khám bệnh của bệnh nhân này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		else
+		{
+			$id=$this->_MChantaymieng->updateObj($vactm, $this->_Chantaymieng);
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblchantaymieng', 'Sửa', $this->UserIP );
+			$jsonObj["success"]=true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$dupli = $this->_MChantaymieng->duplibynhankhau ( $this->_NhankhauId, $this->_ThongtincoquanId, $this->_Namhethong );
+		if ($dupli > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Bệnh nhân này đã chết, không thể thực hiện khám chữa bệnh!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		$dup=$this->_MChantaymieng->dupliObj(0,$this->_Sophieukcb,$this->_Ngaykhoiphat,$this->_ThongtincoquanId);
+		if($dup>0)
+		{
+			echo "<script type=\"text/javascript\">
+			    alert('Phiếu khám của bệnh nhân này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		else
+		{
+			$id=$this->_MChantaymieng->AddObj($this->_Chantaymieng);
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblchantaymieng', 'Sửa', $this->UserIP );
+			$jsonObj["success"]=true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );;
+	}
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_MChantaymieng->DelObj ( $item['Id'] );
+				$jsonObj = array (
+						'success' => true
+				);
+			}
+		}
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblhiv', 'Xóa', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function searAction() {
+		$this->_helper->layout ()->disableLayout ();
+	
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$sgioitinh = $this->_getParam ( 'sGioitinh' );
+		$sthonto = $this->_getParam ( 'sThonto' );
+		$sloaicabenh=$this->_getParam('sLoaicabenh');
+		$snguoibenh = $this->_getParam ( 'sTnb' );
+		$snguoikham = $this->_getParam ( 'sNs' );
+		$sngaynhapvien = $this->_getParam ( 'sNgaynhapvien' );
+	
+		if ($sngaynhapvien != '') {
+			$sngaynhapvien = $this->convertDateSearch ( $sngaynhapvien );
+		}	
+		//$jsonObj = json_encode ( $this->_MChantaymieng->searObj ($snguoibenh, $snguoikham,$sloaicabenh, $sngaynhapvien, $sgioitinh, $sthonto, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'], $sort, $order, $offset, $rows ) );
+		$jsonObj=json_encode($this->_MChantaymieng->searObj($snguoibenh, $snguoikham, $sngaynhapvien, $sgioitinh, $sthonto,$sloaicabenh, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'], $sort, $order, $offset, $rows));
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//in ra danh sach benh nhan chan tay mieng
+	public function printdsAction()
+	{
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$maphieuhiv = $this->_getParam ( 'Id' );
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$sgioitinh = $this->_getParam ( 'sGioitinh' );
+		$sthonto = $this->_getParam ( 'sThonto' );
+		$sloaicabenh=$this->_getParam('sLoaicabenh');
+		$snguoibenh = $this->_getParam ( 'sTnb' );
+		$snguoikham = $this->_getParam ( 'sNs' );
+		$sngaynhapvien = $this->_getParam ( 'sNgaynhapvien' );
+	
+		if ($sngaynhapvien != '') {
+			$sngaynhapvien = $this->convertDateSearch ( $sngaynhapvien );
+		}
+		$colIndex = '';
+		$rowIndex = 0;
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+		/*
+		 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+		* tĩnh.
+		*/
+		$sheet->setCellValue ( 'A1', $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+		$sheet->mergeCellsByColumnAndRow ( 0, 1, 4, 1 );
+		$helpExport->setStyle_13_TNR_B_L ( $sheet, 'A1', 'A1' );
+		$sheet->setCellValue ( 'F1', 'Mẫu số 2 ban hành kèm theo Quyết định số 581/QĐ-BYT ngày 24/02/2012 của Bộ Y tế' );
+		$sheet->mergeCellsByColumnAndRow ( 5, 1, 17, 1 );
+		$helpExport->setStyle_11_TNR_B_C ( $sheet, 'A1', 'A1' );
+		$sheet->setCellValue ( 'B3','DANH SÁCH CÁC BỆNH NHÂN TAY CHÂN MIỆNG '. $this->TblThongtincoquanbyId [0] ['Namhoatdong'] );
+		$sheet->mergeCellsByColumnAndRow ( 1, 3, 17, 3 );
+		$helpExport->setStyleTitleDoc ( $sheet, 'B3', 'B3' );
+	
+		$rowStart = 4;
+		$colStart = 'A';
+		$rowIndex = $rowStart;
+		$colIndex = $colStart;
+		$sheet = $objPHPExcel->getActiveSheet ();
+		// BEGIN set width for column
+		$sheet->getColumnDimension ( 'A' )->setWidth ( 5 );
+		$sheet->getColumnDimension ( 'B' )->setWidth ( 11 );
+		$sheet->getColumnDimension ( 'C' )->setWidth ( 6.8 );
+		$sheet->getColumnDimension ( 'D' )->setWidth ( 5.3 );
+		$sheet->getColumnDimension ( 'E' )->setWidth ( 5 );
+		$sheet->getColumnDimension ( 'F' )->setWidth ( 7 );
+		$sheet->getColumnDimension ( 'G' )->setWidth ( 8 );
+		$sheet->getColumnDimension ( 'H' )->setWidth ( 7.71 );
+		$sheet->getColumnDimension ( 'I' )->setWidth ( 7.14 );
+		$sheet->getColumnDimension ( 'J' )->setWidth ( 7.86 );
+		$sheet->getColumnDimension ( 'K' )->setWidth ( 7.29 );
+		$sheet->getColumnDimension ( 'L' )->setWidth ( 10.57 );
+		$sheet->getColumnDimension ( 'M' )->setWidth ( 5.71 );
+		$sheet->getColumnDimension ( 'N' )->setWidth ( 8 );
+		$sheet->getColumnDimension ( 'O' )->setWidth ( 7.3 );
+		$sheet->getColumnDimension ( 'P' )->setWidth ( 8 );
+		$sheet->getColumnDimension ( 'Q' )->setWidth ( 7.14 );
+		$sheet->getColumnDimension ( 'R' )->setWidth ( 7.3 );
+	
+		// END set width for column
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(0, $rowIndex, 0, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Họ và tên bệnh nhân', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(1, $rowIndex, 1, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tuổi', 'D' );
+		$sheet->mergeCellsByColumnAndRow(2, $rowIndex, 3, ($rowIndex ));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Giới tính', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(4, $rowIndex, 4, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Địa chỉ nơi khởi phát', 'I' );
+		$sheet->mergeCellsByColumnAndRow(5, $rowIndex, 8, ($rowIndex ));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ngày khởi phát', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(9, $rowIndex, 9, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ngày nhập viện', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(10, $rowIndex, 10, $rowIndex+1);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Nơi điều trị (Tại nhà hoặc tên CSYT)', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(11, $rowIndex, 11, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Phân độ LS (b)', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(12, $rowIndex, 12, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Có đi học (c)', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(13, $rowIndex, 13, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Loại ca bệnh (d)', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(14, $rowIndex, 14, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Lấy mẫu và KQXN (e)', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(15, $rowIndex, 15, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ngày ra viện/ Tử vong', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(16, $rowIndex, 16, ($rowIndex + 1));
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Kết quả điều trị (f)', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(17, $rowIndex, 17, ($rowIndex + 1));
+		$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . ($rowIndex + 1) );
+		$sheet->getRowDimension('5')->setRowHeight(60);
+		$sheet->setCellValue('C5', 'Tháng');
+		$sheet->setCellValue('D5', 'Năm');
+		$sheet->setCellValue('F5', 'Số nhà/ đường');
+		$sheet->setCellValue('G5', 'Xã/ Phường');
+		$sheet->setCellValue('H5', 'Huyện/ Quận');
+		$sheet->setCellValue('I5', 'Tỉnh/ Thành phố');
+		$helpExport->setStyle_11_TNR_B_C($sheet, 'C5', 'D5');
+		$helpExport->setStyle_11_TNR_B_C($sheet, 'F5', 'I5');
+		// Lấy dữ liệu
+		$jsonObj = $this->_MChantaymieng->printviewdschantaymieng($this->TblTinhbytramId[0]['Tentinh'],$this->TblTinhbytramId[0]['Tenhuyen'],$this->TblTinhbytramId[0]['Tenxa'],$this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong']);
+		$rowIndex+=1;
+		if (count ( $jsonObj ) > 0) {
+			$stt=0;
+			// $tempIndex = $rowIndex + 1;
+			foreach ( $jsonObj as $row ) {
+				$rowIndex += 1;
+				$stt ++;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $stt, $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Nhankhau'], $colIndex );
+				if($row['Thang']==NULL)
+				{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				else
+				{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Thang'], $colIndex );
+				}
+				if($row['Nam']==NULL)
+				{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				else
+				{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Nam'], $colIndex );
+				}
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Gioitinh'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Diachi'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Xa'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Huyen'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Tinh'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Ngaykhoiphat'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Ngaynhapvien'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Noidieutri'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['PhandoLS'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Codihoc'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Loaicabenh'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Laymauvakqxn'], $colIndex );
+				if($row['Ngayravien']=="00/00/0000")
+				{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				else
+				{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Ngayravien'], $colIndex );
+				}				
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Ketqua'], $colIndex );
+	
+				$helpExport->setStyle_11_TNR_N_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$helpExport->setStyle_11_TNR_N_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$helpExport->setStyle_Align_Center ( $sheet, 'A' . $rowIndex, 'A' . $rowIndex );
+				$helpExport->setStyle_Align_Center ( $sheet, 'C' . $rowIndex, 'E' . $rowIndex );
+				$helpExport->setStyle_Align_Center ( $sheet, 'M' . $rowIndex, 'M' . $rowIndex );
+			}
+		}
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'R' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'R' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+	
+		$rowIndex += 1;
+		$sheet->setCellValue ('A' . $rowIndex, 'Tổng số người mắc bệnh: ' . (count ( $jsonObj )));
+		$helpExport->setStyle_12_TNR_B_L ( $sheet, 'A' . $rowIndex, 'A' . $rowIndex );
+		$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 4, $rowIndex );
+		
+		$rowIndex += 3;
+		$sheet->setCellValue ('E' . $rowIndex, 'Lãnh đạo Đơn vị ');
+		$helpExport->setStyle_12_TNR_B_C ( $sheet, 'E' . $rowIndex, 'E' . $rowIndex );
+		$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 6, $rowIndex );
+		
+		$sheet->setCellValue ( 'N' . $rowIndex, 'Nhân viên in phiếu:' );
+		$helpExport->setStyle_12_TNR_B_C ( $sheet, 'N' . $rowIndex, 'N' . $rowIndex );
+		$sheet->mergeCellsByColumnAndRow ( 13, $rowIndex, 16, $rowIndex );
+		$rowIndex += 1;
+		$sheet->setCellValue ('N' . $rowIndex, ' (Ký tên) ');
+		$helpExport->setStyle_12_TNR_N_C ( $sheet, 'N' . $rowIndex, 'N' . $rowIndex );
+		$sheet->mergeCellsByColumnAndRow ( 13, $rowIndex, 16, $rowIndex );
+		
+		$sheet->setCellValue ('E' . $rowIndex, ' (Ký tên, đóng dấu) ');
+		$helpExport->setStyle_12_TNR_N_C ( $sheet, 'E' . $rowIndex, 'E' . $rowIndex );
+		$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 6, $rowIndex );
+		
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setOrientation ( PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE );
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4 );
+		$pageMargin = $sheet->getPageMargins ();
+		$pageMargin->setTop ( .5 );
+		$pageMargin->setLeft ( .45 );
+		$pageMargin->setRight ( .2 );
+		////////////////////////////////////////////////////
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="QLYTEXAPHUONG_DSBENHNHANCHANTAYMIENG'.$this->TblThongtincoquanbyId[0]['Tencoquan'].'(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+	public function printctAction()
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$maphieuctm = $this->_getParam('Id');
+		$objReader = PHPExcel_IOFactory::createReader("Excel5");
+		$colIndex = '';
+		$rowIndex = 0;
+		try {
+			if (isset ( $maphieuctm ) && $maphieuctm != '') {
+				$jsonObj = $this->_MChantaymieng->getCT($maphieuctm,$this->TblTinhbytramId[0]['Tentinh'],$this->TblTinhbytramId[0]['Tenhuyen'],$this->TblTinhbytramId[0]['Tenxa'], $this->_ThongtincoquanId, $this->_Namhethong );
+				$objPHPExcel = new PHPExcel ();
+				$objPHPExcel = $objReader->load ( "public/media/temp/chitietctm.xls" );
+				$sheet = $objPHPExcel->getActiveSheet ();
+				/*
+				 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá
+				* trị tĩnh.
+				*/
+				foreach ( $jsonObj as $row ) {
+					$sheet->setCellValue ( "A" . "1", $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+					$sheet->setCellValue ( "B" . "4", $jsonObj [0] ['Mahodan'] );
+					$sheet->setCellValue ( "B" . "5", $jsonObj [0] ['Nhankhau'] );
+					$sheet->setCellValue ( "B" . "6", $jsonObj [0] ['Diachi'].' - '.$jsonObj[0]['Xa'].' - '.$jsonObj[0]['Huyen'].' - '.$jsonObj[0]['Tinh'] );
+					$sheet->setCellValue ( "B" . "7", $jsonObj [0] ['Codihoc'] );
+					$sheet->setCellValue ( "G" . "7", $jsonObj [0] ['Gioitinh'] );
+					$sheet->setCellValue ( "B" . "8", $jsonObj [0] ['Ngaykhoiphat'] );
+					$sheet->setCellValue ( "G" . "8", $jsonObj [0] ['Ngaysinh'] );
+					$sheet->setCellValue ( "B" . "9", $jsonObj [0] ['Ngaynhapvien'] );
+					$sheet->setCellValue ( "G" . "9", $jsonObj [0] ['Loaicabenh'] );
+					$sheet->setCellValue ( "B" . "10", $jsonObj [0] ['Noidieutri'] );
+					$sheet->setCellValue ( "G" . "10", $jsonObj [0] ['PhandoLS'] );
+					$sheet->setCellValue ( "B" . "11", $jsonObj [0] ['Laymauvakqxn'] );
+					$sheet->setCellValue ( "B" . "12", $jsonObj [0] ['Hoten'] );
+					if($row['Ngayravien']=="00/00/0000")
+					{
+						$sheet->setCellValue ( "B" . "13", '' );
+					}
+					else
+					{
+						$sheet->setCellValue ( "B" . "13", $jsonObj [0] ['Ngayravien'] );
+					}
+					$sheet->setCellValue ( "B" . "14", $jsonObj [0] ['Ketqua'] );
+				}
+				/* Redirect output to a clientâ€™s web browser (Excel5) */
+		
+				header ( 'Content-Type: application/vnd.ms-excel' );
+				header ( 'Content-Disposition: attachment;filename="chitiet_Chantaymieng(' . date ( "d/m/Y" ) . ').xls"' );
+				header ( 'Cache-Control: max-age=0' );
+				$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+				$objWriter->save ( 'php://output' );
+			} else {
+				$objPHPExcel = new PHPExcel ();
+				$sheet = $objPHPExcel->getActiveSheet ();				
+			}
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Exception: Export Excel!');
+					</script>";
+		}
+	}
+}
+?>

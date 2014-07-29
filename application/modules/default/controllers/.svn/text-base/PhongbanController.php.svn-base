@@ -1,0 +1,134 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class PhongbanController extends PublicdetailController{
+	
+	private $_MPhongban;
+	private $_Phongban =array();
+	private $_Tenphongban;
+	private $_MHistory;
+	private $_Thongtincoquanid;
+	private $_Namhoatdong;
+	
+	public function init(){
+		
+		$this->initValue();
+		$this->_MPhongban = new Model_Phongban();
+		$this->_MHistory = new Model_History();
+		$this->_Thongtincoquanid = $this->TblThongtincoquanbyId[0]['Id'];
+		
+	if (isset ( $_REQUEST ['Tenphongban'] ) && $_REQUEST ['Tenphongban'] != '') {
+			$this->_Tenphongban = $_REQUEST ['Tenphongban'];
+			$varNhakho = $_REQUEST ['Nhakho'];
+			$this->_Phongban = array (
+					'Tenphongban' => $_REQUEST ['Tenphongban'],
+					'Diengiai' => $_REQUEST ['Diengiai'],
+					'Nhakho' => $varNhakho,
+					'Namhoatdong' => $this->TblThongtincoquanbyId [0] ['Namhoatdong'],
+					'ThongtincoquanId' =>$this->_Thongtincoquanid 
+			);
+		}
+		
+	}
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function jsonAction(){
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_MPhongban->getFetObj($sort, $order, $offset, $rows, $this->_Thongtincoquanid));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// combobox
+	public function comboAction(){
+		// $Trangthai=1 -> chi hiển thị kho, $Trangthai=2-> hien thi không phải
+		// là kho
+		// $Trangthai=3-> Hiển thị tất cả
+		$Trangthai = $this->_getParam ( 'Trangthai' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MPhongban->getIdandNameObj ( $Trangthai, $this->_Thongtincoquanid, $this->TblThongtincoquanbyId [0] ['Namhoatdong'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function combobyiddonviAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MPhongban->getIdName ( $this->_Thongtincoquanid, $this->TblThongtincoquanbyId [0] ['Namhoatdong'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi du lieu
+	public function addAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MPhongban->dupliObj ( 0, $this->_Tenphongban, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bạn nhập đã có trong dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MPhongban->addObj ( $this->_Phongban );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_bophan', 'Thêm', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// cap nhat du lieu
+	public function updateAction(){
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MPhongban->dupliObj ( $id, $this->_Tenphongban, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bạn nhập đã có trong dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MPhongban->updateObj ( $id, $this->_Phongban );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_bophan', 'Sửa', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// xoa du lieu
+	public function delAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObj = null;
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MPhongban->delObj ( $id );
+		} else {
+			return;
+		}
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+}

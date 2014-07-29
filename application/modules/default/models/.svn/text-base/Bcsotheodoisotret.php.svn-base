@@ -1,0 +1,40 @@
+<?php
+class Model_Bcsotheodoisotret{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	public function getSTDSR($thongtincoquanid, $Namhethong){
+		$str_query = "SELECT Id, (SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten, 
+				IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nam', ($Namhethong 
+				- (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nam, 
+				
+				IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nữ', ($Namhethong 
+				- (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nu, 
+				
+				(SELECT  concat(Diachi,', ' , (select Tenthonto from tbldm_thonto where id = tblchuhodan.ThontoId))  FROM  tblchuhodan where Mahodan 
+			in (select Mahodan from tblnhankhau where tblnhankhau.Id=tblsotret.NhankhauId)
+			and tblchuhodan.ThongtincoquanId =$thongtincoquanid) as Diachi
+				,
+				(SELECT Nghenghiep FROM tblnhankhau WHERE Id = NhankhauId) AS Nghenghiep, 
+				IF((SELECT Thieuso FROM tbldm_dantoc, tblnhankhau WHERE tbldm_dantoc.Id = tblnhankhau.DantocId AND
+							 tblnhankhau.Id = NhankhauId), 'x' , ' ') AS Dantocitnguoi,
+				(DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang, 
+				
+				IF(Cothai = 1, 'x', ' ') AS Cothai, 
+				IF(Cosot = 1, 'x', ' ') AS Cosot, 
+				Xetnghiemlamquethu, Ketquaxetnghiem, 
+				
+				IF(Ketquadieutri = 'Chuyển viện', 'CV', (IF(Ketquadieutri = 'Khỏi', 'K', 'C'))) AS Ketquadieutri, 
+				Noiphathien, Chuandoan, ThuocSRdieutri, ThuocSRtudieutri, Ghichu, 
+				(SELECT Tencoquan FROM tblthongtincoquan WHERE Id = ThongtincoquanId) AS Thongtincoquan
+				FROM tblsotret WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $Namhethong";
+		$query = $this->db->query( $str_query);
+		return $query->fetchAll();
+	}
+	
+	
+	
+}

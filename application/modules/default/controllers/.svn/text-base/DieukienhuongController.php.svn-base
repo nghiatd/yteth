@@ -1,0 +1,19 @@
+<?php
+include_once 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class DieukienhuongController extends PublicdetailController{
+	private $_MDieukienhuong;
+	public function init(){
+		$this->initValue();
+		$this->_MDieukienhuong = new Model_Dieukienhuong();
+	}
+	// hien thi du lieu com bo
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$chedoid = $this->_getParam('ChedoId');
+		$jsonObj = $this->_MDieukienhuong->getFetObj($chedoid);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+}

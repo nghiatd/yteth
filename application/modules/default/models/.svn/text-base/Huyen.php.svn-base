@@ -1,0 +1,91 @@
+<?php
+/**
+ * 
+ * @author kiên lê
+ *
+ */
+class Model_Huyen
+{
+	protected $db;
+	
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	//phadh sua phan trang
+	public function getFetObj($sort, $order, $offset, $rows) 
+	{
+		$result = array ();
+		$query = $this->db->query ( 'SELECT COUNT(*) AS Total FROM tbldm_huyen' );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ("SELECT h.Id, h.Tenhuyen, h.TinhId, t.Tentinh
+				FROM tbldm_huyen AS h INNER JOIN tbldm_tinh AS t ON h.TinhId = t.Id
+				order by $sort $order limit $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result["rows"]  = $query->fetchAll ();
+		return  $result;	
+		
+	}
+	
+	// Lay Id va Ten
+	public function getIdName() 
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenhuyen FROM tbldm_huyen' );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function getIdNameById($_id) 
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenhuyen FROM tbldm_huyen WHERE Id = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+
+	public function getIdNameByTinhId($_id)
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenhuyen FROM tbldm_huyen WHERE TinhId = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function addObj($tenhuyen, $tinhid) 
+	{
+		$data = array (
+				'Tenhuyen' => $tenhuyen,
+				'TinhId' => $tinhid
+		);
+		$id = $this->db->insert ( 'tbldm_huyen', $data );
+		return $id;
+	}
+	// ten $tentinh doi thanh $Tentinh
+	public function updateObj($id, $Tenhuyen, $tinhid) 
+	{
+		$data = array (
+				'Tenhuyen' => $Tenhuyen,
+				'TinhId' => $tinhid
+		);
+		$this->db->update ( 'tbldm_huyen', $data, 'Id = ' . $id );
+	}
+	
+	public function delObj($id) 
+	{
+		$idDel = $this->db->delete ( 'tbldm_huyen', 'Id = ' . $id );
+		return $idDel;
+	}
+	
+	public function dupliObj($id, $Tenhuyen, $tinhid) 
+	{
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_huyen WHERE 
+				md5(Tenhuyen) = md5('$Tenhuyen') AND TinhId = $tinhid" );
+		if($id != 0){
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_huyen WHERE
+					md5(Tenhuyen) = md5('$Tenhuyen') AND TinhId = $tinhid AND Id != $id" );
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+}

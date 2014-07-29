@@ -1,0 +1,37 @@
+<?php
+/*************
+ * Create by Phadh
+ */
+class Model_BCkehoachhoagiadinh{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	public function getKHHGD($thongtincoquanId, $namhoatdong){
+		$str_query = "SELECT Id, NhankhauId, (DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang,
+			Soconhienco, DatDCTC, DangthuocId, Baocaosu, Trietsan, NhansuId, Ghichu, Taibien,Chet, ThongtincoquanId, Chuyentuyen,
+(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,
+IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nam', ($namhoatdong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nam, 
+IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nữ', ($namhoatdong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nu, 
+(SELECT Mahodan FROM tblnhankhau WHERE Id = NhankhauId) AS Ma,
+(SELECT  concat(Diachi,', ' , (select Tenthonto from tbldm_thonto where id = tblchuhodan.ThontoId))  FROM  tblchuhodan where Mahodan 
+			in (select Mahodan from tblnhankhau where tblnhankhau.Id=tblkehoachhoagiadinh.NhankhauId)
+			and   tblchuhodan.ThongtincoquanId=$thongtincoquanId) as Diachi
+,
+
+(SELECT Nghenghiep FROM tblnhankhau WHERE Id = NhankhauId) AS Nghenghiep,
+(SELECT Hoten FROM tblnhansu WHERE Id = NhansuId) AS Nhansu,
+IF(Baocaosu  = 1, 'x', ' ') AS Baocaosu,
+IF(Trietsan  = 1, 'x', ' ') AS Trietsan,
+IF(Chet  = 1, 'x', ' ') AS Chet,
+IF(DangthuocId IN(SELECT Id FROM tbldm_dangthuoc WHERE Tendangthuoc LIKE '%Thuốc tiêm%'), 'x', ' ') AS Thuoctiem,
+IF(DangthuocId IN(SELECT Id FROM tbldm_dangthuoc WHERE Tendangthuoc LIKE '%Thuốc viên%'), 'x', ' ') AS Thuocvien,
+IF(DangthuocId IN(SELECT Id FROM tbldm_dangthuoc WHERE Tendangthuoc LIKE '%Thuốc cấy%'), 'x', ' ') AS Thuoccay
+ FROM tblkehoachhoagiadinh WHERE ThongtincoquanId = $thongtincoquanId
+			";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

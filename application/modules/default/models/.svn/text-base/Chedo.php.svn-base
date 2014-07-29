@@ -1,0 +1,17 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Chedo{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	// hien thi du lieu combo
+	public function getFetObj(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tenchedo FROM tbldm_chedo");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

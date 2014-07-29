@@ -1,0 +1,23 @@
+<?php if($this->form):?>
+<?php echo $this->form;?>
+<?php endif;?>
+<?php if($this->error):?>
+                        	<?php foreach ($this->error as $value):?>
+                        		<?php foreach ($value as $v):?>
+                        		<?php if(!is_array($v)):?>
+<span style="color: red; font-size: 14px;"><?php echo $v?></span>
+<br>
+<?php endif;?>	
+                        		<?php endforeach;?>
+                        	<?php endforeach;?>
+                        <?php endif;?>
+                        <?php if($this->error['captcha']):?>
+                        	<?php foreach ($this->error['captcha'] as $value):?>
+                        		<?php foreach ($value as $v):?>
+                        		<?php if(!is_array($v)):?>
+<span style="color: red; font-size: 14px;"><?php print_r( $v)?></span>
+<br>
+<?php endif;?>	
+                        		<?php endforeach;?>
+                        	<?php endforeach;?>
+                        <?php endif;?>

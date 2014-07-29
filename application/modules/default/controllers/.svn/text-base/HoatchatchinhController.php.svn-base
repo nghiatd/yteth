@@ -1,0 +1,135 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class HoatchatchinhController extends PublicdetailController {
+	private $_MHoatchat;
+	private $_Tenhoatchat;
+	private $_Chucnang;
+	private $_Ghichu;
+	private $_Hoatchat = array ();
+	
+	public function init() {
+		$this->initValue ();
+		$this->_MHoatchat = new Model_Hoatchatchinh();
+		
+		if (isset ( $_REQUEST ['Tenhoatchat'] ) && $_REQUEST ['Tenhoatchat'] != '') {
+			$this->_Tenhoatchat = $_REQUEST ['Tenhoatchat'];
+			if(isset ( $_REQUEST ['Chucnang'] ) && $_REQUEST ['Chucnang'] != ''){
+				$this->_Chucnang = $_REQUEST ['Chucnang'];
+			}
+			if(isset ( $_REQUEST ['Ghichu'] ) && $_REQUEST ['Ghichu'] != ''){
+				$this->_Ghichu = $_REQUEST ['Ghichu'];
+			}
+			$this->_Hoatchat = array (
+					'Tenhoatchat' => $_REQUEST ['Tenhoatchat'] ,
+					'Chucnang' => $_REQUEST['Chucnang'],
+					'Ghichu' => $_REQUEST['Ghichu']
+			);
+		}
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MHoatchat->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra về Id và Tên của đối tượng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MHoatchat->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MHoatchat->dupliObj ( 0, $this->_Tenhoatchat );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên hoạt chất này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MHoatchat->addObj ( $this->_Hoatchat );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MHoatchat->dupliObj ( $id, $this->_Tenhoatchat );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên hoạt chất này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MHoatchat->updateObj ( $id, $this->_Hoatchat );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MHoatchat->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

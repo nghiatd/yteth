@@ -1,0 +1,287 @@
+<?php echo $this->doctype(); ?>
+<html lang="vi">
+<div id="nav-menu-top" class="nav-menu-top">
+	<ul>
+   <li class='has-sub'><a href='#'><span>Báo cáo nhân sự</span></a>
+   	  <ul>
+   	  	 <li class='has-sub'><a href="#">Báo cáo nhân sự</a>
+   	  	 	<ul>
+   	  	 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bclaodongsoyte">Danh sách lao động sở y tế</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcnhanlucytethonban">Nhân lực y tế thôn, bản</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcnlytkdnvncl">Nhân viên lực y tế khối doanh nghiệp và ngoài công lập</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctochucytehuyenxa">Tổ chức y tế huyện xã</a></li>
+   	  	 	</ul>
+   	  	 </li>
+   	  	 <li class='has-sub'><a href="#">Báo cáo bảo hiểm nhân sự</a>
+   	  	 	<ul>
+   	  	 		 <li class='has-sub'><a href="#">Báo cáo bảo hiểm xã hội</a>
+   	  	 		 	<ul>
+   	  	 		 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdscaplaisobaohiem">Danh sách cấp lại sổ BHXH</a></li>
+   	  	 		 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienchuacosobhxh">Danh sách nhân viên chưa có sổ bảo hiểm xã hội</a></li>
+   	  	 		 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienthamgiabhxh">Danh sách nhân viên tham gia bảo hiểm xã hội</a></li>
+				         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienthamgiabhxhchitiet">Danh sách nhân viên tham gia bảo hiểm xã hội (chi tiết)</a></li>
+				         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienthamgiabhxhtonghop">Danh sách nhân viên tham gia bảo hiểm xã hội (tổng hợp)</a></li>
+				         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdschithamgiabhxhtn">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện</a></li>
+				         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsthamgiabhxhtntang">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện (tăng)</a></li>
+				         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsthamgiabhxhtngiam">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện (đóng lại)</a></li>
+				         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsthamgiabhxhtndongtiep">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện (đóng tiếp)</a></li>
+   	  	 		 	</ul>
+   	  	 		 </li>
+   	  	 		 <li class='has-sub'><a href="#">Báo cáo bảo hiểm y tế</a>
+   	  	 		 	<ul>
+   	  	 		 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdschithamgiabhyttang">Danh sách nhân viên chỉ tham gia BHYT (tăng)</a></li>
+   	  	 		 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdscapthebaohiem">Danh sách cấp thẻ BHYT</a></li>
+   	  	 		 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienchuacobhyt">Danh sách nhân viên chưa có bảo hiểm y tế</a></li>
+		         		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdschithamgiabhytgiam">Danh sách nhân viên chỉ tham gia BHYT (giảm)</a></li>
+		         		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdieuchinhbhyt">Danh sách điều chỉnh mức đóng cho người chỉ tham gia BHYT</a></li>
+   	  	 		 	</ul>
+   	  	 		 </li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdclaodongvamucbhxh">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Lao động tăng)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdclaodongvamucbhxhgiam">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Lao động giảm)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdclaodongvamucbhxhluong">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Thay đổi lương)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdclaodongvamucbhxhbosung">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Bổ sung BHXH)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdclaodongvamucbhxhbsbhyt">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Bổ sung BHYT)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdclaodongvamucbhxhtonghop">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Tổng hợp chung)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongthamgiabh">Danh sách lao động tham gia BHYT, BHXH (Tăng)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongthamgiabhgiam">Danh sách lao động tham gia BHYT, BHXH (Giảm)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdenghithaydoi">Danh sách đề nghị thay đổi thông tin của người tham gia không thay đổi mức đóng</a></li>
+		         
+   	  	 	</ul>
+   	  	 </li>
+   	  	 <li class='has-sub'><a href="#">Báo cáo nhân sự nghỉ chế độ</a>
+   	  	 	<ul>
+   	  	 		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdsphskomdau">Danh sách người lao động đề nghị hưởng DSPHSK sau ốm đau</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdsphskomdautiep">Danh sách người lao động đề nghị hưởng DSPHSK sau ốm đau (tiếp)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdsphskthaisan">Danh sách người lao động đề nghị hưởng DSPHSK sau thai sản</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdenghithaisan">Danh sách người lao động đề nghị hưởng chế độ thai sản</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdenghithaisantt">Danh sách người lao động đề nghị hưởng chế độ thai sản(tránh thai)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdenghiomdau">Danh sách người lao động đề nghị hưởng chế độ ốm đau (con ốm)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdslaodongdenghiomdaukt">Danh sách người lao động đề nghị hưởng chế độ ốm đau (kham thai)</a></li>
+   	  	 	</ul>
+   	  	 </li> 
+         <li class='has-sub'><a href="#">Báo cáo danh hiệu nhân sự </a>
+         	<ul>
+         		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdenghittnd">Danh sách trích ngang đề nghị xét tặng danh hiệu TTND</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdenghittut">Danh sách trích ngang đề nghị xét tặng danh hiệu TTƯT</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcquatrinhdaotao">Quá trình đào tạo, bồi dưỡng học về chuyên môn</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctomtathsttnd">Tóm tắt hồ sơ cá nhân đề nghị xét danh hiệu TTND</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctomtathsttut">Tóm tắt hồ sơ cá nhân đề nghị xét danh hiệu TTUT</a></li>
+         	</ul>
+         </li>
+         <li class='has-sub'><a href="#">Báo cáo tổng hợp </a>
+         	<ul>
+         		 <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsnhanvienchuacosld">Danh sách nhân viên chưa có sổ lao động</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/quatrinhlamviec">Quá trình làm việc</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/quatrinhdaotao">Quá trình đào tạo</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dschuongtrinhdaotao">Danh sách chương trình đào tạo</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbangkedanhsachnhanvien">Bảng kê danh sách nhân viên </a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienhuongcs">Danh sách nhân viên hưởng chính sách</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsnhanvienduocnangluong">Danh sách cán bộ, viên chức được nâng lương</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsdotkhenthuong">Danh sách các đợt khen thưởng</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dsdotkyluat">Danh sách các đợt kỷ luật</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdenghinangluong">Danh sách cán bộ, nhân viên đề nghị nâng bậc lương thường xuyên</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsdenghinangluonghd">Danh sách cán bộ, nhân viên đề nghị nâng bậc lương thường xuyên (hợp đồng)</a></li>
+		         <li class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbangketncn">Bảng kê thu nhập chịu thuế và thuế thu nhập cá nhân</a></li>
+         	</ul>
+         </li>
+      </ul>
+   </li>
+   <li class='has-sub'><a href='#'><span>Báo cáo dân số</span></a>
+		<ul>
+			<li  class='has-sub'><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bchanhchinhdansosinhtu">Đơn vị hành chính, dân số và tình hình sinh tử</a></li>
+		</ul>
+   </li>
+   <li class='has-sub'><a href='#'><span>Báo cáo khám bệnh</span></a>
+		<ul>
+			<li class='has-sub'><a href='#'><span>Báo cáo</span></a>
+			 	<ul>
+					 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bchoatdongchamsoc">Hoạt động chăm sóc bà mẹ, trẻ em và kế hoạch hóa gia đình</a></li>
+					 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bckhambenh">Hoạt động khám chữa bệnh</a></li>
+					 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbenhtruyennhiem">Các bệnh truyền nhiễm gây dịch và bệnh quan trọng</a></li>
+					 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bchoatdongphongchongbenhxahoi">Hoạt động phòng chống bệnh xã hội</a></li>
+					 <li><a href="<?php echo $this->baseUrl();?>/public/mau/bang ke chi phi kham benh chua benh ngoai tru.xls">Bảng kê chi phí khám bệnh, chữa bệnh ngoại trú </a></li>
+					 <li><a href="<?php echo $this->baseUrl();?>/public/mau/bang ke chi phi kham chua benh noi tru.xls">Bảng kê chi phí khám bệnh, chữa bệnh nội trú</a></li>
+					 <li><a href="<?php echo $this->baseUrl();?>/public/mau/bang ke chi phi kham chua benh tai tram y te xa phuong.xls">Bảng kê chi phí khám bệnh, chữa bệnh tại trạm y tế xã, phường</a></li>
+					 
+				</ul>
+			 </li>
+			 <li class='has-sub'><a href='#'><span>Báo cáo BHYT</span></a>
+			 	<ul>
+			 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbhytkcbncdntt">Danh sách người bệnh BHYT khám chữa bệnh ngoại trú đề nghị thanh toán</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctkcpkcbncndt">T/k chi phí KCB ngoại trú các nhóm đối tượng theo tuyến chuyên môn kỹ thuật</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/baocaothcpkcbbhytnt">Tổng hợp chi phí khám chữa bệnh BHYT ngoại trú</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbkdsctbhyt">Bảng kê danh sách chuyển tuyến BHYT</a></li>
+			 	</ul>
+			 </li>
+			 <li class='has-sub'><a href='#'><span>Sổ ghi chép YTCS</span></a>
+			 	<ul>
+			 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctamthan/tamthan">Sổ theo dõi bệnh tâm thần</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcsotheodoisotret/exstdsr">Sổ theo dõi bệnh sốt rét</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcsotheodoituvong/exstdtv">Sổ theo dõi tử vong</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcphathai/phathai">Sổ phá thai</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bckehoachhoagiadinh">Sổ cung cấp dịch vụ kế hoạch hóa gia đình</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcsode/expxlsnstyt">Sổ đẻ</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcsokhamthai/sokhamthai">Sổ khám thai</a></li>
+					<!--<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctiemchunguonvan/expxlstcuv">Sổ tiêm vác xin phòng uốn ván cho phụ nữ</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/Bctiemchung2/tiemchung2">Mẫu sổ tiêm chủng(Viêm não, tả, thương hàn)</a></li>-->
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcsokhambenh/sokhambenh">Sổ khám bệnh</a></li>
+					<!-- <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/Bctiemchung1/bctiemchung">Sổ tiêm chủng miễn dịch cho trẻ em</a></li>-->
+			 	</ul>
+			 </li>
+			 <!-- <li class='has-sub'><a href='#'><span>Sổ ghi chép tổng hợp</span></a>
+			 	<ul>
+			 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/tinhhinhsdthuocbhyt">Tình hình sử dụng thuốc</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/chiphithuoctrongthang">Chi phí thuốc theo tháng</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bienbankiemketvt">Bản kiêm kê thuốc</a></li>	
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bangquyettoanthuoc">Bảng quyết toán thuốc</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bccungungvasdtvt">Sổ cung ứng thuốc vật tư và sử dụng</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sokiemnhapthcvtytth">Sổ kiểm nhập thuốc vật tư</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sokiemnhapthuoccttt">Sổ kiểm nhập thuốc vật tư theo mục</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/soqlcanboytexaphuong">Sổ quản lý cán bộ y tế</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/soqlsachtailieuchuyenmon">Sổ quản lý sổ sách - tài liệu chuyên môn</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/soqlvthcvlth">Sổ quản lý nhập xuất thuốc vật tư trong năm</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dutruthuocbhyt">Bảng dự trù thuốc</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoicanbodaotaotaphuan">Sổ theo dõi đào tạo, tập huấn cán bộ</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoikqktvsattpccskdtptdb">Sổ quản lý theo dõi vệ sinh thực phẩm</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoinnhiv">Sổ quản lý đối tượng HIV</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoiqlcpbcsbkt">Sổ phát kim tiêm, bcs</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoitruyenthonggiantiep">Sổ theo dõi truyền thông gián tiếp</a></li>
+					<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoitruyenthongtructiep">Sổ theo dõi truyền thông trực tiếp</a></li>
+			 	</ul>
+			 </li>-->
+			 <li class='has-sub'><a href="#">25-2006</a>
+						<ul>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctainanthuongtichquy">Báo cáo tai nạn thương tích theo quý</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctainanthuongtich">Báo cáo tai nạn thương tích theo ngày</a></li>
+						</ul>
+			</li>
+			<!-- <li class='has-sub'><a href="#">40-2006</a>
+						<ul>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/hethongchitieuthongke">Hệ thống chỉ tiêu thông kê ngành y tế</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieutiemchungmr">Danh mục chỉ tiêu tiêm chủng mở rộng và chăm sóc trẻ em</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieudinhduong">Danh mục chỉ tiêu về dinh dưỡng</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuphongvadalieu">Danh mục chỉ tiêu phòng chống phong và dia liễu</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieutamthan">Danh mục chỉ tiêu về tâm thần</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuphongbuouco">Danh mục chỉ tiêu phòng chống bệnh bươu cổ</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuphongsotret">Danh mục chỉ tiêu phòng chống bênh sốt rét</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuphonglaophoi">Danh mục chỉ tiêu phòng chống bệnh lao</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieucosovanhanluc">Danh mục chỉ tiêu cơ sở và nhân lực y tế</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/danhmucchitieudieutri">Danh mục chỉ tiêu điều trị</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieucssk">Danh mục chỉ tiêu về chăm sóc sức khỏe BMTE/KHHGD</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuyhct">Danh mục chỉ tiêu y học cổ truyền</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieutkytqg">Danh mục chỉ tiêu tài khoản y tế quốc gia</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuhoatdongduoc">Danh mục chỉ tiêu về hoạt động dược</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuphongvadalieu">Danh mục chỉ tiêu DL, TNTT và bệnh nghề nghiệp</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuphonghiv">Danh mục chỉ tiêu phòng chống bênh HIV/AIDS</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dmchitieuattp">Danh mục chỉ tiêu về an toàn thực phẩm</a></li>
+						</ul>
+			</li>-->
+			<li class='has-sub'><a href="#">48-2010</a>
+				<ul>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcngaytinhhinhbenhdich">Báo cáo ngày tình hình bệnh dịch</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbenhtruyennhiemtuan">Báo cáo bệnh truyền nhiễm tuần</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbenhsotrettuan">Báo cáo bệnh sốt rét tuần</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctinhhinhbenhtruyennhiemtuan">Báo cáo tình hình bệnh truyền nhiễm tuần</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctinhhinhbenhtruyennhiemthang">Báo cáo tình hình bênh truyền nhiễm tháng</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcbenhsotretthang">Báo cáo bệnh sốt rét tháng</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctonghopbenhtruyennhiemnam">Báo cáo tổng hợp bênh truyền nhiễm 12 tháng</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctongketdichvunam">Báo cáo tổng kết vụ dịch năm</a></li>
+				</ul>
+			</li>
+			<li class='has-sub'><a href="#">Báo cáo Đức Trọng</a>
+				<ul>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcxetnghiemhiv">Báo cáo xét nghiệm HIV</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdanhsachccssuvss">Báo cáo danh sách ca chết sơ sinh, uốn ván sơ sinh hàng tháng</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsbenhnhanlietmemcap">Báo cáo danh sách bệnh nhân liệt mềm cấp tính nghi ngờ bại liệt</a></li>
+							<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctinhinhbenhtruyennhiemtreem">Báo cáo tình hình bệnh truyền nhiễm trẻ em</a></li>
+				</ul>
+			</li>
+		</ul>
+   </li>
+   <li class='has-sub'><a href='#'><span>Báo cáo CTMTQG</span></a></li>
+   <li class='has-sub'><a href='#'><span>Mẫu báo cáo tiêm chủng</span></a>
+		<ul>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctiemchunguonvan/expxlstcuv">Sổ tiêm vác xin phòng uốn ván cho phụ nữ</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/Bctiemchung2/tiemchung2">Mẫu sổ tiêm chủng(Viêm não, tả, thương hàn)</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bchoatdongtiemchungmorong">Hoạt động tiêm chủng mở rộng</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/Bctiemchung1/bctiemchung">Sổ tiêm chủng miễn dịch cho trẻ em</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcketquatiemchungtreem">Báo cáo kết quả tiêm chủng cho trẻ em</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcketquatiemchungchotreem">Báo cáo kết quả tiêm chủng cho trẻ em (tiếp)</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcketquatiemchunguonvan">Báo cáo kết quả tiêm chủng uốn ván cho trẻ em</a></li>
+			 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctinhhinhsudungvsdctc">Báo cáo tình hình sử dụng vắc xin và dụng cụ tiêm chủng</a></li>
+		</ul>
+   </li>
+   <li class='has-sub'><a href='#'><span>Báo cáo thuốc - vật tư</span></a>
+		<ul>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/tinhhinhsdthuocbhyt">Tình hình sử dụng thuốc</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/chiphithuoctrongthang">Chi phí thuốc theo tháng</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bienbankiemketvt">Bản kiêm kê thuốc</a></li>	
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bangquyettoanthuoc">Bảng quyết toán thuốc</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bccungungvasdtvt">Sổ cung ứng thuốc vật tư và sử dụng</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sokiemnhapthcvtytth">Sổ kiểm nhập thuốc vật tư</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sokiemnhapthuoccttt">Sổ kiểm nhập thuốc vật tư theo mục</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/soqlvthcvlth">Sổ quản lý nhập xuất thuốc vật tư trong năm</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/dutruthuocbhyt">Bảng dự trù thuốc</a></li>
+			<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoiqlcpbcsbkt">Sổ phát kim tiêm, bcs</a></li>
+		</ul>
+   </li>
+   <li class='has-sub'><a href='#'><span>Báo cáo Hà Giang</span></a>
+   	  <ul>
+   	  	 <li class='has-sub'><a href="#">Báo cáo khám bệnh</a>
+   	  	 	<ul>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bctonghopkhamchuabenh">Báo cáo tổng hợp khám chữa bệnh YHHD, YHCT</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsnguoibenhlao">Báo cáo danh sách người bệnh lao</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bckqphuchoichucnang">Báo cáo kết quả PHCN cho người tàn tật</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/soquanlybenhnhanungthu">Sổ quản lý bệnh nhân ung thư, hen phế quản</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotaikhamvaxutritaibien">Sổ tái khám và xử trí tai biến</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoibenhnhannghisoi">Sổ theo dõi bệnh nhân nghi sởi</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoikhuyettat">Sổ theo dõi người khuyết tật phụ hồi chức năng</a></li>
+   	  	 		<li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoiquanlyhiv">Sổ theo dõi quản lý người nhiễm HIV/AIDS</a></li>
+   	  	 	</ul>
+   	  	 </li>
+   	  	 <li class='has-sub'><a href="#">Báo cáo mục tiêu quốc gia</a>
+   	  	 	<ul>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsnguoitu80tuoi">Báo cáo danh sách người từ 80 tuổi trở lên</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdstreduoi1tuoi">Báo cáo danh sách trẻ dưới 1 tuổi</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcketquacandotre">Báo cáo kết quả cân đo trẻ từ 2 đến 5 tuổi</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcketquacandouongvitamin">Báo cáo kết quả cân đo và uống vitamin A, thuốc tẩy giun</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcketquagiamsatngodoc">Báo cáo kết quả giám sát ngộ độc thực phẩm</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheoketquavsattp">Sổ theo dõi  kết quả kiểm tra VSATTP</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoichieucaocannang">Sổ theo dõi  cân nặng chiều cao cho trẻ <2 tuổi hàng quý</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoichieucaosuydinhduong">Sổ theo dõi  cân nặng chiều cao cho trẻ < 5 tuổi bị suy dinh dưỡng 1 tháng 1 lần</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcthuctrangctrinhvesinh">Báo cáo thực trạng công trình vệ sinh</a></li>
+   	  	 	</ul>
+   	  	 </li>
+   	  	 <li class='has-sub'><a href="#">Báo cáo tiêm chủng</a>
+   	  	 	<ul>
+   	  	 		 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoitreduoi1tuoitcdd">Sổ theo dõi trẻ duối 1 tuổi tiêm chủng đầy đủ</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotiemchungtreem">Sổ tiêm chủng trẻ em</a></li>
+   	  	 	</ul>
+   	  	 </li> 
+         <li class='has-sub'><a href="#">Báo cáo thuốc vật tư </a>
+         	<ul>
+         		 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdsthuockkhambenh">Báo cáo danh sách thuốc khám chữa bệnh</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/soquanlyvthctieuhao">Sổ quản lý vật tư, hóa chất, vật liêu tiêu hao</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoibosungvattu">Sổ theo dõi bổ sung vật tư tiêu hao cho y tế thôn bản</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoidanhmuctrangthietbiyte">Sổ theo dõi danh mục trang thiết bị y tế</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoittbttuiyte">Sổ theo dõi trang thiết bị trong túi y tế y thôn bản</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/sotheodoicaphattuiyte">Sổ theo dõi cấp phát túi y tế thôn bản và gói đẻ sạch</a></li>
+         	</ul>
+         </li>
+         <li class='has-sub'><a href="#">Báo cáo nhân sự </a>
+         	<ul>
+         		 <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdscanbotaphuan">Báo cáo danh sách cán bộ tham gia đào tạo, tập huấn</a></li>
+		         <li><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcdscongtacviendanso">Báo cáo danh sách cộng tác viên</a></li>
+         	</ul>
+         </li>
+      </ul>
+   </li>
+  </ul>
+</div>
+<?php echo $this->inlineScript()?>
+	<script type="text/javascript">
+ 	</script>
+</html>
+
+ 
+	

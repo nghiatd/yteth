@@ -1,0 +1,66 @@
+<?php
+class Model_Hinhthuctruyenthong
+{
+protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+
+	public function getFetObj($sort,$order,$offset,$rows)
+	{		
+		$result = array ();
+		$query = $this->db->query ("SELECT COUNT(*)AS Total FROM tbldm_hinhthuctruyenthong");
+		$row = $query->fetchAll ();
+		$query=$this->db->query("SELECT Id,Tenhinhthuc, IF(Trangthai=1,'Trực tiếp','Gián tiếp')
+				AS Trangthai FROM tbldm_hinhthuctruyenthong");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function CheckValueObj($id, $tenhinhthuc) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hinhthuctruyenthong WHERE Tenhinhthuc = '$tenhinhthuc'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hinhthuctruyenthong WHERE Id != $id and Tenhinhthuc = '$tenhinhthuc'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function AddObj($data) {
+		$Id = $this->db->insert ('tbldm_hinhthuctruyenthong',$data );
+		return $Id;
+	}
+	
+	public function updateObj($id, $data) {
+		$id=$this->db->update ( 'tbldm_hinhthuctruyenthong', $data, 'Id = ' . $id );
+		return $id; 
+	}
+	
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_hinhthuctruyenthong', 'Id=' . $Id );
+		return $Iddel;
+	}
+	public function getHinhthuc($trangthai)
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id, Tenhinhthuc FROM tbldm_hinhthuctruyenthong WHERE Trangthai='$trangthai'");
+		$result= $query->fetchAll ();
+		return $result;
+	}
+	public function getHinhthucten()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id, Tenhinhthuc FROM tbldm_hinhthuctruyenthong");
+		$result= $query->fetchAll ();
+		return $result;
+	}
+	/*public function getcombo()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id AS ContrungId, Tencontrung FROM tbldm_hinhthuctruyenthong");
+		$result= $query->fetchAll ();
+		return $result;
+	}*/
+}

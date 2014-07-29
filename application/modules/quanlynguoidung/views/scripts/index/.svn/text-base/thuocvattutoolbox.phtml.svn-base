@@ -1,0 +1,47 @@
+<?php echo $this->doctype(); ?>
+<html lang="vi">
+<div id="nav-menu-top">
+	<ul>
+		<li><a href="#">Hệ thống</a>
+			<ul>
+				<li><a href="#">Thay đổi nười dùng</a></li>
+				<li><a href="#">Quản lý nười dùng</a></li>
+				<li><a href="#">Lịch sử thao tác</a></li>
+				<li><a href="#">Sao lưu dữ liệu</a></li>
+				<li><a href="#">Thoát</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Danh mục</a>
+			<ul>
+				<li><a href="#">Danh mục hành chính</a></li>
+				<li><a href="#">Danh mục đối tượng sử dụng</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Quản lý hộ khẩu</a>
+			<ul>
+				<li><a href="#">Quản lý hộ dân</a></li>
+				<li><a href="#">Quản lý nhân khẩu</a></li>
+				<li><a href="#">Giấy khai sinh</a></li>
+				<li><a href="#">Giấy khai tử</a></li>
+				
+			</ul>
+		</li>
+		<li><a href="#">Sổ sách báo cáo</a>
+			<ul>
+				<li><a href="#">Báo cáo</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Trợ giúp</a>
+			<ul>
+				<li><a href="#">Tác giả</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<?php echo $this->inlineScript()?>
+	<script type="text/javascript">
+ 	</script>
+</html>
+
+ 
+	

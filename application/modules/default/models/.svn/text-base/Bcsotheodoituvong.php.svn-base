@@ -1,0 +1,38 @@
+<?php
+class Model_Bcsotheodoituvong{
+	protected $db;
+	public function __construct(){
+		$this->db= Zend_Registry::get("db");
+	}
+	
+	public function getSTDTV($thongtincoquanid, $namhethong){
+		$str_query = "SELECT
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,
+				
+				IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) ='Nam', 
+						($namhethong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nam , 
+						
+				IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nữ', 
+						($namhethong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nu,
+						
+				(SELECT  concat(Diachi,', ' , (select Tenthonto from tbldm_thonto where id = tblchuhodan.ThontoId))  FROM  tblchuhodan where Mahodan 
+					in (select Mahodan from tblnhankhau where tblnhankhau.Id=tblgiaykhaitu.NhankhauId)
+					and tblchuhodan.ThongtincoquanId=$thongtincoquanid) as Diachi,
+			
+				(SELECT Nghenghiep FROM tblnhankhau WHERE Id = NhankhauId) AS Nghenghiep,
+				DATE_FORMAT(Ngaychet, '%d/%m/%Y') AS Ngaychet , 
+				(SELECT Tendiadiem FROM tbldm_diadiem WHERE Id = DiadiemId) AS Noichet, 
+				 
+				IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%trạm y tế%')>= 1, 'TYT', IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Bệnh viện huyện%')>= 1, 'BVH', 
+					IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Bệnh viện tỉnh%')>= 1, 'BVT', IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Bệnh viện trung ương%')>= 1, 'BVTƯ',
+						IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Y tế ngành%')>= 1, 'YTN', IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Tư nhân%')>= 1, 'TN', ' ')))))) AS CSYT,
+				IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Nhà%')>= 1, 'N', ' ') AS Nha, IF((select count(tbldm_diadiem.Id) from tbldm_diadiem where  tbldm_diadiem.Id=tblgiaykhaitu.DiadiemId and tbldm_diadiem.Tendiadiem like '%Khác%')>= 1, 'K', ' ') AS Khac,
+				
+				Nguyennhan, 
+				IF(CBYTChamsoc = 1, 'x', ' ') AS Co,
+				IF(CBYTChamsoc = '', 'x', '') AS Khong, Ghichu FROM tblgiaykhaitu 
+				WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhethong order by DATE(Ngaychet) ASC ";
+		$query = $this->db->query($str_query);
+		return $query->fetchAll();
+	}
+}

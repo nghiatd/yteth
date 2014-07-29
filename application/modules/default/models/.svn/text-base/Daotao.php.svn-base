@@ -1,0 +1,184 @@
+<?php 
+class Model_Daotao
+{
+	protected $db;
+	public function __construct()
+	{
+		$this->db=Zend_Registry::get("db");
+	}
+	public function listAllObj($thongtincoquanId,$namhoatdong)
+	{
+		$query=$this->db->query("SELECT Id, Madot,Tendot, Mota,Trangthai, Mucdichthuchien,
+				Hinhthucthuchien, Chungchiduoccap,
+				DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay,
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Soluonghocvien, Soquyetdinh, Nguoiraquyetdinh
+				FROM tbldm_daotao WHERE ThongtincoquanId='$thongtincoquanId' AND Namhoatdong='$namhoatdong'");
+		$result=$query->fetchAll();
+		return $result;
+	}
+	public function getFetObj($sort,$order,$offset,$rows,$thongtincoquanId,$namhoatdong)
+	{
+		$result=array();
+		$query=$this->db->query("SELECT COUNT(*) AS Total FROM tbldm_daotao WHERE ThongtincoquanId=$thongtincoquanId");
+		$row=$query->fetchAll();
+		
+		$query=$this->db->query("SELECT Id, Madot,Tendot, Mota,Trangthai, Mucdichthuchien, 
+				Hinhthucthuchien, Chungchiduoccap, 
+				DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay, 
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Soluonghocvien, Soquyetdinh, Nguoiraquyetdinh
+		FROM tbldm_daotao WHERE ThongtincoquanId='$thongtincoquanId' AND Namhoatdong='$namhoatdong' ORDER BY $sort $order LIMIT $offset,$rows");
+		$result['total']=$row[0]['Total'];
+		$result['rows']=$query->fetchAll();
+		return $result;
+	}
+	public function getInfobyIdObj($id)
+	{
+		$result = array();
+		$query = $this->db->query("SELECT Id, Madot,Tendot, Mota,Trangthai, Mucdichthuchien, 
+				Hinhthucthuchien, Chungchiduoccap, 
+				DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay, 
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Soluonghocvien, Soquyetdinh, Nguoiraquyetdinh
+		FROM tbldm_daotao WHERE Id = '$id'");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	public function delObj($id)
+	{
+		$Iddel=$this->db->delete('tbldm_daotao','Id='.$id);
+		return $Iddel;
+	}
+	public function dupliObj($id, $madot, $tendot, $thongtincoquanid) {
+		$query = $this->db->query("SELECT COUNT( * ) AS Total FROM tbldm_daotao
+				WHERE ThongtincoquanId = $thongtincoquanid AND (Madot = '$madot' OR (Tendot = '$tendot'))" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT( * ) AS Total FROM tbldm_daotao 
+				WHERE ThongtincoquanId = $thongtincoquanid AND Id != $id AND (Madot = '$madot' OR (Tendot = '$tendot'))" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function addObj($data)
+	{
+		$id = $this->db->insert ( 'tbldm_daotao', $data );
+		return $id;
+	}
+	public function updateObj($id, $data) 
+	{
+		$id = $this->db->update ( 'tbldm_daotao', $data, 'Id = ' . $id );
+		return $id;
+	}
+	public function getObjById($id) {
+		$query=$this->db->query("SELECT Id, Madot, Tendot, Mota, Trangthai, Mucdichthuchien, Hinhthucthuchien, Chungchiduoccap, Soluonghocvien, Soquyetdinh, Nguoiraquyetdinh, (DATE_FORMAT(Tungay,'%d/%m/%Y')) AS Tungay, (DATE_FORMAT(Denngay,'%d/%m/%Y')) AS Denngay FROM tbldm_daotao WHERE Id='$id'");
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function searObj($madot,$tendot,$hinhthuc,$chungchi,$tungay,$denngay,$thongtincoquanid,$namhoatdong,$sort,$order,$offset,$rows)
+	{
+		$result=array();
+		$where=" ThongtincoquanId='$thongtincoquanid' AND Namhoatdong='$namhoatdong' AND  Madot LIKE '%$madot%'";
+		if($tendot !='')
+		{
+			$where=$where." AND Tendot LIKE '%$tendot%' ";
+		}
+		if($hinhthuc !="")
+		{
+			$where=$where." AND Hinhthucthuchien='$hinhthuc' ";
+		}
+		if($chungchi !='')
+		{
+			$where=$where." AND Chungchiduoccap ='$chungchi' ";
+		}
+		if($tungay !='')
+		{
+			$where=$where." AND Tungay ='$tungay' ";
+		}
+		if($denngay !='')
+		{
+			$where=$where." AND Denngay ='$denngay' ";
+		}
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_daotao WHERE $where");
+		$row = $query->fetchAll();
+		$result["total"]=$row[0]['Total'];
+		$query=$this->db->query("SELECT Id, Madot, Tendot, Hinhthucthuchien, Chungchiduoccap,
+				(DATE_FORMAT(Tungay,'%d/%m/%Y')) AS Tungay,
+				(DATE_FORMAT(Denngay,'%d/%m/%Y')) AS Denngay
+				FROM tbldm_daotao WHERE $where
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['rows']=$query->fetchAll();
+		return $result;
+	}
+	public function searObjCombogrid($madot,$tendot,$tungay,$denngay,$hinhthuc,$chungchi, $thongtincoquanid, $sort, $order, $offset, $rows)
+	{
+		$result=array();
+		$where = " Madot LIKE '%$madot%' ";
+		if($tendot!="")
+		{
+			$where=$where." AND Tendot LIKE '%$tendot%' ";
+		}
+		if($tungay!="")
+		{
+			$where=$where." AND Tungay LIKE '%$tungay%' ";
+		}
+		if($denngay!="")
+		{
+			$where=$where." AND Denngay LIKE '%$denngay%'";
+		}
+		if($hinhthuc !="")
+		{
+			$where=$where." AND Hinhthucthuchien LIKE '%$hinhthuc%'";
+		}
+		if($chungchi !="")
+		{
+			$where=$where." AND Chungchiduoccap LIKE '%$chungchi%'";
+		}
+		$query=$this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_daotao WHERE 
+				ThongtincoquanId = $thongtincoquanid AND $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	//lay du lieu in danh sach
+	public function getDSdaotao($madot,$tendot,$hinhthuc,$chungchi,$tungay,$denngay,$thongtincoquanid,$namhoatdong)
+	{
+		$result = array();
+		$where=" Madot LIKE '%$madot%' ";
+		if($tendot!='')
+		{
+			$where=$where ."AND Tendot LIKE '%$tendot%' ";
+		}
+		if($hinhthuc!='')
+		{
+			$where=$where." AND Hinhthucthuchien='$hinhthuc' ";
+		}
+		if($chungchi!='')
+		{
+			$where = $where." AND Chungchiduoccap='$chungchi'";
+		}
+		if($tungay!='')
+		{
+			$where=$where." AND Tungay='$tungay'";
+		}
+		if($denngay!='')
+		{
+			$where=$where."AND Denngay='$denngay'";
+		}
+		//cau lenh truy van
+		$query=$this->db->query("SELECT Id, Madot, Tendot, Mota, Trangthai, Mucdichthuchien, Hinhthucthuchien, Chungchiduoccap,
+				 (DATE_FORMAT(Tungay,'%d/%m/%Y')) AS Tungay, (DATE_FORMAT(Denngay,'%d/%m/%Y')) AS Denngay, Soluonghocvien,
+				 Soquyetdinh, Nguoiraquyetdinh FROM tbldm_daotao WHERE ThongtincoquanId=$thongtincoquanid AND Namhoatdong=$namhoatdong AND $where" );
+		$result=$query->fetchAll();
+		return $result;
+	}
+
+	public function getInfoHoso($id,$thongtincoquanid,$namhoatdong)
+	{
+		$result=array();
+		$query=$this->db->query("SELECT Id, Madot, Tendot, Mota, Trangthai, Mucdichthuchien, Hinhthucthuchien, Chungchiduoccap,
+				 (DATE_FORMAT(Tungay,'%d/%m/%Y')) AS Tungay, (DATE_FORMAT(Denngay,'%d/%m/%Y')) AS Denngay, Soluonghocvien,
+				 Soquyetdinh, Nguoiraquyetdinh FROM tbldm_daotao WHERE Id = '$id' AND ThongtincoquanId='$thongtincoquanid' AND Namhoatdong='$namhoatdong'");
+		$result=$query->fetchAll();
+		return $result;
+	}
+}
+?>

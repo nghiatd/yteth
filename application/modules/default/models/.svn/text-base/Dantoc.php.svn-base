@@ -1,0 +1,143 @@
+<?php
+/**
+ * 
+ * @author Lê văn Kiên
+ *
+ */
+class Model_Dantoc extends Zend_Db_Table_Abstract {
+	
+	protected static  $DataAp;
+	public function __construct() {
+		self::$DataAp = Zend_Registry::get ( "db" );
+	}
+	private static $str_query = "SELECT Id, Tendantoc, Thieuso ";
+	//Lấy toàn bộ dữ liệu
+	public static function getFetObj($sort, $order, $offset, $rows) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$result = array ();
+		$query = self::$DataAp->query ( "SELECT COUNT(*) AS Total FROM tbldm_dantoc" );
+		$row = $query->fetchAll ();
+		$query = self::$DataAp->query (self::$str_query . "FROM tbldm_dantoc ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public static function getIdName($sdantoc, $q) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$result = array ();
+		$where = "Tendantoc LIKE '%$sdantoc%'";		
+		$query = self::$DataAp->query (  self::$str_query . "FROM tbldm_dantoc WHERE Tendantoc LIKE '%$q%'  AND $where " );
+		return $query->fetchAll();
+	}
+	
+	
+	public function getcombogridone() {
+		$query =self::$DataAp->query ( "SELECT Id AS DantocIdch, Tendantoc as Tendantocch FROM tbldm_dantoc" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function getcombogridthre() {
+		$query = self::$DataAp->query ( "SELECT Id AS DantocIdnk, Tendantoc as Tendantocnk FROM tbldm_dantoc" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public static function getIdNameM($sdantocme, $q) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$result = array ();
+		$where = "Tendantoc LIKE '%$sdantocme%'";
+		
+		$query = self::$DataAp->query ( self::$str_query . "FROM tbldm_dantoc WHERE Tendantoc LIKE '%$q%' AND $where " );
+		
+		
+		return  $query->fetchAll ();
+	}
+	// thomnd
+	public static  function getIdNameforcbogrid($q){
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		}
+		$query = self::$DataAp->query("SELECT Id, Tendantoc FROM tbldm_dantoc WHERE Tendantoc like '%$q%'");
+		return $query->fetchAll();
+	}
+	
+	//
+	
+	public static function getIdNameByThieuso($thieuso) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$query = self::$DataAp->query ( "SELECT Id, Tendantoc FROM tbldm_dantoc
+				WHERE Thieuso = $thieuso" );
+				return $query->fetchAll ();
+	}
+	public static function CheckValueObj($id, $varTendantoc) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$query = self::$DataAp->query ( "SELECT COUNT(*) AS Total FROM tbldm_dantoc WHERE Tendantoc = '$varTendantoc'" );
+		if ($id != 0) {
+			$query = self::$DataAp->query ( "SELECT COUNT(*) AS Total FROM tbldm_dantoc WHERE Id != $id and Tendantoc = '$varTendantoc'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public static function AddObj($varTendantoc, $varThieuso) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$data = array (
+				'Tendantoc' => $varTendantoc,
+				'Thieuso' => $varThieuso
+		);
+		$Id = self::$DataAp->insert ( 'tbldm_dantoc', $data );
+		return $Id;
+	}
+	
+	// Edit
+	public static function updateObj($id,$varTendantoc, $varThieuso) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$data = array (
+				'Tendantoc' => $varTendantoc,
+				'Thieuso' => $varThieuso
+		);
+		self::$DataAp->update ( 'tbldm_dantoc', $data, 'Id = ' . $id );
+	}
+	public static function DelObj($Id) {
+		if(self::$DataAp==null)
+		{
+			self::$DataAp = Zend_Registry::get("db");
+		
+		}
+		$Iddel = self::$DataAp->delete ( 'tbldm_dantoc', 'Id=' . $Id );
+		return $Iddel;
+	}
+}
+?>

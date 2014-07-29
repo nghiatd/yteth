@@ -1,0 +1,29 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Create By Daitk
+ */
+class CtsieuamController extends PublicdetailController {
+	private $_MCTSieuam;
+	private $_ThongtincoquanId;
+	public function init() {
+		$this->initValue ();
+		$this->_MCTSieuam = new Model_CTSieuam ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+	}
+	
+	public function getbysaidAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'id' );
+		$jsonObj = json_encode ( $this->_MCTSieuam->getFetObjBySieuamId ( $this->TblThongtincoquanbyId[0]['Id'],$id ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+}
+
+
+
+
+
+
+
+

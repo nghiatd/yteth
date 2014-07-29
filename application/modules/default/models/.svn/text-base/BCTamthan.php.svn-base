@@ -1,0 +1,31 @@
+<?php
+/*************
+ * Create by Phadh
+ */
+class Model_BCTamthan{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	public function getTamthan($thongtincoquanId, $namhoatdong){
+		$str_query = "SELECT Id, (DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang, NhankhauId, Tamthanphanliet, Dongkinh, Tramcam,
+			Phuongphapdieutri, Ketquadieutri, NhansuId, Ghichu,
+			(SELECT Mahodan FROM tblnhankhau WHERE Id = NhankhauId) AS Mahodan,
+			(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) As Hoten,
+			(SELECT Hoten  FROM tblnhansu WHERE Id = NhansuId) AS Nhansu,
+			(SELECT Mahodan FROM tblnhankhau WHERE Id = NhankhauId) AS Ma,
+			(SELECT  concat(Diachi,', ' , (select Tenthonto from tbldm_thonto where id = tblchuhodan.ThontoId))  FROM  tblchuhodan where Mahodan 
+			in (select Mahodan from tblnhankhau where tblnhankhau.Id=tbltamthan.NhankhauId)
+			and tblchuhodan.ThongtincoquanId=$thongtincoquanId) as Diachi
+			, 
+			(SELECT Nghenghiep FROM tblnhankhau WHERE Id = NhankhauId) AS Nghenghiep,
+			IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nam', ($namhoatdong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nam, 
+			IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nữ', ($namhoatdong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nu
+			FROM tbltamthan WHERE ThongtincoquanId = $thongtincoquanId and Namhoatdong=$namhoatdong  order by DATE(Ngaythang) ASC
+			";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

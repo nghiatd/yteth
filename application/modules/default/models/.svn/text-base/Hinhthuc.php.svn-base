@@ -1,0 +1,73 @@
+<?php
+/**
+ * 
+ * @author Lê văn Kiên
+ *
+ */
+class Model_Hinhthuc{
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get("db");
+	}
+	//hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_hinhthuc");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenhinhthuc,
+				IF(Muc = 1, 'Khen thưởng', 'Kỷ luật') AS Muc
+				FROM tbldm_hinhthuc ORDER BY $sort $order LIMIT $offset, $rows
+				");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	//kiem tra trung lap du lieu
+	public function dupliObj($id, $tenhinhthuc, $muc){
+		$row = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_hinhthuc WHERE Tenhinhthuc = '$tenhinhthuc' AND Muc = $muc");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_hinhthuc WHERE Tenhinhthuc = '$tenhinhthuc' AND Muc = $muc
+					AND Id != $id");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	// du lieu combo khen thuong
+	public function getkhenthuong(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tenhinhthuc FROM tbldm_hinhthuc WHERE Muc = 1");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// du lieu combo ly luat
+	public function getkyluat(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tenhinhthuc FROM tbldm_hinhthuc WHERE Muc = 0");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert("tbldm_hinhthuc", $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update("tbldm_hinhthuc", $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tbldm_hinhthuc', 'Id = '.$id);
+		return $Id;
+	}
+}
+?>

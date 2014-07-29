@@ -1,0 +1,476 @@
+<style>
+a {
+	text-decoration: none;
+	text-shadow: none
+}
+</style>
+<div id="muctieuquocgiatt" class="easyui-tree">
+	<li>
+		<div class="tree-node" node-id="10" style="cursor: pointer;">
+			<span class="tree-hit tree-expanded"></span> <span
+				class="tree-icon tree-folder tree-folder-open"></span> <span
+				class="tree-title"><?php echo $this->Tencoquan;?></span>
+		</div>
+		<ul>
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Nghiệp vụ</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/tailieuchuyenmon">Tài liệu chuyên môn</a></span>
+						</div></li>
+						
+						<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/vesinhnuocsach">Vệ sinh nước sạch</a></span>
+						</div></li>
+						
+						<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/giamsatvsattp">Giám sát vệ sinh an toàn thực phẩm</a></span>
+						</div></li>
+						<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/dieutrasotxuathuyet">Điều tra sốt xuất huyết</a></span>
+						</div></li>
+						
+				</ul></li>	
+				
+		
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ I</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/sohopbanchidoochamsocsuckhoenhandan.xls">Sổ họp ban chỉ đạo Chăm sóc sức khỏe nhân dân</a></span>
+						</div></li>
+				</ul></li>			
+				
+				
+				
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ II</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcdscanbotaphuan">Sổ theo dõi cán bộ được đào tạo tập huấn </a></span>
+						</div></li>
+						<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcnhanlucytethonban">Sổ quản lý cán bộ trạm y tế, Y tế Thôn bản, cộng tác viên dân số, ATVSTP, Cộng tác viên dinh dưỡng</a></span>
+						</div></li>
+						<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/sohopbanchidoochamsocsuckhoenhandan.xls">Sổ giao ban trạm Y tế , y tế thôn bản hàng tháng </a></span>
+						</div></li>
+						
+						
+				</ul></li>	
+				
+				
+				
+				
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ IV</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoidanhmuctrangthietbiyte">Sổ theo dõi danh mục trang thiết bị tại trạm y tế</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/so theo doi tai san co dinh tai tram.xls">Sổ theo dõi tài sản cố định</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcdsthuockhambenh">Sổ quản lý danh mục thuốc khám chữa bệnh</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/SO QUAN LY VAN PHONG PHAM.xls">Sổ quản lý văn phòng phẩm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/soquanlyvthctieuhao">Sổ quản lý vật tư hoá chất, vật liệu tiêu hao</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoittbttuiyte">Sổ theo dõi quản lý túi Y tế thôn bản</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoibosungvattu">Sổ theo dõi bổ sung trang thiết bị vật tư tiêu hao cho y tế thôn bản</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/soqlsachtailieuchuyenmon">Sổ quản lý sách, tài liệu chuyên môn</a></span>
+						</div></li>
+				</ul></li>	
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ V</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/so theo doi nguon kinh phi ctr muc tieu quoc gia.xls">Sổ quản lý, theo dõi kinh phí chương trình mục tiêu quốc gia</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ quản lý theo dõi kinh phí chi thường xuyên</a></span>
+						</div></li>							
+				</ul></li>
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ VI</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcbenhtruyennhiemtuan">Sổ theo dõi các bệnh truyền nhiễm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bctinhhinhbenhtruyennhiemtuan">Sổ giám sát các bệnh truyền nhiễm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bctinhhinhtrucdich">Sổ trực dịch và báo cáo dịch hàng ngày</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ theo dõi kết quả thực hiện chỉ tiêu kế hoạch các chương trình MTYTQG</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcthuctrangctrinhvesinh">Sổ theo dõi nước sinh hoạt và nhà tiêu hợp vệ sinh</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcketquagiamsatngodoc">Sổ giám sát ngộ độc thực phẩm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheoketquavsattp">Sổ theo dõi kiểm tra các cơ sở kinh doanh thực phẩm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ quản lý các cơ sở kinh doanh thực phẩm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoiquanlyhiv">Sổ theo dõi quản lý người nhiễm HIV/AIDS</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/theo doi qly cap phat bcs, bom kim tiem cho doi tuong co nguy co cao.xls">Sổ theo dõi cấp phát bơm kim tiêm, bao cao su</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/so tu van nguoi nhiem hiv aids tai nha.xls">Sổ tư vấn người nhiễm HIV/AIDS tại nhà</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/So truyen thong pc hiv aids.xls">Sổ truyền thông người nhiễm HIV/AIDS</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/so dky tu van xet nghiem hiv cho phu nu mang thai.xls">Sổ đăng ký tư vấn và xét nghiệm HIV cho phụ nữ mang thai</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ quản lý bệnh nhân tăng huyết áp</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcsotheodoisotret/exstdsr">Sổ quản lý bệnh nhân sốt rét</a></span>
+						</div></li>	
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ quản lý bệnh nhân sốt xuất huyết</a></span>
+						</div></li>	
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcdsnguoibenhlao">Sổ quản lý bệnh nhân Lao</a></span>
+						</div></li>	
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/so quan ly benh nhan dai thao duong va tien dai thao duong.xls">Sổ quản lý bệnh nhân đái tháo đường và tiền đái tháo đường</a></span>
+						</div></li>	
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/soquanlybenhnhanungthu">Sổ quản lý bệnh nhân ung thư, hen phế quản</a></span>
+						</div></li>			
+				</ul></li>
+				
+				
+				
+				
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ VII</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ theo dõi thực hiện dịch vụ kỹ thuật</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcsokhambenh/sokhambenh">Sổ khám bệnh (A1)</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bctonghopkhamchuabenh">Sổ theo dõi kết quả thực hiện khám chữa bệnh YHCT</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoikhuyettat">Sổ quản lý người khuyết tật</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/kq phcn cho nguoi tan tat.xls">Sổ theo dõi kết quả phục hồi chức năng cho người tàn tật</a></span>
+						</div></li>
+						
+				</ul></li>
+				
+				
+				
+				<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ VIII</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcsokhamthai/sokhamthai">Sổ khám thai</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bctiemchunguonvan/expxlstcuv">Sổ tiêm vắc xin uốn ván cho phụ nữ </a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcsokhamthai/sokhamthai">Sổ quản lý theo dõi 3 thời kỳ khám thai</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcsode/expxlsnstyt">Sổ đẻ</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/so tdoi cs sau sinh cho ba me tre so sinh.xls">Sổ theo dõi chăm sóc bà mẹ và trẻ sơ sinh sau sinh</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoitreduoi1tuoitcdd">Sổ theo dõi tỷ lệ trẻ em dưới 1 tuổi tiêm chúng đầy đủ</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/Bctiemchung2/tiemchung2">Sổ tiêm chúng trẻ em dành cho tuyến xã phường</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotiemchungtreem">Sổ tiêm chúng trẻ em ( Sởi –DPT)</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoibenhnhannghisoi">Sổ theo dõi bệnh nhân nghi sởi</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ theo dõi trẻ từ 6- 36 tháng uống VitaminA 2 lần /năm</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoichieucaocannang">Sổ theo dõi tăng trưởng cho trẻ từ 0-2 tuổi</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcketquacandotre">Báo cáo kết quả cân đo cho trẻ từ 2-5 tuổi</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoichieucaosuydinhduong">Sổ theo dõi trẻ 2-5 tuổi bị suy dinh dưỡng cân nặng/tuổi</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bcdsnguoitu80tuoi">Sổ theo dõi quản lý sức khoẻ người từ 80 tuổi trở lên</a></span>
+						</div></li>
+						<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bienbankiemketvt">Biên bản kiểm nhập thuốc</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/bienbankiemnhaptvt">Sổ kiểm nhập thuốc</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ quản lý danh mục thuốc BHYT</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/dutruthuocbhyt">Sổ theo dõi dự trù thuốc BHYT</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ theo dõi xuất thuốc hàng ngày</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/thekho">Thẻ kho M2 + hạn dùng</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Tổng hợp báo cáo quyết toán BHYT quý</a></span>
+						</div></li>
+						
+						
+				</ul></li>
+				
+			
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ IX</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/tdoi cac cap vo chong ap dung pptt hd.xls">Sổ theo dõi, quản lý các cặp vợ chồng trong độ tuổi sinh đẻ áp dụng các biện pháp tránh thai</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bckehoachhoagiadinh">Sổ thực hiện KHHGĐ A5.1/YTCS</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Sổ theo dõi danh sách phụ nữ sinh con thứ 3 trở lên</a></span>
+						</div></li>
+						
+				</ul></li>
+				
+				
+			
+			   <li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">TIÊU CHÍ X</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/public/mau/theo doi tai san trang thiet bi truyen thong.xls">Sổ theo dõi tài sản trang thiết bị truyền thông</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoitruyenthongtructiep">Sổ theo dõi truyền thông trực tiếp</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/muctieuquocgia/sotheodoitruyenthonggiantiep">Sổ theo dõi hoạt động truyền thông gián tiếp</a></span>
+						</div></li>
+					
+					
+					
+				</ul></li>	
+			
+		</ul>
+	</li>
+</div>

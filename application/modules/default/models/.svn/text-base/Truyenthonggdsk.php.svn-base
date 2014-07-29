@@ -1,0 +1,117 @@
+<?php
+class Model_Truyenthonggdsk{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbltruyenthonggdsk WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, Noidung,(select Tendoituongtruyenthong from tbldm_doituongtruyenthong where tbldm_doituongtruyenthong.Id=DoituongtruyenthongId  )as Doituong, DoituongtruyenthongId, Uoctinh_soluongthamdu, 
+									Thoiluong, Solanthuchien, Diadiem, DATE_FORMAT(Ngaybatdau, '%d/%m/%Y') AS Ngaybatdau, 
+									DATE_FORMAT(Ngayketthuc, '%d/%m/%Y') AS Ngayketthuc, Nguoithuchien, Namhoatdong, Dang,
+									IF(Dang = 1, 'Trự tiếp', 'Gián tiếp') AS Dang_tg
+									FROM tbltruyenthonggdsk WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+									ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tbltruyenthonggdsk', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbltruyenthonggdsk', $data, 'Id= '.$id);
+		return $Id;
+	}
+	
+	//xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tbltruyenthonggdsk', 'Id= '.$id);
+		return $Id;
+	}
+	
+	// tim kiem
+	public function searObj($sNoidung, $sDiadiem, $sNguoithuchien, $sNgaybatdau, $sNgayketthuc, $sDang, $sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		if($sDang == 0){
+			$sDang = '';
+			$where = "Noidung LIKE '%$sNoidung%'";
+			if($sDiadiem != '')
+				$where = $where."AND Diadiem LIKE '%$sDiadiem%'";
+			if($sNguoithuchien != '')
+				$where = $where."AND Nguoithuchien LIKE '%$sNguoithuchien%'";
+			if($sNgaybatdau != '')
+				$where = $where."AND Ngaybatdau = '$sNgaybatdau'";
+			if($sNgayketthuc != '')
+				$where = $where."AND Ngayketthuc = '$sNgayketthuc'";
+		}else{
+			$where = "Noidung LIKE '%$sNoidung%'";
+			if($sDiadiem != '')
+				$where = $where."AND Diadiem LIKE '%$sDiadiem%'";
+			if($sNguoithuchien != '')
+				$where = $where."AND Nguoithuchien LIKE '%$sNguoithuchien%'";
+			if($sNgaybatdau != '')
+				$where = $where."AND Ngaybatdau = '$sNgaybatdau'";
+			if($sNgayketthuc != '')
+				$where = $where."AND Ngayketthuc = '$sNgayketthuc'";
+			if($sDang != '')
+				$where = $where."AND Dang = $sDang";
+		}
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbltruyenthonggdsk WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, Noidung, (select Tendoituongtruyenthong from tbldm_doituongtruyenthong where tbldm_doituongtruyenthong.Id=DoituongtruyenthongId  )as Doituong, DoituongtruyenthongId, Uoctinh_soluongthamdu, 
+									Thoiluong, Solanthuchien, Diadiem, DATE_FORMAT(Ngaybatdau, '%d/%m/%Y') AS Ngaybatdau, 
+									DATE_FORMAT(Ngayketthuc, '%d/%m/%Y') AS Ngayketthuc, Nguoithuchien, Namhoatdong, Dang,
+									IF(Dang = 1, 'Trự tiếp', 'Gián tiếp') AS Dang_tg
+									FROM tbltruyenthonggdsk WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where
+									ORDER BY $sort $order LIMIT $offset, $rows ");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// in danh sach cong viec tuyen truyen giao duc suc khoe
+	public function getds($sNoidung, $sDiadiem, $sNguoithuchien, $sNgaybatdau, $sNgayketthuc, $sDang, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		if($sDang == 0){
+			$sDang = '';
+			$where = "Noidung LIKE '%$sNoidung%'";
+			if($sDiadiem != '')
+				$where = $where."AND Diadiem LIKE '%$sDiadiem%'";
+			if($sNguoithuchien != '')
+				$where = $where."AND Nguoithuchien LIKE '%$sNguoithuchien%'";
+			if($sNgaybatdau != '')
+				$where = $where."AND Ngaybatdau = '$sNgaybatdau'";
+			if($sNgayketthuc != '')
+				$where = $where."AND Ngayketthuc = '$sNgayketthuc'";
+		}else{
+			$where = "Noidung LIKE '%$sNoidung%'";
+			if($sDiadiem != '')
+				$where = $where."AND Diadiem LIKE '%$sDiadiem%'";
+			if($sNguoithuchien != '')
+				$where = $where."AND Nguoithuchien LIKE '%$sNguoithuchien%'";
+			if($sNgaybatdau != '')
+				$where = $where."AND Ngaybatdau = '$sNgaybatdau'";
+			if($sNgayketthuc != '')
+				$where = $where."AND Ngayketthuc = '$sNgayketthuc'";
+			if($sDang != '')
+				$where = $where."AND Dang = $sDang";
+		}
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, Noidung, (select Tendoituongtruyenthong from tbldm_doituongtruyenthong where tbldm_doituongtruyenthong.Id=DoituongtruyenthongId  )as Doituong, DoituongtruyenthongId, Uoctinh_soluongthamdu,
+				Thoiluong, Solanthuchien, Diadiem, DATE_FORMAT(Ngaybatdau, '%d/%m/%Y') AS Ngaybatdau,
+				DATE_FORMAT(Ngayketthuc, '%d/%m/%Y') AS Ngayketthuc, Nguoithuchien, Namhoatdong, Dang,
+				IF(Dang = 1, 'Trự tiếp', 'Gián tiếp') AS Dang_tg
+				FROM tbltruyenthonggdsk WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where
+				 ");
+		return $query->fetchAll();
+	}
+}

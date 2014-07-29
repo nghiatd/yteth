@@ -1,0 +1,76 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Phongban{
+	
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_phongban WHERE ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenphongban, Diengiai, Nhakho, Namhoatdong, ThongtincoquanId FROM tbldm_phongban 
+									WHERE ThongtincoquanId = $thongtincoquanId ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// du lieu combobox
+	public function getIdName($ThongtincoquanId, $Namhoatdong) {
+		$query = $this->db->query ( "SELECT Id, Tenphongban FROM tbldm_phongban where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	
+	public function getIdandNameObj($Trangthai, $CoquanId, $Namhoatdong) {
+	
+		// $Trangthai=1 -> chi hiển thị kho, $Trangthai=2-> hien thi không phải
+		// là kho
+		// $Trangthai=3-> Hiển thị tất cả
+		$str = "";
+		if ($Trangthai == 1)
+			$str = "SELECT Id,Tenphongban FROM tbldm_phongban where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId and Nhakho=1";
+		if ($Trangthai == 2)
+			$str = "SELECT Id,Tenphongban   FROM tbldm_phongban where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId and Nhakho =0";
+		if ($Trangthai == 3)
+			$str = "SELECT Id,Tenphongban  FROM tbldm_phongban where Namhoatdong<=$Namhoatdong and ThongtincoquanId=$CoquanId";
+		$query = $this->db->query ( $str );
+		return $query->fetchAll ();
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $tenphongban, $ThongtincoquanId, $Namhoatdong) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phongban WHERE Namhoatdong<=$Namhoatdong and ThongtincoquanId=$ThongtincoquanId and Tenphongban = '$tenphongban'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phongban WHERE Namhoatdong<=$Namhoatdong and ThongtincoquanId=$ThongtincoquanId and Id != $id AND Tenphongban = '$tenphongban'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tbldm_phongban', $data);
+		return $Id;
+	}
+	
+	//cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update ( 'tbldm_phongban', $data, 'Id='.$id );
+		return $Id;
+	}
+	
+	// xoa su lieu
+	public function delObj($id){
+		$Id = $this->db->delete ( 'tbldm_phongban', 'Id =' . $id );
+		return $Id;
+	}
+	
+}

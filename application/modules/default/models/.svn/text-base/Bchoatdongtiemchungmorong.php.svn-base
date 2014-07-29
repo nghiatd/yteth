@@ -1,0 +1,89 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_Bchoatdongtiemchungmorong {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Lấy thông tin tiêm chủng miễn dịch cơ bản cho trẻ nhỏ hơn 1 tuổi.
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 * @param Number $thangbaocao        	
+	 */
+	public function getTiemchungcobanTreem1tuoi($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong, $thangbaocao) {
+		$str_query = "SELECT COUNT(Id) AS SLTrongdientiem, COUNT(IdDatiem) AS SLDatiem, COUNT(IdTiemBCG) AS SLTiemBCG, COUNT(IdTiemDPT) AS SLTiemDPT, COUNT(IdTiemOPV) AS SLTiemOPV, COUNT(IdTiemSoi) AS SLTiemSoi, COUNT(IdTiemVGB) AS SLTiemVGB, COUNT(IdTiemDD) AS SLTiemDD FROM ( 
+				SELECT Id, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND ((EXTRACT( YEAR_MONTH FROM Ngayvaoso ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) OR (EXTRACT( YEAR_MONTH FROM Ngaytiem_BCG ) BETWEEN $thangnamBatdau AND $thangnamKetthuc)) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdDatiem, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Lao') AND Seo_BCG = 1 AND (EXTRACT( YEAR_MONTH FROM Ngaytiem_BCG ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdTiemBCG, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'BH-HG-UV') AND Lan = 3 AND (EXTRACT( YEAR_MONTH FROM Ngayvaoso ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdTiemDPT, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Bại liệt') AND Lan = 3 AND (EXTRACT( YEAR_MONTH FROM Ngayvaoso ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdTiemOPV, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Sởi') AND (EXTRACT( YEAR_MONTH FROM Ngayvaoso ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdTiemSoi, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Viêm gan B') AND Lan = 3 AND (EXTRACT( YEAR_MONTH FROM Ngayvaoso ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdTiemVGB, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmiendich WHERE ThongtincoquanId = $thongtincoquanId AND TCĐĐ = 1 AND ((EXTRACT( YEAR_MONTH FROM Ngayvaoso ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) OR (EXTRACT( YEAR_MONTH FROM Ngaytiem_BCG ) BETWEEN $thangnamBatdau AND $thangnamKetthuc)) AND tbltiemchungmiendich.NhankhauId = tblnhankhau.Id) AS IdTiemDD
+				 FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaysinh) BETWEEN ($namhoatdong - 1) AND $namhoatdong) AND (IF((YEAR(Ngaysinh) = $namhoatdong - 1), ((12 - MONTH(Ngaysinh) + $thangbaocao) <= 12), TRUE))
+				) TEMP";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	
+	/**
+	 * - Lấy thông tin tiêm chủng mở rộng cho trẻ nhỏ từ 1 - 5 tuổi.
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getTiemchungmorongTreem1den5tuoi($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$str_query = "SELECT COUNT(IdTiemVN) AS SLTiemVN, COUNT(IdTiemTa) AS SLTiemTa, COUNT(IdTiemTH ) AS SLTiemTH 
+				FROM (
+				SELECT Id, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmorong WHERE tbltiemchungmorong.ThongtincoquanId = $thongtincoquanId AND (EXTRACT( YEAR_MONTH FROM Ngaytiemchung ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Viêm não') AND Lantiem = 3 AND tbltiemchungmorong.NhankhauId = tblnhankhau.Id) AS IdTiemVN, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmorong WHERE tbltiemchungmorong.ThongtincoquanId = $thongtincoquanId AND (EXTRACT( YEAR_MONTH FROM Ngaytiemchung ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Tả') AND Lantiem = 2 AND tbltiemchungmorong.NhankhauId = tblnhankhau.Id) AS IdTiemTa, 
+				(SELECT DISTINCT NhankhauId FROM tbltiemchungmorong WHERE tbltiemchungmorong.ThongtincoquanId = $thongtincoquanId AND (EXTRACT( YEAR_MONTH FROM Ngaytiemchung ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung LIKE 'Thương hàn') AND tbltiemchungmorong.NhankhauId = tblnhankhau.Id) AS IdTiemTH 
+				FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) BETWEEN 0 AND 5) AND Vanglai = 0
+				) TEMP";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Lấy thông tin tiêm chủng uốn ván phụ nữ có thai từ 2 lần tiêm trở lên.
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getTiemchungUV2Phunucothai($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$str_query = "SELECT COUNT(NhankhauId) AS SLTiem FROM (SELECT NhankhauId, COUNT(Id) AS Lantiem FROM tbluonvan WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaythangtiem ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND Thangthai > 0 GROUP BY NhankhauId) TEMP WHERE Lantiem >= 2";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Lấy thông tin mắc, chết do các bệnh có vắc xin phòng ngừa.
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getMacCheCoVacxinPhong($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$str_query = "SELECT Id, Tenbenhdich, (SELECT COUNT(Id) FROM tblphieukhambenh WHERE BenhdichId = tbldm_benhdich.Id AND 
+				(EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId) AS Mac, (SELECT COUNT(Id) FROM 
+				tblgiaykhaitu WHERE Nguyennhan LIKE CONCAT('%', Tenbenhdich ,'%') AND (EXTRACT( YEAR_MONTH FROM Ngaychet ) BETWEEN 
+				$thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId) AS Chet FROM tbldm_benhdich WHERE Tenbenhdich IN ('Bạch hầu', 
+				'Ho gà', 'Uốn ván', 'Uốn ván sơ sinh', 'Bại liệt', 'Sởi', 'Lao', 'Viêm gan', 'Tả', 'Thương hàn', 
+				'Viêm màng não', 'Viêm não')
+				";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

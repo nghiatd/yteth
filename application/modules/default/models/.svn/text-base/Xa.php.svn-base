@@ -1,0 +1,189 @@
+<?php
+/**
+ * 
+ * @author kiên lê
+ *
+ */
+class Model_Xa
+{
+	protected $db;
+	
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	public function getFetObj($sort, $order, $offset, $rows) 
+	{
+		$result = array ();
+		$query = $this->db->query ( 'SELECT COUNT(*) AS Total FROM tbldm_xa' );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ("SELECT Id, Tenxa, HuyenId,
+				(select Tenhuyen from tbldm_huyen where Id = HuyenId) AS Tenhuyen,
+				(select TinhId from tbldm_huyen where Id = HuyenId) AS TinhId
+				from tbldm_xa order by $sort $order limit $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result["rows"]  = $query->fetchAll ();
+		return  $result;	
+		
+	}
+	
+	// Lay Id va Ten
+	public function getIdName() 
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenxa FROM tbldm_xa' );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function getIdNameById($_id) 
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenxa FROM tbldm_xa WHERE Id = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function combobythongtincoquanid($thongtincoquanId)
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenxa FROM tbldm_xa WHERE Id = ' . $thongtincoquanId );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function getIdNameByHuyenId($_id)
+	{
+		$query = $this->db->query ( 'SELECT Id, Tenxa FROM tbldm_xa WHERE HuyenId = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+		
+	public function addObj($tenxa, $huyenid) 
+	{
+		$data = array (
+				'Tenxa' => $tenxa,
+				'HuyenId' => $huyenid
+		);
+		$id = $this->db->insert ( 'tbldm_xa', $data );
+		return $id;
+	}
+	
+	
+	public function updateObj($id, $Tenxa, $huyenid) 
+	{
+		$data = array (
+				'Tenxa' => $Tenxa,
+				'HuyenId' => $huyenid
+		);
+		$this->db->update ( 'tbldm_xa', $data, 'Id = ' . $id );
+	}
+	
+	public function delObj($id) 
+	{
+		$idDel = $this->db->delete ( 'tbldm_xa', 'Id = ' . $id );
+		return $idDel;
+	}
+	
+	public function dupliObj($Tenxa, $huyenid) 
+	{
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_xa WHERE 
+				md5(Tenxa) = md5('$Tenxa') AND HuyenId = $huyenid" );
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	//edit phadh
+	public function getcomboObj($sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows) {
+		$result = array ();
+		/*
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_xa WHERE Tenxa LIKE '%$sXa%' AND
+				HuyenId IN (SELECT Id FROM tbldm_huyen WHERE Tenhuyen LIKE '%$sHuyen%'and TinhId IN
+				(SELECT Id FROM tbldm_tinh WHERE Tentinh LIKE '%$sTinh%'))");
+		$row = $query->fetchAll ();
+		$query = $this->db->query("
+				SELECT Id, Tenxa, HuyenId,
+				(SELECT Tenhuyen FROM tbldm_huyen WHERE Id = HuyenId) AS Tenhuyen,
+				(SELECT TinhId FROM tbldm_huyen WHERE Id = HuyenId) AS TinhId,
+				(SELECT Tentinh FROM tbldm_tinh WHERE Id = TinhId) AS Tentinh
+				FROM tbldm_xa WHERE (Tenxa LIKE '%$sXa%' AND Tenxa LIKE '%$q%') AND
+				HuyenId IN (SELECT Id FROM tbldm_huyen WHERE Tenhuyen LIKE '%$sHuyen%'AND TinhId IN
+				(SELECT Id FROM tbldm_tinh WHERE Tentinh LIKE '%$sTinh%'))
+				ORDER BY $sort $order LIMIT $offset, $rows
+				");
+				*/
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_xa,tbldm_huyen,tbldm_tinh
+				WHERE tbldm_xa.HuyenId=tbldm_huyen.Id and  tbldm_huyen.TinhId=tbldm_tinh.Id
+				and Tenxa LIKE '%$sXa%' AND Tenhuyen LIKE '%$sHuyen%'and Tentinh LIKE '%$sTinh%' ");
+		$row = $query->fetchAll ();
+		$query = $this->db->query("
+				SELECT tbldm_xa.Id, Tenxa, HuyenId, Tenhuyen, TinhId, Tentinh	FROM tbldm_xa,tbldm_huyen,tbldm_tinh
+				WHERE tbldm_xa.HuyenId=tbldm_huyen.Id and  tbldm_huyen.TinhId=tbldm_tinh.Id and Tenxa LIKE '%$sXa%' AND Tenhuyen LIKE '%$sHuyen%'and Tentinh LIKE '%$sTinh%'
+					ORDER BY $sort $order LIMIT $offset, $rows
+				");
+		
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	//
+	
+	public function combogridbycoquanhuyenObj($tblthongtincoquan,$sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows) {
+		$result = array ();
+		/*
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_xa WHERE Tenxa LIKE '%$sXa%' AND
+				HuyenId IN (SELECT Id FROM tbldm_huyen WHERE Tenhuyen LIKE '%$sHuyen%'and TinhId IN
+				(SELECT Id FROM tbldm_tinh WHERE Tentinh LIKE '%$sTinh%'))");
+		$row = $query->fetchAll ();
+		$query = $this->db->query("
+				SELECT Id, Tenxa, HuyenId,
+				(SELECT Tenhuyen FROM tbldm_huyen WHERE Id = HuyenId) AS Tenhuyen,
+				(SELECT TinhId FROM tbldm_huyen WHERE Id = HuyenId) AS TinhId,
+				(SELECT Tentinh FROM tbldm_tinh WHERE Id = TinhId) AS Tentinh
+				FROM tbldm_xa WHERE (Tenxa LIKE '%$sXa%' AND Tenxa LIKE '%$q%') AND
+				HuyenId IN (SELECT Id FROM tbldm_huyen WHERE Tenhuyen LIKE '%$sHuyen%'AND TinhId IN
+				(SELECT Id FROM tbldm_tinh WHERE Tentinh LIKE '%$sTinh%'))
+				ORDER BY $sort $order LIMIT $offset, $rows
+				");
+				*/
+		$where="";
+		// neu la xa
+		if($tblthongtincoquan[0]['Phuluc']==1)
+		{
+			$xaId=$tblthongtincoquan[0]['CoquanId'];
+			$where=" and (tbldm_xa.HuyenId in (SELECT HuyenId from tbldm_xa where Id =$xaId)) ";
+		}
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_xa,tbldm_huyen,tbldm_tinh
+				WHERE tbldm_xa.HuyenId=tbldm_huyen.Id and  tbldm_huyen.TinhId=tbldm_tinh.Id
+				and Tenxa LIKE '%$sXa%' AND Tenhuyen LIKE '%$sHuyen%'and Tentinh LIKE '%$sTinh%' $where");
+		$row = $query->fetchAll ();
+		$query = $this->db->query("
+				SELECT tbldm_xa.Id, Tenxa, HuyenId, Tenhuyen, TinhId, Tentinh	FROM tbldm_xa,tbldm_huyen,tbldm_tinh
+				WHERE tbldm_xa.HuyenId=tbldm_huyen.Id and  tbldm_huyen.TinhId=tbldm_tinh.Id and Tenxa LIKE '%$sXa%' AND Tenhuyen LIKE '%$sHuyen%'and Tentinh LIKE '%$sTinh%'
+				$where	ORDER BY $sort $order LIMIT $offset, $rows
+				");
+		
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function comboObj($sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = "Tenxa LIKE '%$sXa%'";
+		if($sHuyen != '')
+			$where = $where."AND HuyenId IN (SELECT Id FROM tbldm_huyen WHERE Tenhuyen LIKE '%$sHuyen%')";
+		if($sTinh != '')
+			$where = $where."AND HuyenId IN (SELECT Id FROM tbldm_huyen WHERE TinhId IN  (SELECT Id FROM tbldm_tinh WHERE Tentinh LIKE '%$sTinh%'))";
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_xa WHERE $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenxa, HuyenId, (SELECT Tenhuyen FROM tbldm_huyen WHERE Id = HuyenId) AS Tenhuyen,
+									(SELECT Tentinh FROM tbldm_tinh WHERE Id = (SELECT TinhId FROM tbldm_huyen WHERE Id = HuyenId)) AS Tentinh
+									FROM tbldm_xa WHERE $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}

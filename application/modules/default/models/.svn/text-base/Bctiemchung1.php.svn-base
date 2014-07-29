@@ -1,0 +1,136 @@
+<?php
+class Model_Bctiemchung1{
+	protected $db;
+	public function __construct(){
+		$this->db= Zend_Registry::get("db");
+	}
+	
+	public function gettiemchung($thongtincoquanid, $namhethong){
+		$query = $this->db->query("
+				
+					select Hoten,
+				IF( Gioitinh ='Nam',
+				DATE_FORMAT(Ngaysinh,'%d/%m/%Y'), ' ') AS Nam ,
+				IF( Gioitinh ='Nữ',
+				DATE_FORMAT(Ngaysinh,'%d/%m/%Y'), ' ') AS Nu ,
+				(SELECT tblchuhodan.Tenchuho FROM tblchuhodan WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanid) AS Hotenchame,
+	
+				(select concat(Diachi,', ', (select Tenthonto from tbldm_thonto where Id=tblchuhodan.ThontoId) )  from tblchuhodan where Mahodan =tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanid) as Diachigiadinh,
+		
+				
+				(
+				select DATE_FORMAT(Ngaytiem_BCG,'%d/%m/%Y') from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Lao%')
+				and tbltiemchungmiendich.Lan=1 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Ngaytiem_BCG,
+				
+				
+				(
+				select IF(Seo_BCG = 1, 'x', ' ') AS Seo_BCG from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Lao%')
+				and tbltiemchungmiendich.Lan=1 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Seo_BCG,
+				
+					(
+				select IF(Id >0, 'x', ' ') AS Bailiet1 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Bại liệt%')
+				and tbltiemchungmiendich.Lan=1 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Bailiet1,
+					
+				
+				(
+				select IF(Id >0, 'x', ' ') AS Bailiet2 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Bại liệt%')
+				and tbltiemchungmiendich.Lan=2 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Bailiet2,
+				
+				(
+				select IF(Id >0, 'x', ' ') AS Bailiet3 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Bại liệt%')
+				and tbltiemchungmiendich.Lan=3 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Bailiet3,
+				
+				(
+				select IF(Lan =1, 'x', ' ') AS BH1 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%BH-HG-UV%')
+				and tbltiemchungmiendich.Lan=1 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as BH1,
+				
+					(
+				select IF(Lan =2, 'x', ' ') AS BH2 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%BH-HG-UV%')
+				and tbltiemchungmiendich.Lan=2 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as BH2,
+				
+				(
+				select IF(Lan =3, 'x', ' ') AS BH3 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%BH-HG-UV%')
+				and tbltiemchungmiendich.Lan=3 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as BH3,
+				
+				(
+				select IF(Id >0, 'x', ' ') AS Viemgantruoc24 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm gan B%')
+				and tbltiemchungmiendich.Lan=1 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Viemgantruoc24,
+				
+				(
+				select IF(Id >0, 'x', ' ') AS Viemgansau24 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm gan B%')
+				and tbltiemchungmiendich.Lan=2 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Viemgansau24,
+				
+				(
+				select IF(Id >0, 'x', ' ') AS Viemgan2 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm gan B%')
+				and tbltiemchungmiendich.Lan=3 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Viemgan2,
+				
+				
+				(
+				select IF(Id >0, 'x', ' ') AS Viemgan3 from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm gan B%')
+				and tbltiemchungmiendich.Lan=4 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Viemgan3,
+				(
+				select IF(Id >0, 'x', ' ') AS Soi from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId and
+				tbltiemchungmiendich.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Sởi%')
+				and tbltiemchungmiendich.Lan=1 and  tbltiemchungmiendich.ThongtincoquanId=$thongtincoquanid
+		) as Soi,
+				(select SolieuUV from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId limit 1) as 
+				
+				SolieuUV,
+				
+				(select IF(TCĐĐ = 1, 'x', ' ') as TCĐĐ from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId limit 1)
+				
+				AS TCĐĐ, 
+				
+				(select Ghichu from tbltiemchungmiendich  where
+				tblnhankhau.Id= tbltiemchungmiendich.NhankhauId limit 1) as
+				Ghichu
+				 
+				FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanid 
+				
+				and 
+				
+				tblnhankhau.Id in 
+				(select distinct NhankhauId from tbltiemchungmiendich where ThongtincoquanId=$thongtincoquanid and Namhoatdong=$namhethong)
+				order by DATE(Ngaysinh) ASC ");
+		return $query->fetchAll();
+	}
+}

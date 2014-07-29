@@ -1,0 +1,187 @@
+<?php
+include 'PublicdetailController.php';
+
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BcvesinhnuocsachController extends PublicdetailController {
+	private $_Tencoquan;
+	private $_ThongtincoquanId;
+	private $_Matram;
+	private $_Namhoatdong;
+	private $_Tencaptren;
+	private $Mbaocao;
+	public function init() {
+		$this->initValue ();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_Matram = $this->TblThongtincoquanbyId [0] ['Matram'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_Tencaptren = new Model_Tencaptrenofbc();
+		$this->Mbaocao= new Model_Bcvesinhnuocsach();
+	}
+	
+	public function indexAction() {
+	}
+	
+	public function bcvesinhnuocsachAction() {
+
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$thang = $_REQUEST['Thang'];
+			if($thang==1)
+			{
+				$t1=0;
+				$t2=6;
+				$bc="Báo cáo 6 tháng đầu năm";
+			}
+			elseif($thang==2)
+			{
+				$t1=0;
+				$t2=12;
+				$bc="Báo cáo 6 tháng cuối năm";
+			}
+			else {
+				$t1=0;
+				$t2=12;
+				$bc="Báo cáo 1 năm";
+			}
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+				$jsonObj = $this->Mbaocao->getbcvesinhnuocsach ( $t1,$t2,$this->TblThongtincoquanbyId [0] ['Id'],$this->TblThongtincoquanbyId [0] ['Namhoatdong']);
+				$objPHPExcel = new PHPExcel ();
+				$objPHPExcel = $objReader->load ( "public/media/temp/bc_vsmtruong.xls" );
+				$sheet = $objPHPExcel->getActiveSheet ();
+				/*
+				 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá
+				* trị tĩnh.
+				*/
+				$tencaptren=$this->_Tencaptren->gettencaptren($this->_ThongtincoquanId);
+				
+				$t=date('d-m-Y');
+				$sheet->setCellValue ( "D" . "3",'........ Ngày '. date("d",strtotime($t)).' tháng '.date("m",strtotime($t)).' năm '.date("Y",strtotime($t)));
+				$sheet->setCellValue ( "A" . "8", $bc );
+				$sheet->setCellValue ( "B" . "3", $tencaptren[0]['Tencaptren'] );
+				$sheet->setCellValue ( "B" . "4", $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+				$sheet->setCellValue ( "C" . "13", $jsonObj[0]['Giengdao'] );
+				$sheet->setCellValue ( "D" . "13", $jsonObj [0] ['Giengkhoan'] );
+				$sheet->setCellValue ( "E" . "13", $jsonObj [0] ['Manglantuchay'] );
+				$sheet->setCellValue ( "F" . "13", $jsonObj [0] ['Benuocmua'] );
+				$sheet->setCellValue ( "G" . "13", $jsonObj [0] ['Loaikhac'] );
+				$tong1=$jsonObj [0] ['Loaikhac']+$jsonObj [0] ['Benuocmua']+$jsonObj [0] ['Manglantuchay']+$jsonObj [0] ['Giengkhoan']+$jsonObj[0]['Giengdao'];
+				$sheet->setCellValue ( "H" . "13", $tong1 );
+				
+				$sheet->setCellValue ( "C" . "14", $jsonObj[0]['Giengdaokt'] );
+				$sheet->setCellValue ( "D" . "14", $jsonObj [0] ['Giengkhoankt'] );
+				$sheet->setCellValue ( "E" . "14", $jsonObj [0] ['Manglantuchaykt'] );
+				$sheet->setCellValue ( "F" . "14", $jsonObj [0] ['Benuocmuakt'] );
+				$sheet->setCellValue ( "G" . "14", $jsonObj [0] ['Loaikhackt'] );
+				$tong1=$jsonObj [0] ['Loaikhackt']+$jsonObj [0] ['Benuocmuakt']+$jsonObj [0] ['Manglantuchaykt']+$jsonObj [0] ['Giengkhoankt']+$jsonObj[0]['Giengdaokt'];
+				$sheet->setCellValue ( "H" . "14", $tong1 );
+				
+				$sheet->setCellValue ( "C" . "15", $jsonObj[0]['Giengdaod'] );
+				$sheet->setCellValue ( "D" . "15", $jsonObj [0] ['Giengkhoand'] );
+				$sheet->setCellValue ( "E" . "15", $jsonObj [0] ['Manglantuchayd'] );
+				$sheet->setCellValue ( "F" . "15", $jsonObj [0] ['Benuocmuad'] );
+				$sheet->setCellValue ( "G" . "15", $jsonObj [0] ['Loaikhacd'] );
+				$tong1=$jsonObj [0] ['Loaikhackt']+$jsonObj [0] ['Benuocmuad']+$jsonObj [0] ['Manglantuchayd']+$jsonObj [0] ['Giengkhoand']+$jsonObj[0]['Giengdaod'];
+				$sheet->setCellValue ( "H" . "15", $tong1 );
+				
+				$sheet->setCellValue ( "H" . "19", $jsonObj[0]['Soho'] );
+				$sheet->setCellValue ( "H" . "20", $jsonObj[0]['Sohocnt'] );
+				$sheet->setCellValue ( "H" . "21", $jsonObj[0]['Sohothhvs'] );
+				if($jsonObj[0]['Sohothhvs']==0)
+				{
+					$sheet->setCellValue ( "H" . "22", '');
+				}
+				else
+				{
+					$sheet->setCellValue ( "H" . "22", round(($jsonObj[0]['Sohothhvs']/$jsonObj[0]['Sohocnt'])*100,2));
+				}
+				$sheet->setCellValue ( "H" . "23", $jsonObj[0]['Sohothmx'] );
+				$sheet->setCellValue ( "H" . "24", $jsonObj[0]['Sohothxc'] );
+				
+				$sheet->setCellValue ( "H" . "25", $jsonObj[0]['Sohoth'] );
+				$sheet->setCellValue ( "H" . "26", $jsonObj[0]['Sohothhvs'] );
+				if($jsonObj[0]['Sohoth']==0)
+				{
+					$sheet->setCellValue ( "H" . "27", '');
+				}
+				else
+				{
+					$sheet->setCellValue ( "H" . "27", round(($jsonObj[0]['Sohothhvs']/$jsonObj[0]['Sohoth'])*100,2));
+				}
+				$sheet->setCellValue ( "H" . "28", $jsonObj[0]['Sohothmx'] );
+				$sheet->setCellValue ( "H" . "29", $jsonObj[0]['Sohothxc']);
+				
+				$sheet->setCellValue ( "H" . "30", $jsonObj[0]['Sohotd'] );
+				$sheet->setCellValue ( "H" . "31", $jsonObj[0]['Sohotdhvs'] );
+				if($jsonObj[0]['Sohotd']==0)
+				{
+					$sheet->setCellValue ( "H" . "32", '');
+				}
+				else
+				{
+					$sheet->setCellValue ( "H" . "32", round(($jsonObj[0]['Sohotdhvs']/$jsonObj[0]['Sohotd'])*100,2));
+				}
+				$sheet->setCellValue ( "H" . "33", $jsonObj[0]['Sohotdmx'] );
+				$sheet->setCellValue ( "H" . "34", $jsonObj[0]['Sohotdxc']);
+				
+				$sheet->setCellValue ( "H" . "35", $jsonObj[0]['Sohohn'] );
+				$sheet->setCellValue ( "H" . "36", $jsonObj[0]['Sohohnhvs'] );
+				if($jsonObj[0]['Sohohn']==0)
+				{
+					$sheet->setCellValue ( "H" . "37", '');
+				}
+				else
+				{
+					$sheet->setCellValue ( "H" . "37", round(($jsonObj[0]['Sohohnhvs']/$jsonObj[0]['Sohohn'])*100,2));
+				}
+				
+				$sheet->setCellValue ( "H" . "38", $jsonObj[0]['Sohohnmx'] );
+				$sheet->setCellValue ( "H" . "39", $jsonObj[0]['Sohohnxc']);
+				
+				$sheet->setCellValue ( "H" . "40", $jsonObj[0]['Sohoc'] );
+				$sheet->setCellValue ( "H" . "41", $jsonObj[0]['Sohochvs'] );
+				if($jsonObj[0]['Sohoc']==0)
+				{
+					$sheet->setCellValue ( "H" . "42", '');
+				}
+				else
+				{
+					$sheet->setCellValue ( "H" . "42", round(($jsonObj[0]['Sohochvs']/$jsonObj[0]['Sohoc'])*100,2));
+				}	
+				$sheet->setCellValue ( "H" . "43", $jsonObj[0]['Sohocmx'] );
+				$sheet->setCellValue ( "H" . "44", $jsonObj[0]['Sohocxc']);
+				
+				$sheet->setCellValue ( "H" . "45", $jsonObj[0]['Loaikhac']);
+				if($jsonObj[0]['Soho']==0)
+				{
+					$sheet->setCellValue ( "H" . "46", '');
+				}
+				else
+				{
+					$sheet->setCellValue ( "H" . "46", round(($jsonObj[0]['Sohocnt']/$jsonObj[0]['Soho'])*100,2));
+				}
+				
+				header ( 'Content-Type: application/vnd.ms-excel' );
+				header ( 'Content-Disposition: attachment;filename="BC_KIEMTRA_VSNSvaNTHGD(' . date ( "d/m/Y" ) . ').xls"' );
+				header ( 'Cache-Control: max-age=0' );
+				$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+				$objWriter->save ( 'php://output' );	
+	}
+	public function jsonAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->Mbaocao->getbcvesinhnuocsach(0,12,$this->TblThongtincoquanbyId [0] ['Id'],$this->TblThongtincoquanbyId [0] ['Namhoatdong']));
+		return $this->view->jsonObj = $jsonObj;
+	}	
+}

@@ -1,0 +1,102 @@
+<?php
+// Giangnl
+include 'PublicdetailController.php';
+/**
+ *
+ * @author thomnd
+ *        
+ */
+class MucdanhhieuController extends PublicdetailController {
+	private $_MMucdanhhieu;
+	private $_Tenmucdanhhieu;
+	private $_Mucdanhhieu = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MMucdanhhieu = new Model_Mucdanhhieu ();
+		
+		if (isset ( $_REQUEST ['Tenmucdanhhieu'] ) && $_REQUEST ['Tenmucdanhhieu'] != '') {
+			$this->_Tenmucdanhhieu = $_REQUEST ['Tenmucdanhhieu'];
+			$this->_Mucdanhhieu = array (
+					'Tenmucdanhhieu' => $_REQUEST ['Tenmucdanhhieu'] 
+			);
+		}
+	}
+	
+
+	public function indexAction() {
+	}
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MMucdanhhieu->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MMucdanhhieu->getNameIdObj () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function combonochuhoAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MMucdanhhieu->getNameIdObjNoChuho () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$dup = $this->_MMucdanhhieu->dupObj ( 0, $this->_Tenmucdanhhieu );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MMucdanhhieu->addObj ( $this->_Mucdanhhieu );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MMucdanhhieu->dupObj ( $id, $this->_Tenmucdanhhieu );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MMucdanhhieu->updateObj ( $id, $this->_Mucdanhhieu );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObj = null;
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MMucdanhhieu->delObj ( $id );
+		} else {
+			return;
+		}
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

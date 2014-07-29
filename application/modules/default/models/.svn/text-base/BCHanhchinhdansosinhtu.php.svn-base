@@ -1,0 +1,58 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_BCHanhchinhdansosinhtu {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - ĐƠN VỊ HÀNH CHÍNH, DÂN SỐ VÀ TÌNH HÌNH SINH TỬ
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamTinhtong        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getDVHCDSVTHST($thongtincoquanId, $thangnamTinhtong, $namhoatdong) {
+		$ds_0107 = $namhoatdong . '-07-01';
+		$str_query = "SELECT Id, (SELECT Dientichxa FROM tblngansachmotnam WHERE ThongtincoquanId = $thongtincoquanId AND tblngansachmotnam.Namhoatdong = tblthongtincoquan.Namhoatdong) AS Dientichxa, 
+		(SELECT COUNT(Id) FROM tbldm_thonto WHERE XaId = CoquanId) AS Sothonban,
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107') - (SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) AS Dansoxa,
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107' AND Gioitinh = 'Nữ' AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107') AND Gioitinh = 'Nữ')) AS Dansoxa_Nu,
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107' AND Gioitinh = 'Nữ' AND ($namhoatdong - YEAR(Ngaysinh)) >= 15 AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107'))) AS Dansoxa_Nu_lonhonbang15tuoi,
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107' AND ($namhoatdong - YEAR(Ngaysinh)) < 1 AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107'))) AS Dansoxa_Nhohon1tuoi,
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107' AND ($namhoatdong - YEAR(Ngaysinh)) < 5 AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107'))) AS Dansoxa_Nhohon5tuoi, 
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107' AND ($namhoatdong - YEAR(Ngaysinh)) < 6 AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107'))) AS Dansoxa_Nhohon6tuoi, 
+		((SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND Ngaysinh < '$ds_0107' AND ($namhoatdong - YEAR(Ngaysinh)) < 15 AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Ngaychet < '$ds_0107')) - 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL AND Ngayketthuc != '0000-00-00' AND Ngayketthuc < '$ds_0107'))) AS Dansoxa_Nhohon15tuoi,
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaysinh) = $namhoatdong) AND Tinhtrang = 1) AS TSSosinh_Song, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong)) AS TSChet, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%tại trạm%')) AS TSChet_Taitram,
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%tại nhà%')) AS TSChet_Tainha, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%YT khác%')) AS TSChet_YTKhac, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%nơi khác%')) AS TSChet_Noikhac, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ($namhoatdong - YEAR(Ngaysinh)) < 1 AND ThongtincoquanId = $thongtincoquanId AND Tinhtrang = 0)) AS TSChet_nhon1tuoi, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ($namhoatdong - YEAR(Ngaysinh)) < 5 AND ThongtincoquanId = $thongtincoquanId AND Tinhtrang = 0)) AS TSChet_nhon5tuoi, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND Thaisan = 1 AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE Gioitinh = 'Nữ' AND ThongtincoquanId = $thongtincoquanId AND Tinhtrang = 0)) AS TSChetme, 
+		(SELECT COUNT(Id) FROM tblnhankhau WHERE Vanglai = 0 AND ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaysinh) = $namhoatdong) AND Tinhtrang = 1 AND Gioitinh = 'Nữ') AS TSSosinh_Song_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%tại trạm%') AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_Taitram_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%tại nhà%') AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_Tainha_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%YT khác%') AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_YTKhac_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND DiadiemId IN (SELECT Id FROM tbldm_diadiem WHERE Tendiadiem LIKE '%nơi khác%') AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_Noikhac_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ($namhoatdong - YEAR(Ngaysinh)) < 1 AND ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_nhon1tuoi_Nu, 
+		(SELECT COUNT(Id) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND (YEAR(Ngaychet) = $namhoatdong) AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ($namhoatdong - YEAR(Ngaysinh)) < 5 AND ThongtincoquanId = $thongtincoquanId AND Gioitinh = 'Nữ' AND Tinhtrang = 0)) AS TSChet_nhon5tuoi_Nu 
+		FROM tblthongtincoquan WHERE Id = $thongtincoquanId AND Namhoatdong = $namhoatdong";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

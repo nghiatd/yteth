@@ -1,0 +1,132 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ 
+ */
+class MangachController extends PublicdetailController{
+	private $_ArrMangach =array ();
+	private $_Tenmangach;
+	
+	private $_MMangach;
+	
+	
+	
+	
+	public function init() {
+		$this->initValue ();
+		$this->_MMangach = new Model_Mangach();
+	
+		if (isset ( $_REQUEST ['Tenmangach'] ) && $_REQUEST ['Tenmangach'] != '') {
+			$this->_Tenmangach = $_REQUEST ['Tenmangach'];
+			$this->_ArrMangach = array (
+					'Tenmangach' => $_REQUEST ['Tenmangach'],
+					'Mangach' => $_REQUEST ['Mangach']
+			);
+		}
+	}
+	public function updateAction() {
+		$id = $this->_getParam('id');
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MMangach->dupliObj ( $id, $this->_Tenmangach);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MMangach->updateObj ( $id, $this->_ArrMangach);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MMangach->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+	
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MMangach->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$dup = $this->_MMangach->dupliObj ( 0, $this->_Tenmangach);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên mã ngạch này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			
+			$this->_MMangach->addObj ( $this->_ArrMangach);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function combogridAction(){
+		$this->_helper->layout()->disableLayout();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = json_encode($this->_MMangach->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// thomnd
+	public function cbogridmangachAction(){
+		$this->_helper->layout()->disableLayout();
+		$sTenmangach= $this->_getParam('sTenmangach');
+		
+		$jsonObj = json_encode($this->_MMangach->getIdandNameforCbogridObj($sTenmangach));
+		return $this->view->jsonObj = $jsonObj;
+	} 
+	//
+	
+	// tiem kiem trong combogrid
+	public function searAction(){
+		$this->_helper->layout()->disableLayout();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$sTenmangach = $this->_getParam('sTenmangach');
+		$sMaso = $this->_getParam('sMangach');
+		$jsonObj = $this->_MMangach->searObj($sTenmangach, $sMaso, $sort, $order, $offset, $rows);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+}

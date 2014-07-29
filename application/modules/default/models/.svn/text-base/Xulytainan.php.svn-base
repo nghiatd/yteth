@@ -1,0 +1,62 @@
+<?php
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class Model_Xulytainan{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get('db');
+	}
+	
+public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_xulytainan" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Tenxulytainan FROM tbldm_xulytainan ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	//phadh
+	//combo xulytainan
+	public function getNamebyId(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tenxulytainan FROM tbldm_xulytainan ORDER BY Tenxulytainan ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	public function CheckValueObj($id, $varTenxulytainan) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_xulytainan WHERE Tenxulytainan = '$varTenxulytainan'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_xulytainan WHERE Id !=$id and Tenxulytainan = '$varTenxulytainan'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($varTenxulytainan) {
+		$data = array (
+				'Tenxulytainan' => $varTenxulytainan 
+		);
+		$Id = $this->db->insert ( 'tbldm_xulytainan', $data );
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id, $varTenxulytainan) {
+		$data = array (
+				'Tenxulytainan' => $varTenxulytainan 
+		)
+		;
+		$this->db->update ( 'tbldm_xulytainan', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_xulytainan', 'Id=' . $Id );
+		return $Iddel;
+	}
+}

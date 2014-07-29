@@ -1,0 +1,129 @@
+<?php
+class Model_Dieutrasotxuathuyet{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	// hien thi du lieu theo phan trang
+	public function getFetObj($thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblphieudieutrasotxuathuyet
+				WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Sophieudt, NhansuId, DATE_FORMAT(Ngaythang, '%d/%m/%Y') AS Ngaythang,
+				Diemgiamsat, Thoigiangiamsat, (SELECT Hoten FROM tblnhansu WHERE Id = NhansuId) AS Nhanvien
+				FROM tblphieudieutrasotxuathuyet WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $sophieudt, $thongtincoquanId, $namhoatdong, $ngaythang){
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblphieudieutrasotxuathuyet WHERE Sophieudt = '$sophieudt'
+				AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Ngaythang = '$ngaythang'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblphieudieutrasotxuathuyet WHERE Sophieudt = '$sophieudt'
+					AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Ngaythang = '$ngaythang' AND Id != $id");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tblphieudieutrasotxuathuyet', $data);
+		return $Id;
+	}
+	
+	// cao nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tblphieudieutrasotxuathuyet', $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tblphieudieutrasotxuathuyet','Id = '.$id);
+		return $Id;
+	}
+	
+	// kiem tra trung lap du lieu chi tiet phieu dieu tra sot xuat huyet
+	public function dupli($id, $mahodan, $sophieudt, $contrungid, $dungcuchuanuocid, $thongtincoquanId, $namhoatdong){
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblchitietdieutrasoxuathuyet WHERE
+				ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Mahodan = '$mahodan'
+				AND ContrungId = $contrungid AND DungcuchuanuocId = $dungcuchuanuocid AND Sophieudt = '$sophieudt'");
+		if($id != ''){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblchitietdieutrasoxuathuyet WHERE Id != $id AND
+					ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Mahodan = '$mahodan'
+					AND ContrungId = $contrungid AND DungcuchuanuocId = $dungcuchuanuocid AND Sophieudt = '$sophieudt'");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu chi tiet phieu dieu tra sot xuat huyet
+	public function add($data){
+		$Id = $this->db->insert("tblchitietdieutrasoxuathuyet", $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu chi tiet phieu dieu tra sot xuat huyet
+	public function update($id, $data){
+		$Id = $this->db->update("tblchitietdieutrasoxuathuyet", $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu chi tiet phieu dieu tra sot xuat huyet
+	public function del($id){
+		$Id = $this->db->delete("tblchitietdieutrasoxuathuyet", "Sophieudt = '$id'");
+		return $Id;
+	}
+	
+	// hien thi du lieu datagrid khi click sua
+	public function datagrid($sophieudt, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows){
+		$resutl = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblchitietdieutrasoxuathuyet WHERE
+				Sophieudt = '$sophieudt' AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Sophieudt, Mahodan, ContrungId, Soluongcontrung, DungcuchuanuocId, 
+				Soluongdungcu, Tacnhansinhhoc, ChisoBreteau, Chisomuoi, Matdomuoi,
+				(SELECT Tencontrung FROM tbldm_contrung WHERE Id = ContrungId) AS Tencontrung,
+				(SELECT Tendungcuchuanuoc FROM tbldm_dungcuchuanuoc WHERE Id = DungcuchuanuocId) AS Tendungcuchuanuoc,
+				(SELECT Tenchuho FROM tblchuhodan WHERE Mahodan = tblchitietdieutrasoxuathuyet.Mahodan AND 
+				ThongtincoquanId = tblchitietdieutrasoxuathuyet.ThongtincoquanId AND 
+				Namhoatdong = tblchitietdieutrasoxuathuyet.Namhoatdong) AS Tenchuho
+				FROM tblchitietdieutrasoxuathuyet WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong 
+				AND Sophieudt = '$sophieudt' ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// tim kiem du lieu theo dieu kien truyen vao
+	public function searObj($sSophieudt, $sNgaythang, $sNhansuId, $sDiemgiamsat, $sThoigiangiamsat, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows){
+		$result = array();
+		$where = "Sophieudt LIKE '%$sSophieudt%'";
+		if($sNgaythang != '')
+			$where = $where."AND Ngaythang = '$sNgaythang'";
+		if($sNhansuId != '')
+			$where = $where."AND NhansuId IN (SELECT Id FROM tblnhansu WHERE Hoten LIKE '%$sNhansuId%')";
+		if($sDiemgiamsat != '')
+			$where = $where."AND Diemgiamsat LIKE '%$sDiemgiamsat%'";
+		if($sThoigiangiamsat != '')
+			$where = $where."AND Thoigiangiamsat LIKE '%$sThoigiangiamsat%'";
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblphieudieutrasotxuathuyet
+				WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Sophieudt, NhansuId, DATE_FORMAT(Ngaythang, '%d/%m/%Y') AS Ngaythang,
+				Diemgiamsat, Thoigiangiamsat, (SELECT Hoten FROM tblnhansu WHERE Id = NhansuId) AS Nhanvien
+				FROM tblphieudieutrasotxuathuyet WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}

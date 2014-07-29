@@ -1,0 +1,71 @@
+<?php
+class Model_Benhdich
+{
+	 protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	private $str_query = "SELECT Id, Tenbenhdich, ICD10,Tentienganh ";
+	
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_benhdich");
+		$row = $query->fetchAll();
+	
+		$query = $this->db->query($this->str_query." FROM tbldm_benhdich ORDER BY $sort $order LIMIT $offset, $rows");
+		$result["total"] = $row[0]['Total'];
+		$result["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	public function getNameObj($sBd, $sICD, $sTen, $q, $sort, $order, $offset, $rows){
+		$result = array();
+		$where = "Tenbenhdich LIKE '%$sBd%'";
+		if($sICD != '')
+			$where = $where."AND ICD10 LIKE '%$sICD%'";
+		if($sTen != '')
+			$where = $where."AND Tentienganh LIKE '%$sTen%'";
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_benhdich WHERE (Tenbenhdich LIKE '%$q%' OR ICD10 LIKE '%$q%'OR Tentienganh LIKE '%$q%') AND $where");
+		$row = $query->fetchAll();
+	
+		$query = $this->db->query($this->str_query." FROM tbldm_benhdich WHERE (Tenbenhdich LIKE '%$q%' OR ICD10 LIKE '%$q%'OR Tentienganh LIKE '%$q%') AND $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result["total"] = $row[0]['Total'];
+		$result["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	public function dupObj($id, $tenbenhdich){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_benhdich WHERE Tenbenhdich = '$tenbenhdich'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_benhdich WHERE Id != $id AND Tenbenhdich = '$tenbenhdich'");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	public function addObj($data){
+		$id = $this->db->insert('tbldm_benhdich', $data);
+		return $id;
+	}
+	
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbldm_benhdich', $data, 'Id ='.$id);
+		return $Id;
+	}
+	
+	/* public function updateObj($id, $data){
+		$Id = $this->db->update('tbldm_benhdich', $data, 'Id = '.$id);
+		return $Id;
+	} */
+	
+	public function delObj($id){
+		$Id = $this->db->delete('tbldm_benhdich', 'Id ='.$id);
+		return $Id;
+	}
+	
+	
+	
+}

@@ -1,0 +1,116 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class TinhluongController extends PublicdetailController {
+	private $_MTinhluong;
+	private $_MHistory;
+	private $_ThongtincoquanId;
+	public function init() {
+		$this->initValue ();
+		$this->_MTinhluong = new Model_Tinhluong ();
+		$this->_MHistory = new Model_History ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+	}
+	public function indexAction() {
+	}
+	
+	// them moi du lieu
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$ngaynghi = $this->_getParam ( 'Ngaynghi' );
+		$ngaynghi = isset ( $ngaynghi ) ? $this->convertDateSearch ( $ngaynghi ) : '';
+		$items = $_REQUEST ['items'];
+		$this->_MTinhluong->delObj ( $ngaynghi, $this->_ThongtincoquanId );
+		foreach ( $items as $item ) {
+			$data = array ();
+			$data ['NhanvienId'] = $item ['Id'];
+			$data ['ThongtincoquanId'] = $this->_ThongtincoquanId;
+			$data ['Ngaythang'] = $ngaynghi;
+			$data ['Chamcong'] = 1;
+			$data ['Lydo'] = $item ['Lydo'];
+			$this->_MTinhluong->addObj ( $data );
+		}
+		$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+		$jsonObj ["success"] = true;
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function jsonAction(){
+		$this->_helper->layout ()->disableLayout ();
+		
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$jsonObj = json_encode($this->_MTinhluong->getFetObj($this->_ThongtincoquanId, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function inforquatrinhluongAction(){
+		$Nhanvienid = $this->_getParam('NhanvienId');
+		$this->_helper->layout()->disableLayout();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = array();
+		$jsonObj = $this->_MTinhluong->getthongtinnangluongfobyId($Nhanvienid);
+		return $this->view->jsonObj =json_encode( $jsonObj);
+	}
+	
+	public function detailAction(){
+		$this->_helper->layout()->disableLayout();
+		$sManhanvien = $this->_getParam('Manhanvien');
+		$jsonObj = $this->_MTinhluong->detailObj($sManhanvien, $this->_ThongtincoquanId);
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// hien thi du lieu theo phan trang tim kiem
+	public function searAction(){
+		$this->_helper->layout ()->disableLayout ();
+		
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$sHoten = $this->_getParam('sHoten');
+		$sNgaysinh = $this->_getParam('sNgaysinh');
+		$sTo = $this->_getParam('sTo');
+		$sMangach = $this->_getParam('sMangach');
+		if($sNgaysinh != ''){
+			$sNgaysinh = $this->convertDateSearch($sNgaysinh);
+		}
+		
+		$jsonObj = $this->_MTinhluong->searObj($this->_ThongtincoquanId, $sort, $order, $offset, $rows, $sHoten, $sNgaysinh, $sTo, $sMangach);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// tinh luong theo ket qua tim kiem
+	public function tinhluongAction(){
+		$this->_helper->layout ()->disableLayout ();
+		
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$sHoten = $this->_getParam('sHoten');
+		$sNgaysinh = $this->_getParam('sNgaysinh');
+		$sTo = $this->_getParam('sTo');
+		$sMangach = $this->_getParam('sMangach');
+		if($sNgaysinh != ''){
+			$sNgaysinh = $this->convertDateSearch($sNgaysinh);
+		}
+		
+		$jsonObj = $this->_MTinhluong->tinhluongObj($this->_ThongtincoquanId, $sort, $order, $offset, $rows, $sHoten, $sNgaysinh, $sTo, $sMangach);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+}

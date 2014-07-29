@@ -1,0 +1,151 @@
+<?php
+/*********
+ * Create by thomnd / ngay 23/06/2013 da co ty le quye doi
+ */
+include 'PublicdetailController.php';
+class ThietbivattuController extends PublicdetailController {
+	private $_MThietbivattu;
+	private $_Tenthietbivattu;
+	private $_Thietbivattu = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MThietbivattu = new Model_Thietbivattu ();
+		
+			if (isset ( $_REQUEST ['Tenthietbivattu'] ) && $_REQUEST ['Tenthietbivattu'] != '') {
+				$this->_Tenthietbivattu = $_REQUEST ['Tenthietbivattu'];
+				$hinhanh = $this->getImage ();
+				
+				$this->_Thietbivattu = array (
+						'Tenthietbivattu' => $this->_Tenthietbivattu,
+						'DonvitinhId' => $_REQUEST ['DonvitinhId'],
+						'Hinhanh' => $hinhanh
+				);
+			}
+		} 
+	public function indexAction() {
+	}
+
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThietbivattu->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThietbivattu->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MThietbivattu->dupliObj (0, $this->_Tenthietbivattu, $_REQUEST['DonvitinhId']);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên vật tư này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThietbivattu->addObj ( $this->_Thietbivattu );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function updateAction() {
+		$id = $this->_getParam ( 'idthietbivattu' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MThietbivattu->dupliObj ($id, $this->_Tenthietbivattu, $_REQUEST ['DonvitinhId'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên vật tư này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThietbivattu->updateObj ( $id, $this->_Thietbivattu );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['idthietbivattu'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MThietbivattu->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function getImage() {
+		$hinhanh = (isset ( $_FILES ['image'] ['tmp_name'] ) && $_FILES ['image'] ['tmp_name'] != "") ? $_FILES ['image'] ['tmp_name'] : "";
+		$imgData = "";
+		try {
+			if ($hinhanh != "")
+				$imgData = file_get_contents ( $hinhanh );
+		} catch ( Excpetion $e ) {
+			echo "<script type=\"text/javascript\">
+				alert('Exception: Upload image!');
+				</script>";
+		}
+		return $imgData;
+	}
+	
+	
+	////////////////search thong tin Thietbivattu
+	public function searAction() {
+		$this->_helper->layout ()->disableLayout ();
+	
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+	
+		$Tenthietbivattus = $this->_getParam ( 'sTenthietbivattu' );
+		
+	
+		$jsonObj = json_encode ( $this->_MThietbivattu->searObj ( $Tenthietbivattus, $sort, $order, $offset, $rows ) );
+	
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// lay thong tin chi tiet cua thuoc
+	
+	public function detailAction() {
+		$id = $this->_getParam ( 'idthietbivattu' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+
+		$jsonObj = $this->_MThietbivattu->getObjById_Detail ( $id );
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+}

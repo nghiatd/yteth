@@ -1,0 +1,70 @@
+<?php
+/*
+ * Created thomnd
+ */
+class Model_CTDutruthuoc {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getFetObjByMaDutruthuoc($Sophieudt, $ThongtincoquanId) {
+		$query = $this->db->query ( "	select	Id,Sophieudt ,ThuocId as cId
+				
+				, (select Tenthuoc from tbldm_thuoc where Id=tblchitietdutruthuocbaohiem.ThuocId	) as cTenthuoc
+				
+				
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where id=tblchitietdutruthuocbaohiem.ThuocId) ) as Tendonvitinh
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where id=tblchitietdutruthuocbaohiem.ThuocId) ) as cTendonvitinh
+				
+				,Soluong as cSoluong,Soluongduyet as cSoluongduyet,
+				NuocsanxuatId as cNuocsanxuatId
+				,(select Tennuocsanxuat from tbldm_nuocsanxuat where Id=tblchitietdutruthuocbaohiem.NuocsanxuatId) as cTennuocsanxuat
+				,Ghichu as cGhichu,ThongtincoquanId
+			 from tblchitietdutruthuocbaohiem	where   Sophieudt='$Sophieudt' and ThongtincoquanId =$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	
+
+	public function getFetObjByMaDutruthuocthietbi($Sophieudt, $ThongtincoquanId) {
+		$query = $this->db->query ( "	select	Id,Sophieudt ,ThuocId as cId
+	
+				, (select Tenthuoc from tbldm_thuoc where Id=tblchitietdutruthuocbaohiem.ThuocId		) as cTenthuoc
+	
+	
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where id=tblchitietdutruthuocbaohiem.ThuocId) ) as Tendonvitinh
+	
+				,Soluong as cSoluong,Soluongduyet as cSoluongduyet,	NuocsanxuatId as cNuocsanxuatId,
+				(select Tennuocsanxuat from tbldm_nuocsanxuat where Id=tblchitietdutruthuocbaohiem.NuocsanxuatId) as cTennuocsanxuat
+				,				
+				Ghichu as cGhichu,ThongtincoquanId
+				from tblchitietdutruthuocbaohiem		where   Sophieudt='$Sophieudt' and ThongtincoquanId =$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	
+	public function getFetObjByMaDutruthuocExcel($Sophieudt, $ThongtincoquanId){
+		$query = $this->db->query ( "select	Id,Sophieudt,ThuocId
+				, (select Tenthuoc from tbldm_thuoc where Id=tblchitietdutruthuocbaohiem.ThuocId		) as Tenthuoc
+				,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where id=tblchitietdutruthuocbaohiem.ThuocId) ) as Tendonvitinh
+				,Soluong,Soluongduyet,	NuocsanxuatId,
+				(select Tennuocsanxuat from tbldm_nuocsanxuat where Id=tblchitietdutruthuocbaohiem.NuocsanxuatId) as Tennuocsanxuat
+				,Ghichu,ThongtincoquanId
+			 from tblchitietdutruthuocbaohiem	where  Sophieudt='$Sophieudt' and ThongtincoquanId =$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	public function addObj($_data) {
+
+		$id = $this->db->insert ('tblchitietdutruthuocbaohiem', $_data );
+		return $id;
+	}
+	
+	
+	public function delObj($Sophieudt, $ThongtincoquanId) {
+		$where [] = "Sophieudt = '$Sophieudt'";
+		$where [] = "ThongtincoquanId = $ThongtincoquanId";
+		$idDel = $this->db->delete ( 'tblchitietdutruthuocbaohiem', $where );
+		return $idDel;
+	}
+}

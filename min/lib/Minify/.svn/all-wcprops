@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify
+END
+Packer.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/Packer.php
+END
+CommentPreserver.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/CommentPreserver.php
+END
+HTML.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/HTML.php
+END
+Source.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/Source.php
+END
+Javascript.php
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/Javascript.php
+END
+ImportProcessor.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/ImportProcessor.php
+END
+Build.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/Build.php
+END
+Lines.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/Lines.php
+END
+YUICompressor.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/YUICompressor.php
+END
+CSS.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/SVN_Ytetonghop/!svn/ver/724/min/lib/Minify/CSS.php
+END

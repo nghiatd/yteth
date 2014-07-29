@@ -1,0 +1,45 @@
+<?php
+/**
+ * Phadh
+ * @author webmaster
+ *Báo cáo kết quả tiêm chủng cho trẻ em (Tiêm chủng mở rộng)
+ */
+class Model_Bcketquatiemchungchotreem{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	// lay du lieu bao cao theo gia tri truyen vao
+	public function gettiemchungtreem($thongtincoquanId, $namhoatdong, $where){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmiendich WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Sởi') AND DATE_FORMAT(Ngayvaoso, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngayvaoso, '%Y/%m') <= '$where') AS TS_SOI,
+		(SELECT COUNT(DISTINCT NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND (Lantiem = 1 OR Lantiem = 2)) AS TS_VIEMNAO12,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 1) AS TS_VIEMNAO1,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 2) AS TS_VIEMNAO2,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 3) AS TS_VIEMNAO13,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 3) AS TS_VIEMNAO3,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Thương hàn') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where') AS TS_THUONGHAN,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Thương hàn') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$where' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 3) AS TS_THUONGHAN3
+		FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Vanglai =0");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// lay du lieu cong don theo gia tri tuyen vao
+	public function gettiemcungtreemcongdon($thongtincoquanId, $namhoatdong, $where){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmiendich WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Sởi') AND DATE_FORMAT(Ngayvaoso, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngayvaoso, '%Y/%m') <= '$where') AS TS_SOI,
+		(SELECT COUNT(DISTINCT NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND (Lantiem = 1 OR Lantiem = 2)) AS TS_VIEMNAO12,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 1) AS TS_VIEMNAO1,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 2) AS TS_VIEMNAO2,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 3) AS TS_VIEMNAO13,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Viêm não') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 3) AS TS_VIEMNAO3,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Thương hàn') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where') AS TS_THUONGHAN,
+		(SELECT COUNT(NhankhauId) FROM tbltiemchungmorong WHERE MuctiemchungId IN (SELECT Id FROM tbldm_muctiemchung WHERE Tenmuctiemchung = 'Thương hàn') AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') >= '$namhoatdong/01' AND DATE_FORMAT(Ngaytiemchung, '%Y/%m') <= '$where' AND Lantiem = 3) AS TS_THUONGHAN3
+		FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Vanglai =0");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

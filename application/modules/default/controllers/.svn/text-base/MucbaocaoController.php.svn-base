@@ -1,0 +1,115 @@
+<?php
+/**
+ * @authorPhadh
+ */
+include 'PublicdetailController.php';
+class MucbaocaoController extends PublicdetailController{
+	
+	private $_MMucbaocao;
+	private $_Tenmucbaocao;
+	private $_Mucbaocao = array();
+	public function init(){
+		$this->initValue();
+		$this->_MMucbaocao = new Model_Mucbaocao();
+		
+		if (isset ($_REQUEST['Tenmucbaocao']) && $_REQUEST['Tenmucbaocao'] != ''){
+			$this->_Tenmucbaocao = $_REQUEST['Tenmucbaocao'];
+			$this->_Mucbaocao = array(
+					'Tenmucbaocao' => $_REQUEST['Tenmucbaocao']
+					);
+		}
+	}
+	
+	
+	
+	public function indexAction(){
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MMucbaocao->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// combobox muc bao cao
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MMucbaocao->getIdName());
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi du lieu muc bao cao
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		$dub = $this->_MMucbaocao->dubliObj(0, $this->_Tenmucbaocao);
+		if($dub > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên mục báo cáo này đã có!');
+			</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj=json_encode($jsonObj);
+		}else{
+			$this->_MMucbaocao->addObj($this->_Mucbaocao);
+			$jsonObj["success"]=true;
+			return $this->view->jsonObj=json_encode($jsonObj);
+		}
+	}
+	
+	// cap nhat du lieu muc bao cao
+	public function updateAction(){
+		$id = $this->getParam('id');
+		$Tenmucbaocao = $_REQUEST['Tenmucbaocao'];
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		$dup = $this->_MMucbaocao->dubliObj($id, $Tenmucbaocao);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên mục báo cáo nỳ đã có!');
+			</script>";
+			$jsonObj["success"]=false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}else{
+			$this->_MMucbaocao->updateObj($id, $this->_Mucbaocao);
+			$jsonObj["success"]=true;
+		}
+			return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// xao du lieu muc bao cao
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MMucbaocao->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

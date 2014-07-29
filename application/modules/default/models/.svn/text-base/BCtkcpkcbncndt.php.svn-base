@@ -1,0 +1,27 @@
+<?php
+/*************
+ * Create by Daitk
+ * THÔNG KÊ CHI PHÍ KCB NGOẠI TRÚ CÁC NHÓM ĐỐI TƯỢNG THEO TUYẾN CHUYÊN MÔN KỸ THUẬT
+ */
+class Model_BCtkcpkcbncndt {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getTen_Huyen_Tinh($coquanId) {
+		$str_query = "SELECT (SELECT Tenhuyen FROM tbldm_huyen WHERE Id = HuyenId) AS Tenhuyen, (SELECT Tentinh FROM tbldm_tinh, tbldm_huyen WHERE tbldm_tinh.Id = tbldm_huyen.TinhId AND tbldm_huyen.Id = HuyenId) AS Tentinh FROM tbldm_xa WHERE Id = $coquanId";
+		$query = $this->db->query ( $str_query );
+		$rows = $query->fetchAll ();
+		return $rows [0];
+	}
+	public function getInfor($thongtincoquanId, $namhoatdong, $ngaybatdau, $ngayketthuc, $nhombhyt,$arraymucluutru) {
+		$str_query = "SELECT COUNT(*) AS SL_Dungtuyen, SUM(Thuocdich) AS Thuocdich, SUM(Congkham) AS Congkham, SUM(Tienthuthuat) AS Tienthuthuat FROM 
+				(SELECT (SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId ) AS Hoten, Tienthuthuat, 
+				(SELECT SUM((SELECT SUM(Soluong * Dongia) FROM tblchitietnhapxuat WHERE Mahoadon = tblnhapxuat.Mahoadon AND ThongtincoquanId = $thongtincoquanId and MucluutruId in $arraymucluutru LIMIT 1)) AS Tongtien FROM tblnhapxuat WHERE PhieukhambenhId = tblphieukhambenh.Id) AS Thuocdich, 
+				(SELECT Giatien FROM tbldm_dongia WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong) AS Congkham 
+				FROM tblphieukhambenh WHERE ThongtincoquanId = $thongtincoquanId AND Ngaylapphieu BETWEEN '$ngaybatdau' AND '$ngayketthuc' AND (SUBSTRING(Sobaohiem, 1, 2) IN ($nhombhyt))
+				) AS TMP WHERE Hoten != ''";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

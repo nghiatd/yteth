@@ -1,0 +1,51 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_BCKhambenh {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - HOẠT ĐỘNG KHÁM CHỮA BỆNH
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getHDKCB($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$str_query = "SELECT (SELECT Tongsoduongbenh FROM tblngansachmotnam WHERE Namhoatdong = $namhoatdong AND ThongtincoquanId = $thongtincoquanId) AS TSGiuong, COUNT(Id) AS TSKhambenh, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND YHCT = 1) AS TSKhambenh_YHCT, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND NhankhauId 
+				IN (SELECT Id FROM tblnhankhau WHERE ($namhoatdong - YEAR(Ngaysinh)) < 6)) AS TSKhambenh_Treem, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%nội trú%')) AS TSKhambenh_Noitru, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%nội trú%') AND YHCT = 1) AS TSKhambenh_Noitru_YHCT, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%nội trú%') AND NhankhauId IN (SELECT Id FROM tblnhankhau 
+				WHERE ($namhoatdong - YEAR(Ngaysinh)) < 6)) AS TSKhambenh_Noitru_Treem, 
+				IF(SUM(Songaynoitru) > 0, SUM(Songaynoitru), 0) AS TSNgaynoitru, 
+				(SELECT IF(SUM(Songaynoitru) > 0, SUM(Songaynoitru), 0) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%nội trú%') AND YHCT = 1) AS TSNgaynoitru_YHCT, 
+				(SELECT IF(SUM(Songaynoitru) > 0, SUM(Songaynoitru), 0) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%nội trú%') AND NhankhauId IN (SELECT Id FROM tblnhankhau 
+				WHERE ($namhoatdong - YEAR(Ngaysinh)) < 6)) AS TSNgaynoitru_Treem, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%ngoại trú%')) AS TSKhambenh_Ngoaitru, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%ngoại trú%') AND YHCT = 1) AS TSKhambenh_Ngoaitru_YHCT, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND PhuongphapdieutriId IN 
+				(SELECT Id FROM tbldm_phuongphapdieutri WHERE Tenphuongphap LIKE '%ngoại trú%') AND NhankhauId IN 
+				(SELECT Id FROM tblnhankhau WHERE ($namhoatdong - YEAR(Ngaysinh)) < 6)) AS TSKhambenh_Ngoaitru_Treem, 
+				(SELECT COUNT(Id) FROM tblxetnghiem WHERE (EXTRACT( YEAR_MONTH FROM Ngayxetnghiem ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId) AS TSXetnghiem, 
+				(SELECT COUNT(Id) FROM tblsieuam WHERE (EXTRACT( YEAR_MONTH FROM Ngaysieuam ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId) AS TSSieuam, 
+				(SELECT COUNT(Id) FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId AND Chutrinhdieutri = 2) AS TSChuyenvien, 
+				(SELECT Tongsokhamduphong FROM tblngansachmotnam WHERE Namhoatdong = $namhoatdong AND ThongtincoquanId = $thongtincoquanId) AS TSKhamduphong 
+				FROM tblphieukhambenh WHERE (EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

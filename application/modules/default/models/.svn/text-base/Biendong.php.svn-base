@@ -1,0 +1,25 @@
+<?php
+/**
+ * Phadh
+ * @author webmaster
+ *
+ */
+class Model_Biendong{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_biendong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Mabiendong, Tenbiendong,
+				IF(BHXH = 1, 'on', '') AS BHXH, IF(BHYT = 1, 'on', '') AS BHYT, IF(BHTN = 1, 'on', '') AS BHTN
+				FROM tbldm_biendong ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}

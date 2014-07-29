@@ -1,0 +1,29 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_BCBenhtruyennhiem {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - CÁC BỆNH TRUYỀN NHIỄM GÂY DỊCH VÀ BỆNH QUAN TRỌNG
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 */
+	public function getCBTNGDVBQT($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc) {
+		$str_query = "SELECT Id, Tenbenhdich, (SELECT COUNT(Id) FROM tblphieukhambenh WHERE BenhdichId = tbldm_benhdich.Id AND 
+		(EXTRACT( YEAR_MONTH FROM Ngaylapphieu ) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId) AS Mac, (SELECT COUNT(Id) FROM 
+		tblgiaykhaitu WHERE Nguyennhan LIKE CONCAT('%', Tenbenhdich ,'%') AND (EXTRACT( YEAR_MONTH FROM Ngaychet ) BETWEEN 
+		$thangnamBatdau AND $thangnamKetthuc) AND ThongtincoquanId = $thongtincoquanId) AS Chet FROM tbldm_benhdich WHERE Tenbenhdich IN ('Các bệnh tiêu chảy', 
+		'Dại và nghi dại', 'Thủy đậu', 'Quai bị', 'Viêm hô hấp trên', 'Viêm phế quản', 'Viêm phổi', 'Cảm cúm', 'Tự tử', 
+		'Ngộ độc thực phẩm', 'Tai nạn giao thông', 'Tai nạn lao động', 'Ngộ độc hóa chất', 'Tai nạn, ngộ độc, chấn thương khác')";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

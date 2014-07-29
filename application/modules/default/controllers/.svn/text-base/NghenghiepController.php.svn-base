@@ -1,0 +1,113 @@
+<?php
+/**
+ * Phadh
+ */
+include 'PublicdetailController.php';
+class NghenghiepController extends PublicdetailController{
+	private $_MNghenghiep;
+	private $_Tennghenghiep;
+	private $_Nghenghiep = array();
+	public function init() {
+		$this->initValue ();
+		$this->_MNghenghiep = new Model_Nghenghiep();
+		if (isset ( $_REQUEST ['Tennghenghiep'] ) && $_REQUEST ['Tennghenghiep'] != ''){
+			$this->_Tennghenghiep = $_REQUEST['Tennghenghiep'];
+			$this->_Nghenghiep = array(
+					'Tennghenghiep' => $this->_Tennghenghiep
+			);
+		}
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = $this->_MNghenghiep->getFetObj($sort, $order, $offset, $rows);
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	//them moi du lieu
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MNghenghiep->dupliObj(0, $this->_Tennghenghiep);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+					    alert('Dữ liệu này đã tồn tại!');
+					</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MNghenghiep->addObj($this->_Nghenghiep);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	//cap nhat du lieu
+	public function updateAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('id');
+		// kiem tra trung lap du lieu
+		$dup = $this->_MNghenghiep->dupliObj($id, $this->_Tennghenghiep);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+					    alert('Dữ liệu này đã tồn tại!');
+					</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MNghenghiep->updateObj($id,$this->_Nghenghiep);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// xoa du lieu
+	public function delAction() {
+		$id = $_REQUEST ['id'];
+		$delId = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$delId = $this->_MNghenghiep->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $delId) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		//$this->_MHistory->insert($this->TblUserbyId[0]['Id'], $this->Time_Ac, 'tbldm_chucvu', 'Xóa', $this->UserIP);
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// hien thi du lieu combo
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = $this->_MNghenghiep->getFetObj1();
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	// hein thi combo trong ho khau
+	public function combointohokhauAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = $this->_MNghenghiep->getcombo();
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	// hein thi combo trong ho khau
+	public function combointonhankhauAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = $this->_MNghenghiep->getcombonhankhau();
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+}

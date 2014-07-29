@@ -1,0 +1,82 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * phadh
+ * @author webmaster
+ *
+ */
+class CtdaotaonhansuController extends PublicdetailController{
+	private $_MCtdaotao;
+	private $_CtDaotao = array();
+	private $_NhansuId;
+	private $_DaotaonhansuId;
+	public function init(){
+		$this->initValue();
+		$this->_MCtdaotao = new Model_Ctdaotaonhansu();
+		if (isset ( $_REQUEST ['NhansuId'] ) && $_REQUEST ['NhansuId'] != ''){
+			$this->_NhansuId = $_REQUEST['NhansuId'];
+			$this->_DaotaonhansuId = $_REQUEST['DaotaonhansuId'];
+			$this->_CtDaotao = array(
+					'NhansuId' => $this->_NhansuId,
+					'DaotaonhansuId' => $this->_DaotaonhansuId,
+					'Ketqua' => $_REQUEST['Ketqua'],
+					'Ghichu' => $_REQUEST['Ghichu']
+					);
+		}
+	}
+	// them moi du lieu
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MCtdaotao->dupliObj(0, $this->_NhansuId, $this->_DaotaonhansuId);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Đang tồn tại dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$id = $this->_MCtdaotao->addObj($this->_CtDaotao);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	// cap nhat du lieu
+	public function updateAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('id');
+		$jsonObj = array();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MCtdaotao->dupliObj($id, $this->_NhansuId, $this->_DaotaonhansuId);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Đang tồn tại dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$id = $this->_MCtdaotao->updateObj($id,$this->_CtDaotao);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	//xoa du lieu
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_MCtdaotao->delObj ( $item ['Id'] );
+				$jsonObj = array (
+						'success' => true
+				);
+			}
+		}
+		//$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblchuyenvien', 'Xóa phiếu', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+}

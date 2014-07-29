@@ -1,0 +1,159 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author GiangKuteo
+ *
+ */
+class HangsanxuatController extends PublicdetailController
+{
+	private $_MHangsanxuat;
+	private $_Tenhang;
+	private $_Nguoilienhe;
+	private $_Chucvu;
+	private $_Diachi;
+	private $_Dienthoai;
+	private $_Fax;
+	private $_Email;
+	private $_Website;
+	private $_Ghichu;
+	//private $_Logo;
+	private $_Hangsanxuat = array();
+	
+	public function init(){
+		$this->initValue();
+		$this->_MHangsanxuat = new Model_Hangsanxuat();
+		
+		if(isset($_REQUEST['Tenhang']) && $_REQUEST['Tenhang'] != ''){
+			$this->_Tenhang = $_REQUEST['Tenhang'];
+			$this->_Nguoilienhe = $_REQUEST['Nguoilienhe'];
+			$this->_Chucvu = $_REQUEST['Chucvu'];
+			$this->_Diachi = $_REQUEST['Diachi'];
+			$this->_Dienthoai = $_REQUEST['Dienthoai'];
+			$this->_Fax = $_REQUEST['Fax'];
+			$this->_Email = $_REQUEST['Email'];
+			$this->_Website = $_REQUEST['Website'];
+			$this->_Ghichu = $_REQUEST['Ghichu'];
+			$this->_anh = (isset ( $_FILES ['Logo'] ['tmp_name'] ) && $_FILES ['Logo'] ['tmp_name'] != "") ? $_FILES ['Logo'] ['tmp_name'] : "";
+			
+			$logo = $this->getImage ();
+			$this->_Hangsanxuat = array(
+					'Tenhang' => $_REQUEST['Tenhang'],
+					'Nguoilienhe' => $_REQUEST['Nguoilienhe'],
+					'Chucvu' => $_REQUEST['Chucvu'],
+					'Diachi' => $_REQUEST['Diachi'],
+					'Dienthoai' => $_REQUEST['Dienthoai'],
+					'Fax' => $_REQUEST['Fax'],
+					'Email' => $_REQUEST['Email'],
+					'Website' => $_REQUEST['Website'],
+					'Ghichu' => $_REQUEST['Ghichu'],
+					'Logo' => $logo
+				);
+		}
+	}
+	
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MHangsanxuat->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function detailAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('id');
+		$jsonObj = array();
+		$jsonObj = $this->_MHangsanxuat->getNamebyIdObj($id);
+		return $this->view->jsonObj = $jsonObj;
+	}
+		
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MHangsanxuat->getNameObj());
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		$dup = $this->_MHangsanxuat->dupObj(0, $this->_Tenhang);
+		/* echo "<script type=\"text/javascript\">
+			    alert('$dup!');
+			</script>";
+		return; */
+		if($dup>0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên hãng sản xuất này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MHangsanxuat->addObj($this->_Hangsanxuat);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function updateAction(){
+		$id = $this->_getParam('id');
+		$this->_helper->layout()->disableLayout();
+		$dup = $this->_MHangsanxuat->dupObj($id, $this->_Tenhang);
+		if($dup>0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên hãng sản xuất này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MHangsanxuat->updateObj($id, $this->_Hangsanxuat);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function delAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $_REQUEST['id'];
+		$_Id = null;
+		$jsonObj = null;
+		if(isset($id) && $id>0){
+			$_Id = $this->_MHangsanxuat->delObj($id);
+		}else{
+			return;
+		}
+		if(!$_Id){
+			$jsonObj = json_encode(array('success' => false));
+		}else{
+			$jsonObj = json_encode(array('success' => true));
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+
+	public function getImage() {
+		$logo = (isset ( $_FILES ['image'] ['tmp_name'] ) && $_FILES ['image'] ['tmp_name'] != "") ? $_FILES ['image'] ['tmp_name'] : "";
+		$imgData = "";
+		try {
+			if ($logo != "")
+				$imgData = file_get_contents ( $logo );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+				alert('Exception: Upload image!');
+				</script>";
+		}
+		return $imgData;
+	}
+	
+	
+}

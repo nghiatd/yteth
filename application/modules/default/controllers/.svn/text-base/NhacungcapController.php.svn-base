@@ -1,0 +1,113 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author GiangKuteo
+ *
+ */
+class NhacungcapController extends PublicdetailController
+{
+	private $_MNhacungcap;
+	private $_Tennhacungcap;
+	private $_Ghichu;
+	private $_Nhacungcap = array();
+	
+	public function init(){
+		$this->initValue();
+		$this->_MNhacungcap = new Model_Nhacungcap();
+		
+		if (isset($_REQUEST['Tennhacungcap']) && $_REQUEST['Tennhacungcap'] != ''){
+			$this->_Tennhacungcap = $_REQUEST['Tennhacungcap'];
+			$this->_Ghichu = $_REQUEST['Ghichu'];
+			$this->_Nhacungcap = array(
+					'Tennhacungcap' => $_REQUEST['Tennhacungcap'],
+					'Ghichu' => $_REQUEST['Ghichu']);
+		}
+	}
+	
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MNhacungcap->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MNhacungcap->getNameIdObj());
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		$dup = $this->_MNhacungcap->dupObj(0, $this->_Tennhacungcap);
+		if($dup>0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên nhà cung cấp đã có!');
+			</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}else{
+			$this->_MNhacungcap->addObj($this->_Nhacungcap);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+		
+	}
+	
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MNhacungcap->dupObj($id, $this->_Tennhacungcap);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên nhà cung cấp này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MNhacungcap->updateObj($id, $this->_Nhacungcap);
+			$jsonObj ["success"] = true;
+		}$jsonObj ["success"] = true;
+		
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MNhacungcap->delObj($id);
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+}

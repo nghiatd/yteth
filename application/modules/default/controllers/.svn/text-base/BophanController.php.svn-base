@@ -1,0 +1,141 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class BophanController extends PublicdetailController {
+	private $_MBophan;
+	private $_TenBophan;
+	private $_ThongtincoquanId;
+	private $_Bophan = array ();
+	private $_MHistory;
+	public function init() {
+		$this->initValue ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_MBophan = new Model_Bophan ();
+		$this->_MHistory = new Model_History ();
+		
+		if (isset ( $_REQUEST ['Tenbophan'] ) && $_REQUEST ['Tenbophan'] != '') {
+			$this->_Tenbophan = $_REQUEST ['Tenbophan'];
+			$varNhakho = $_REQUEST ['Nhakho'];
+			$this->_Bophan = array (
+					'Tenbophan' => $_REQUEST ['Tenbophan'],
+					'Diengiai' => $_REQUEST ['Diengiai'],
+					'Nhakho' => $varNhakho,
+					'Namhoatdong' => $this->TblThongtincoquanbyId [0] ['Namhoatdong'],
+					'ThongtincoquanId' => $_REQUEST ['ThongtincoquanId'] 
+			);
+		}
+	}
+	public function indexAction() {
+	}
+	/**
+	 * - View dá»¯ liá»‡u.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$CoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MBophan->getFetObj ( $sort, $order, $offset, $rows, $CoquanId, $this->TblThongtincoquanbyId [0] ['Namhoatdong'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra vá»� Id vÃ  TÃªn cá»§a Ä‘á»‘i tÆ°á»£ng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		
+		// $Trangthai=1 -> chi hiển thị kho, $Trangthai=2-> hien thi không phải
+		// là kho
+		// $Trangthai=3-> Hiển thị tất cả
+		$Trangthai = $this->_getParam ( 'Trangthai' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MBophan->getIdandNameObj ( $Trangthai, $this->_ThongtincoquanId, $this->TblThongtincoquanbyId [0] ['Namhoatdong'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function combobyiddonviAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MBophan->getIdName ( $this->_ThongtincoquanId, $this->TblThongtincoquanbyId [0] ['Namhoatdong'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	/**
+	 * - ThÃªm dá»¯ liá»‡u.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MBophan->dupliObj ( 0, $this->_Tenbophan, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bạn nhập đã có trong dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MBophan->addObj ( $this->_Bophan );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_bophan', 'Thêm', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sá»­a dá»¯ liá»‡u.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MBophan->dupliObj ( $id, $this->_Tenbophan, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bạn nhập đã có trong dữ liệu!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MBophan->updateObj ( $id, $this->_Bophan );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_bophan', 'Sửa', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - XÃ³a dá»¯ liá»‡u.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false 
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_MBophan->delObj ( $item ['Id'] );
+				$jsonObj = array (
+						'success' => true 
+				);
+			}
+		}
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_bophan', 'Xóa', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function nhansuAction() {
+		echo $_REQUEST ['idp'];
+	}
+}

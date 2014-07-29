@@ -1,0 +1,140 @@
+<?php
+class Model_Tinhhinhsdthuocbhyt
+{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+
+	public function getFetObj($sMucluu,$thongtincoquanid, $thang,$namhoatdong)
+	{
+		
+		$sqlMucluu="";
+		$sqlMucluutonghop="";
+		if($sMucluu==0)
+		{
+			$sqlMucluu=="";
+		$sqlMucluutonghop="";
+		}
+		else
+		{
+			$sqlMucluu=" and vwNhapxuat.MucluutruId=$sMucluu ";
+			$sqlMucluutonghop=" and MucluutruId=$sMucluu ";
+		}			
+		
+		$sdateend=''.$namhoatdong.'-'.($thang).'-'.'31';
+		$sdatebg=''.$namhoatdong.'-'.($thang).'-'.'01';
+		$strSql="
+				
+		select Idthuoc,Tenthuoc, Tendonvi,Sldauthang,Dongiadauthang,
+		Thanhtiendauthang,Slnhaptrongthang,Dongianhaptrongthang, Thanhtiennhaptrongthang,
+		Slsdtrongthang,Dongiasdtrongthang,Thanhtiensdtrongthang,
+		Sltoncuoithang, Dongiatoncuoithang,  Thanhtientoncuoithang,
+		Noisanxuat
+		from 
+		
+	
+		(select Idthuoc,Tenthuocvattu as Tenthuoc,Tendonvitinh as Tendonvi,
+		(select  sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid
+		and  Ngaynhapxuat <'$sdatebg'   and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Sldauthang,
+		
+		(select  Dongia  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid
+		and  Ngaynhapxuat <'$sdatebg'   and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Dongiadauthang,
+		
+		(select  sum(Soluong*Dongia)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid
+		and  Ngaynhapxuat <'$sdatebg'   and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Thanhtiendauthang,
+		(select  sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Slnhaptrongthang,
+		
+		(select  Dongia  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Dongianhaptrongthang,
+		
+		(select  sum(Soluong*Dongia)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+			having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Thanhtiennhaptrongthang,
+		
+		(select  -1*sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		) as Slsdtrongthang,
+		
+		(select Dongia  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and 
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		) as Dongiasdtrongthang,
+		
+		 (select  -1*sum(Soluong*Dongia)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang $sqlMucluu
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		) as Thanhtiensdtrongthang,
+		
+		 sum(Soluong) as Sltoncuoithang,Dongia as  Dongiatoncuoithang,(sum(Soluong)*Dongia ) as  Thanhtientoncuoithang
+		, '' as Noisanxuat from vwNhapxuat as Tonghop where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		 $sqlMucluutonghop
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc) as abc
+		where ( COALESCE(Sldauthang,0)+ COALESCE(Slnhaptrongthang,0)+  COALESCE(Slsdtrongthang,0)+COALESCE(Sltoncuoithang,0))<>0  
+		
+		";	
+		
+		$query = $this->db->query($strSql);
+		return $query->fetchAll();
+	}
+// 	/HAVING Sltoncuoithang>0 and Slsdtrongthang>0 and Sldauthang>0 and Slnhaptrongthang>0
+	//
+	//Having (COALESCE(Sldauthang,0) + COALESCE(Slnhaptrongthang,0)+ COALESCE(Slsdtrongthang,0)
+	//COALESCE(Sltoncuoithang,0)) >0
+	
+	
+
+	public function gettenmucluutruObj($Mucluutru)
+	{
+		$strSql="		select Tenmucluutru from tbldm_mucluutru where Id=$Mucluutru";
+		$query = $this->db->query($strSql);
+		return $query->fetchAll();
+	}
+	
+	
+}

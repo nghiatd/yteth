@@ -1,0 +1,103 @@
+<?php
+class Model_Vesinhnuocsach
+{
+protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $namhethong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblvesinh_nuocsach WHERE ThongtincoquanId = $thongtincoquanId and 
+				Namhoatdong = $namhethong" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ("
+			SELECT Id,Mahodan,IF(Loaigieng='','Chưa có',Loaigieng) AS Loaigieng,IF(Loainhatieu='','Chưa có',Loainhatieu)AS Loainhatieu,
+				DATE_FORMAT(Ngaynhap,'%d/%m/%Y')AS Ngaynhap,Trangthai,IF(Kiemtra = '1', 'on', '') AS Kiemtra,IF(Dat = '1', 'on', '') AS Dat,
+				(
+					SELECT Tenthonto 
+					FROM  tbldm_thonto 
+					WHERE Id=(SELECT DISTINCT(ThontoId) FROM tblchuhodan WHERE Mahodan=tblvesinh_nuocsach.Mahodan)
+				)AS Tenthonto 
+			FROM tblvesinh_nuocsach
+			WHERE ThongtincoquanId = $thongtincoquanId and 
+			Namhoatdong = $namhethong ORDER BY $sort $order LIMIT $offset, $rows
+		");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	public function CheckValueObj($id,$mahodan,$ngaynhap) {
+		
+		if ($id == 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblvesinh_nuocsach WHERE Mahodan='$mahodan' and Ngaynhap = '$ngaynhap'" );			
+		}
+		else
+		{
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblvesinh_nuocsach WHERE Id != $id and Mahodan='$mahodan' and Ngaynhap = '$ngaynhap' " );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function AddObj($data) {
+		$Id = $this->db->insert ( 'tblvesinh_nuocsach', $data );
+		return $Id;
+	}
+	public function updateObj($id, $data) {
+		$this->db->update ( 'tblvesinh_nuocsach', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tblvesinh_nuocsach', 'Id=' . $Id );
+		return $Iddel;
+	}
+	
+	public function searObj($smahodan, $sloaigieng, $sthonto, $sloainhatieu,$sngaynhap, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows)
+	{
+		$result = array ();
+		$where="";
+		if($smahodan!="")
+		{
+			$where= " AND vsns.Mahodan='$smahodan' ";
+		}
+		if($sloaigieng!="")
+		{			
+				$where=$where."AND vsns.Loaigieng= '$sloaigieng' " ;			
+		}
+		if($sthonto!="")
+		{
+			$where=$where." AND chd.ThontoId='$sthonto' ";
+		}
+		if($sloainhatieu!="")
+		{
+			$where=$where." AND vsns.Loainhatieu='$sloainhatieu' ";
+		}
+		if($sngaynhap!="")
+		{
+			$where=$where." AND vsns.Ngaynhap ='$sngaynhap' ";
+		}
+		//lay thong tin ban ghi
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblvesinh_nuocsach AS vsns, tblchuhodan AS chd
+			WHERE vsns.ThongtincoquanId = '$thongtincoquanId' and 
+			vsns.Namhoatdong = '$namhoatdong' and vsns.Mahodan=chd.Mahodan AND chd.ThongtincoquanId=6 $where 
+		" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		
+		// thuc hien cau lenh truy xuat du lieu
+		$query = $this->db->query ( "SELECT vsns.Id,vsns.Mahodan,IF(vsns.Loaigieng='','Chưa có',vsns.Loaigieng) AS Loaigieng,IF(vsns.Loainhatieu='','Chưa có',
+				vsns.Loainhatieu)AS Loainhatieu,DATE_FORMAT(vsns.Ngaynhap,'%d/%m/%Y')AS Ngaynhap,vsns.Trangthai,
+				(
+					SELECT Tenthonto 
+					FROM  tbldm_thonto 
+					WHERE Id=chd.ThontoId
+				)AS Tenthonto 
+			FROM tblvesinh_nuocsach AS vsns, tblchuhodan AS chd
+			WHERE vsns.ThongtincoquanId = '$thongtincoquanId' and 
+			vsns.Namhoatdong = '$namhoatdong' and vsns.Mahodan=chd.Mahodan AND chd.ThongtincoquanId='$thongtincoquanId' $where  
+			ORDER BY vsns.$sort $order LIMIT $offset, $rows
+			" );
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+		
+	}
+}

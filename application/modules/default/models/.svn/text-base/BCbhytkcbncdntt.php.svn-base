@@ -1,0 +1,21 @@
+<?php
+/*************
+ * Create by Daitk
+ * DANH SÁCH NGƯỜI BỆNH BẢO HIỂM Y TẾ KHÁM CHỮA BỆNH NGOẠI TRÚ ĐỀ NGHỊ THANH TOÁN
+ */
+class Model_BCbhytkcbncdntt {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getInfor($thongtincoquanId, $namhoatdong, $ngaybatdau, $ngayketthuc, $nhombhyt) {
+		$str_query = "SELECT (SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId AND Vanglai = 0) AS Hoten, 
+				(SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId AND Vanglai = 0) AS Namsinh, Tienthuthuat, 
+				(SELECT IF(Gioitinh = 'Nam', 1, 0) FROM tblnhankhau WHERE Id = NhankhauId AND Vanglai = 0) AS Gioitinh, Sobaohiem, DATE_FORMAT(Ngaylapphieu, '%d/%m/%Y') AS Ngaykham, 
+				(SELECT SUM((SELECT SUM(Soluong * Dongia) FROM tblchitietnhapxuat WHERE Mahoadon = tblnhapxuat.Mahoadon AND ThongtincoquanId = $thongtincoquanId LIMIT 1)) AS Tongtien FROM tblnhapxuat WHERE PhieukhambenhId = tblphieukhambenh.Id) AS Thuocdich, 
+				(SELECT Giatien FROM tbldm_dongia WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong) AS Congkham 
+				FROM tblphieukhambenh WHERE ThongtincoquanId = $thongtincoquanId AND Ngaylapphieu BETWEEN '$ngaybatdau' AND '$ngayketthuc' AND (SUBSTRING(Sobaohiem, 1, 2) IN ($nhombhyt)) ORDER BY Ngaykham";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

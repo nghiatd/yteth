@@ -1,0 +1,84 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_BCSokhamthai {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - SỔ KHÁM THAI
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getSKT($thongtincoquanId, $namhoatdong) {
+		$str_query = "SELECT Sophieukcb FROM tblkhamthai WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - CHI TIẾT SỔ KHÁM THAI
+	 *
+	 * @param Number $soso        	
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	/*
+	public function getCTSKT($soso, $thongtincoquanId, $namhoatdong) {
+		$str_query = "
+				
+				
+				
+				SELECT DATE_FORMAT(Ngaykham, '%d/%m/%Y') AS Ngaykhamthai, 
+		(SELECT Hoten FROM tblnhankhau, tblkhamthai WHERE tblnhankhau.Id = tblkhamthai.NhankhauId AND tblkhamthai.Sosokhamthai = Sosokhamthai) AS Hoten, 
+		($namhoatdong - (SELECT YEAR(Ngaysinh) FROM tblnhankhau, tblkhamthai WHERE tblnhankhau.Id = tblkhamthai.NhankhauId AND tblkhamthai.Sosokhamthai = Sosokhamthai)) AS Tuoi, 
+		(SELECT Diachi FROM tblchuhodan, tblnhankhau, tblkhamthai WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan AND tblnhankhau.Id = tblkhamthai.NhankhauId 
+		AND tblkhamthai.Sosokhamthai = Sosokhamthai) AS Diachi, 
+		(SELECT Nghenghiep FROM tblnhankhau, tblkhamthai WHERE tblnhankhau.Id = tblkhamthai.NhankhauId AND tblkhamthai.Sosokhamthai = Sosokhamthai) AS Nghenghiep, 
+		(SELECT Soconhienco FROM tblkhamthai WHERE tblkhamthai.Sosokhamthai = Sosokhamthai) AS Soconhienco,   
+		(SELECT Lancothaithu FROM tblkhamthai WHERE tblkhamthai.Sosokhamthai = Sosokhamthai) AS Lancothaithu,   
+		(SELECT Tiensuckhoevasinhde FROM tblkhamthai WHERE tblkhamthai.Sosokhamthai = Sosokhamthai) AS Tiensuckhoevasinhde,   
+		(SELECT DATE_FORMAT(Ngaykinhcuoi, '%d/%m/%Y') AS Ngaykinhcuoi FROM tblkhamthai WHERE tblkhamthai.Sosokhamthai = Sosokhamthai) AS Ngaykinhcuoi, 
+		Tuanthai, DATE_FORMAT(Dukienngaysinh, '%d/%m/%Y') AS Dukienngaysinh, Trongluongme, Vongbung, CaoTC, Khungchau, Proteinnieu, Huyetap, 
+		IF(Tinhtrangthieumau = 1, 'X', ' ') AS Tinhtrangthieumau, IF(Uongviensat = 1, 'X', ' ') AS Uongviensat, SomuitiemUV, Timthai, Ngoithai, IF(Dethuong = 1, 'X', ' ') AS Dethuong, Conguyco, 		
+		CONCAT((SELECT Hoten FROM tblnhansu WHERE Id = NhansuId), ' - ', 
+		(SELECT Tenchucvu FROM tbldm_chucvu, tblnhansu WHERE tbldm_chucvu.Id = tblnhansu.ChucvuId AND tblnhansu.Id = NhansuId)) AS Nguoikham, 
+		IF((SELECT Tinhtrang FROM tblkhamthai WHERE tblkhamthai.Sosokhamthai = Sosokhamthai) = 2, 'Chuyển tuyến', ' ') AS Ghichu		
+		FROM tblchitietlankhamthai WHERE Sosokhamthai = '$soso' AND YEAR(Ngaykham) = $namhoatdong AND ThongtincoquanId = $thongtincoquanId";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}*/
+	// thomnd
+	public function getCTSKT( $thongtincoquanId, $namhoatdong) {
+		$str_query="select 
+		Id,NhankhauId,Sophieukcb,Soconhienco,Lancothaithu,Tiensuckhoevasinhde,Namhoatdong,ThongtincoquanId,
+		DATE_FORMAT(Ngaykinhcuoi, '%d/%m/%Y') AS Ngaykinhcuoi,
+		(SELECT Hoten FROM tblnhankhau  WHERE tblnhankhau.Id = tblkhamthai.NhankhauId ) AS Hoten,
+		(SELECT ($namhoatdong- year(Ngaysinh)) as Tuoi FROM tblnhankhau  WHERE tblnhankhau.Id = tblkhamthai.NhankhauId  ) AS Tuoi,
+		
+		(SELECT  concat(Diachi,', ' , (select Tenthonto from tbldm_thonto where id = tblchuhodan.ThontoId))  FROM  tblchuhodan where Mahodan 
+			in (select Mahodan from tblnhankhau where tblnhankhau.Id=tblkhamthai.NhankhauId ) and   tblchuhodan.ThongtincoquanId=$thongtincoquanId
+			) as Diachi,				
+		(SELECT Nghenghiep FROM tblnhankhau WHERE tblnhankhau.Id = tblkhamthai.NhankhauId ) AS Nghenghiep
+			 FROM tblkhamthai where Namhoatdong = $namhoatdong AND ThongtincoquanId = $thongtincoquanId";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	public function getdetailsokhamthai( $thongtincoquanId,$Sosokham) {
+		$str_query="select SomuitiemUV,
+		  Sophieukcb, Tuanthai, DATE_FORMAT(Dukienngaysinh, '%d/%m/%Y') AS Dukienngaysinh, Trongluongme, Vongbung, CaoTC, Khungchau, Proteinnieu, Huyetap, 
+		  IF(Tinhtrangthieumau = 1, 'x', ' ') AS Tinhtrangthieumau,
+		  IF(Uongviensat = 1, 'x', ' ') AS Uongviensat,
+		  IF(Dethuong = 1, 'x', ' ') AS Dethuong,
+		  Timthai, Ngoithai, Conguyco, NhansuId, Ghichu,
+		DATE_FORMAT(Ngaykham, '%d/%m/%Y') AS Ngaykham,
+		(select Hoten from tblnhansu where tblnhansu.Id=tblchitietlankhamthai.NhansuId and tblnhansu.ThongtincoquanId=$thongtincoquanId) as Nguoikham
+		FROM tblchitietlankhamthai where Sophieukcb='$Sosokham' AND ThongtincoquanId = $thongtincoquanId order by DATE(Ngaykham) ASC";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

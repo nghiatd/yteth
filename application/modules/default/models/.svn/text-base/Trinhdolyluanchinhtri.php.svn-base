@@ -1,0 +1,61 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Trinhdolyluanchinhtri{
+	
+	protected $db;
+	
+	public function __construct(){
+		
+		$this->db = Zend_Registry::get("db");
+		
+	}
+	
+	
+	// hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_trinhdolyluanchinhtri");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tentrinhdolyluan FROM tbldm_trinhdolyluanchinhtri ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// lay du lieu combobox
+	public function getIdbyName(){
+		$query = $this->db->query("SELECT Id, Tentrinhdolyluan FROM tbldm_trinhdolyluanchinhtri");
+		return $query->fetchAll();
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $tentrinhdo){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_trinhdolyluanchinhtri WHERE Tentrinhdolyluan = '$tentrinhdo'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_trinhdolyluanchinhtri WHERE Id != $id AND Tentrinhdolyluan = '$tentrinhdo'");
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tbldm_trinhdolyluanchinhtri', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbldm_trinhdolyluanchinhtri', $data, 'Id='.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tbldm_trinhdolyluanchinhtri', 'Id='.$id);
+		return $Id;
+	}
+}

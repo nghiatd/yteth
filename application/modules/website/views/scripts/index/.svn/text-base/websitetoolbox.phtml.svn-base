@@ -1,0 +1,40 @@
+<?php echo $this->doctype(); ?>
+<html lang="vi">
+<div id="nav-menu-top">
+	<ul>
+		<li><a href="#">Danh mục</a>
+			<ul>
+				<li><a href="#">Tỉnh</a></li>
+				<li><a href="#">Huyện</a></li>
+				<li><a href="#">Xã</a></li>
+				<li><a href="#">Quốc tịch</a></li>
+				<li><a href="#">Quan hệ</a></li>
+
+				<li><a href="#">Trình độ văn hóa</a></li>
+				<li><a href="#">Thôn tổ</a></li>
+				<li><a href="#">Dân tộc</a></li>
+				<li><a href="#">Địa điểm</a></li>
+				<li><a href="#">Mức độ khuyết tật</a></li>
+				<li><a href="#">Dạng khuyết tật</a></li>
+
+			</ul></li>
+		<li><a href="#">Quản lý hộ khẩu</a></li>
+		<li><a href="#">Quản lý nhân khẩu</a>
+			<ul>
+				<li><a href="#">Giấy khai sinh</a></li>
+				<li><a href="#">Giấy khai tử</a></li>
+
+			</ul></li>
+		<li><a href="#">Tách khẩu</a></li>
+		<li><a href="#">Báo báo</a>
+			<ul>
+				<li><a href="#">Báo cáo</a></li>
+			</ul></li>
+	</ul>
+</div>
+<?php echo $this->inlineScript()?>
+	<script type="text/javascript">
+ 	</script>
+</html>
+
+

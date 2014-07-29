@@ -1,0 +1,64 @@
+<?php
+/********
+ * Create Phadh
+ */
+class Model_Loaihinhkham {
+	
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tenloaihinh ";
+	
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaihinhkham" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_loaihinhkham ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	// kime tra trung lap du lieu
+	
+	public function dupliObj($id, $Tenloaihinh) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaihinhkham WHERE Tenloaihinh = '$Tenloaihinh'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaihinhkham WHERE Id != $id AND Tenloaihinh = '$Tenloaihinh'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// lay thong tin id va ten loai hinh kham
+	
+	public function getIdName() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_loaihinhkham" );
+		return $query->fetchAll ();
+	}
+	
+	// them oi loai hinh kham
+	
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_loaihinhkham', $data );
+		return $Id;
+	}
+	
+	// sua loai hinh kham 
+	
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_loaihinhkham', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xoa loai hinh kham
+	
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_loaihinhkham', 'Id = ' . $id );
+		return $Id;
+	}
+}

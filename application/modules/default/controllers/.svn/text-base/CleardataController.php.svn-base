@@ -1,0 +1,24 @@
+<?php
+/**
+ * @author Daitk
+ */
+include_once 'PublicdetailController.php';
+class CleardataController extends PublicdetailController {
+	private $_ThongtincoquanId;
+	private $_MClerdata;
+	public function init() {
+		$this->initValue ();
+		$this->_MClerdata = new Model_Cleardata ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+	}
+	
+	public function indexAction() {
+	}
+	public function clearalldataAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$_MHistory = new Model_History ();
+		$jsonObj ['success'] = $this->_MClerdata->clearAllData ( $this->_ThongtincoquanId );
+		$_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, ' ', 'Đặt lại về dữ liệu gốc.', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+}

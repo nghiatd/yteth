@@ -1,0 +1,324 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Chamcong {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	// them moi du lieu
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbltrucca', $data );
+		return $Id;
+	}
+	
+	// cap nhat du lieu cham cong cho mot nhan vien
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbltrucca', $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xoa du lueu cham cong cua mot nhan vien
+	public function deleteObj($id){
+		$Id = $this->db->delete('tbltrucca', 'Id = '.$id);
+		return $Id;
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $nhanvienid, $thongtincoquanId, $ngaythang){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbltrucca WHERE NhanvienId = $nhanvienid AND
+				ThongtincoquanId = $thongtincoquanId AND Ngaythang = '$ngaythang' AND Chamcong = 1");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbltrucca WHERE Id != $id AND NhanvienId = $nhanvienid AND
+					ThongtincoquanId = $thongtincoquanId AND Ngaythang = '$ngaythang' AND Chamcong = 1");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	public function getNhanvienIdbyManhanvien($Manhanvien,$date, $thongtincoquanid){
+		$arr = explode("$", $date);
+		$arr_ = explode("-", $date);
+		$thang="";
+		$where="";
+		if($date!="" && count($arr)>1)
+		{
+			$where =  ' AND Month(Ngaythang) ='.$arr[1] . ' ';
+			$thang=$arr[1];
+		}
+		if($date!="" && count($arr_)>1)
+		{
+			$where =  ' AND Month(Ngaythang) ='.$arr_[1] . ' ';
+			$thang=$arr_[1];
+		}
+		
+		$row = array ();
+		$query = $this->db->query("
+				 select '$thang' as Thang ,Id as NhanvienId from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanid and Manhanvien='$Manhanvien'  
+			");
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	public function getdetailchamcongthangbyManhanvien($NhanvienId,$thang, $thongtincoquanid){
+		// chamcong =1 la cham cong nghi
+		// chamcong =0 la truc ca.
+		$query = $this->db->query("	select Id, DATE_FORMAT(Ngaythang,'%d/%m/%Y') as Ngaythangnghi ,Lydo 
+		from tbltrucca where  Chamcong=1  and NhanvienId =$NhanvienId 
+			and ThongtincoquanId=$thongtincoquanid 	 AND Month(Ngaythang) =$thang
+				 ");
+		return $query->fetchAll ();
+	}
+	
+	public function getFetObj($date, $thongtincoquanid,$sort, $order, $offset, $rows){
+		// chamcong =1 la cham cong nghi
+		// chamcong =0 la truc ca.
+		$where="";
+		if($date!="")
+				$where =  ' AND Ngaythang =\'' .$date . '\' ';
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblnhanvien ");
+		$row = $query->fetchAll();
+		$query = $this->db->query("
+				select Id ,Manhanvien  , Hoten ,DATE_FORMAT('$date','%d/%m/%Y')  as Ngaychamcong,
+				(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where 
+				 tblnhanvien.Id=tbltrucca.NhanvienId and tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanid and  Chamcong=1  $where
+				) as ck,
+				(select Lydo from tbltrucca where 
+				 tblnhanvien.Id=tbltrucca.NhanvienId and tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanid and  Chamcong=1  $where
+				) as Lydo 
+				from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanid  ORDER BY $sort $order LIMIT $offset, $rows");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	
+	// xoa du lieu
+	public function delObj($date, $thongtincoquanid) {
+		$where [] = "Ngaythang = '$date'";
+		$where [] = 'Chamcong = 1';
+		$where [] = "ThongtincoquanId = $thongtincoquanid";
+		$Id = $this->db->delete ( 'tbltrucca', $where );
+		return $Id;
+	}
+	
+	public function searObj($sHoten, $sNgaythang, $thongtincoquanId, $sort, $order, $offset, $rows){
+		$result = array();
+		$where="";
+		if($sNgaythang!="")
+				$where =  ' AND Ngaythang =\'' .$sNgaythang . '\' ';
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbltrucca WHERE Chamcong = 1");
+		$row = $query->fetchAll();
+		$query = $this->db->query("select Id ,Manhanvien  , Hoten ,DATE_FORMAT('$sNgaythang','%d/%m/%Y')  as Ngaychamcong,
+				(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where 
+				 tblnhanvien.Id=tbltrucca.NhanvienId and tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1  $where
+				) as ck,
+				(select Lydo from tbltrucca where 
+				 tblnhanvien.Id=tbltrucca.NhanvienId and tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1  $where
+				) as Lydo 
+				from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanId AND Hoten LIKE '%$sHoten%' ORDER BY $sort $order LIMIT $offset, $rows
+				");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// get du lieu cham cong theo ngay cua nhan vien
+	public function getdanhsach($sHoten, $thang, $thongtincoquanId){
+		$result = array();
+		$query = $this->db->query("select Id ,Manhanvien  , Hoten , 
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=01)  as ngay1,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=02)  as ngay2,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=03)  as ngay3,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=04)  as ngay4,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=05)  as ngay5,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=06)  as ngay6,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=07)  as ngay7,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=08)  as ngay8,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=09)  as ngay9,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=10)  as ngay10,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=11)  as ngay11,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=12)  as ngay12,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=13)  as ngay13,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=14)  as ngay14,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=15)  as ngay15,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=16)  as ngay16,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=17)  as ngay17,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=18)  as ngay18,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=19)  as ngay19,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=20)  as ngay20,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=21)  as ngay21,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=22)  as ngay22,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=23)  as ngay23,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=24)  as ngay24,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=25)  as ngay25,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=26)  as ngay26,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=27)  as ngay27,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=28)  as ngay28,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=29)  as ngay29,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=30)  as ngay30,
+
+			(select IF(tbltrucca.Ngaythang,'on',null) as ck from tbltrucca where tblnhanvien.Id=tbltrucca.NhanvienId and 
+
+			tblnhanvien.ThongtincoquanId=tbltrucca.ThongtincoquanId and tbltrucca.ThongtincoquanId=$thongtincoquanId and  Chamcong=1
+
+			and month(ngaythang)=$thang and day(ngaythang)=31)  as ngay31
+ 
+			from tblnhanvien where tblnhanvien.ThongtincoquanId=$thongtincoquanId AND Hoten LIKE '%$sHoten%'");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

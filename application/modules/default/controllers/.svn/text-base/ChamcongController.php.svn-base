@@ -1,0 +1,1219 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+/**
+ * PHPExcel
+*/
+include 'HelpFuncExportExcel.php';
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+
+ */
+class ChamcongController extends PublicdetailController {
+	private $_MChamcong;
+	private $_MHistory;
+	private $_ThongtincoquanId;
+	public function init() {
+		$this->initValue ();
+		$this->_MChamcong = new Model_Chamcong ();
+		$this->_MHistory = new Model_History ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+	}
+	
+	
+	public function getbynhanvienidAction(){
+		$Manhanvien = $this->_getParam('Manhanvien');
+		$date= $this->_getParam ( 'Ngaynghi' );
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		$jsonObj = $this->_MChamcong->getNhanvienIdbyManhanvien($Manhanvien,$date,$this->_ThongtincoquanId);
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//
+	public function getdetailAction(){
+		$this->_helper->layout()->disableLayout();
+		$Manhanvien = $this->_getParam('NhanvienId');
+		$date= $this->_getParam ( 'Thang' );
+		return $this->view->jsonObj = json_encode ($this->_MChamcong->getdetailchamcongthangbyManhanvien($Manhanvien,$date,$this->_ThongtincoquanId));
+	}
+	public function getobjbydateAction() {
+		$date= $this->_getParam ( 'Ngaynghi' );
+		$this->_helper->layout ()->disableLayout ();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = json_encode ( $this->_MChamcong->getFetObj ($date,$this->_ThongtincoquanId, $sort, $order, $offset, $rows) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function searAction(){
+		$sHoten = $this->_getParam('sHoten');
+		$sNgaythang = $this->_getParam('sNgaythang');
+		if($sNgaythang != ''){
+			$sNgaythang = $this->convertDateSearch($sNgaythang);
+		}
+		$this->_helper->layout()->disableLayout();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = json_encode($this->_MChamcong->searObj($sHoten, $sNgaythang, $this->_ThongtincoquanId, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function indexAction() {
+	}
+	
+	// them moi du lieu
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$ngaynghi = $this->_getParam ( 'Ngaynghi' );
+		$ngaynghi = isset ( $ngaynghi ) ? $this->convertDateSearch ( $ngaynghi ) : '';
+		$items = $_REQUEST ['items'];
+		$this->_MChamcong->delObj ( $ngaynghi, $this->_ThongtincoquanId );
+		foreach ( $items as $item ) {
+			if($item ['ck']=='on'){
+				$data = array ();
+				$data ['NhanvienId'] = $item ['Id'];
+				$data ['ThongtincoquanId'] = $this->_ThongtincoquanId;
+				$data ['Ngaythang'] = $ngaynghi;
+				$data ['Chamcong'] = 1;
+				$data ['Lydo'] = $item ['Lydo'];
+				$this->_MChamcong->addObj ( $data );
+			}
+		}
+		$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+		$jsonObj ["success"] = true;
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// them moi du lieu cham cong cho mot nhan vien
+	public function insertAction(){
+		$this->_helper->layout()->disableLayout();
+		$nhanvienid = $_REQUEST['NhanvienId'];
+		$ngaythang = $this->convertDate($_REQUEST['Ngaythangnghi']);
+		$lydo = $_REQUEST['Lydo'];
+		$chamcong = 1;
+		// kiem tra trung lap du lieu
+		$dup = $this->_MChamcong->dupliObj(0, $nhanvienid, $this->_ThongtincoquanId, $ngaythang);
+		if($dup > 0){
+			$jsonObj ["msg"] = 'Trong một ngày không thể chấm công hai lân!';
+			$jsonObj ["success"] = false;
+		}else{
+		$data =array(
+				'NhanvienId' => $nhanvienid,
+				'Ngaythang' => $ngaythang,
+				'Lydo' => $lydo,
+				'Chamcong' => $chamcong,
+				'ThongtincoquanId' => $this->_ThongtincoquanId
+				);
+			$this->_MChamcong->addObj($data);
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// cap nhat du lieu cham cong cua mot nhan vien
+	public function updateAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('id');
+		$nhanvienid = $_REQUEST['NhanvienId'];
+		$ngaythang = $this->convertDate($_REQUEST['Ngaythangnghi']);
+		$lydo = $_REQUEST['Lydo'];
+		$chamcong = 1;
+		// kiem tra trung lap du lieu
+		$dup = $this->_MChamcong->dupliObj($id, $nhanvienid, $this->_ThongtincoquanId, $ngaythang);
+		if($dup > 0 ){
+			$jsonObj ["msg"] = 'Trong một ngày không thể chấm công hai lân!';
+			$jsonObj ["success"] = false;
+		}else{
+			$data = array(
+				'NhanvienId' => $nhanvienid,
+				'Ngaythang' => $ngaythang,
+				'Lydo' => $lydo,
+				'Chamcong' => $chamcong,
+				'ThongtincoquanId' => $this->_ThongtincoquanId
+				);
+			$this->_MChamcong->updateObj($id, $data);
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// xoa du lieu cham cong cua mot nhan vien
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		if (isset ( $items ) && $items > 0) {
+			foreach ( $items as $item ) {
+				if ($item ['Id'] != null) {
+					$this->_MChamcong->deleteObj ( $item ['Id'] );
+					$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+					$jsonObj = array (
+							'success' => true
+					);
+				}
+			}
+		} else {
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu không thành công!';
+			$jsonObj ["success"] = false;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	/**
+	 * Phadh 
+	 * In bang cham cong cua nhan vien theo tim kiem
+	 */
+	public function danhsachAction(){
+		$this->_helper->layout()->disableLayout();
+		//Dieu kien tim kiem//////////////////////////////
+		$sHoten = $this->_getParam('sHoten');
+		$sNgaythang = $this->_getParam('sNgaythang');
+		if($sNgaythang != ''){
+			$sNgaythang = $this->convertDateSearch($sNgaythang);
+		}
+		$thang = $this->_getParam('sNgaythang');
+		if($thang != ''){
+			list ( $date, $month, $year ) = explode ( "$", $thang );
+			$thang = $year . '-' . $month . '-' . $date;
+		}
+		$date = date("Y-m-d");
+		//////////////////////////////////////////////////////
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+		/*
+		 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+		* tĩnh.
+		*/
+		$sheet->setCellValue('A1', mb_strtoupper($this->TblThongtincoquanbyId[0]['Tencoquan'], 'UTF-8'));
+		$sheet->mergeCellsByColumnAndRow(0, 1, 3, 1);
+		$helpExport->setStyle_11_TNR_N_L($sheet, 'A1', 'A1');
+		
+		$sheet->setCellValue('A3', "BẢNG CHẤM CÔNG THÁNG " . date("m", strtotime($thang)));
+		$sheet->mergeCellsByColumnAndRow(0, 3, 32, 3);
+		$helpExport->setStyle_14_TNR_B_C($sheet, 'A3', 'A3');
+		////////////////////////////////////////////////////////
+		
+		$rowStart = 5;
+		$colStart = 'A';
+		$rowIndex = $rowStart;
+		$colIndex = $colStart;
+		$sheet = $objPHPExcel->getActiveSheet ();
+		$sheet->getColumnDimension ( 'A' )->setWidth ( 5.71 );
+		$sheet->getColumnDimension ( 'B' )->setWidth ( 19.57 );
+		$sheet->getColumnDimension ( 'C' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'D' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'E' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'F' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'G' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'H' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'I' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'J' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'K' )->setWidth ( 3.71);
+		$sheet->getColumnDimension ( 'L' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'M' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'N' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'O' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'P' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'Q' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'R' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'S' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'T' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'U' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'V' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'W' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'X' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'Y' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'Z' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AA' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AB' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AC' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AD' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AE' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AF' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AG' )->setWidth ( 3.71 );
+		$sheet->getRowDimension('1')->setRowHeight(21);
+		$sheet->getRowDimension('3')->setRowHeight(25.5);
+		
+		//set tieu de cho tung cot
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'MNV', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(0, $rowIndex, 0, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Họ tên', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(1, $rowIndex, 1, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(2, $rowIndex, 2, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(3, $rowIndex, 3, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(4, $rowIndex, 4, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '4', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(5, $rowIndex, 5, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '5', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(6, $rowIndex, 6, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '6', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(7, $rowIndex, 7, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '7', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(8, $rowIndex, 8, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '8', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(9, $rowIndex, 9, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '9', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(10, $rowIndex, 10, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '10', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(11, $rowIndex, 11, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '11', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(12, $rowIndex, 12, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '12', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(13, $rowIndex, 13, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '13', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(14, $rowIndex, 14, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '14', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(15, $rowIndex, 15, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '15', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(16, $rowIndex, 16, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '16', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(17, $rowIndex, 17, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '17', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(18, $rowIndex, 18, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '18', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(19, $rowIndex, 19, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '19', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(20, $rowIndex, 20, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '20', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(21, $rowIndex, 21, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '21', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(22, $rowIndex, 22, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '22', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(23, $rowIndex, 23, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '23', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(24, $rowIndex, 24, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '24', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(25, $rowIndex, 25, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '25', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(26, $rowIndex, 26, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '26', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(27, $rowIndex, 27, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '27', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(28, $rowIndex, 28, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '28', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(29, $rowIndex, 29, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '29', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(30, $rowIndex, 30, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '30', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(31, $rowIndex, 31, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '31', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(32, $rowIndex, 32, $rowIndex);
+		$helpExport->setStyle_10_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+		////////////////////////////
+		
+		//Lay du lieu///////////////
+		$jsonObj = $this->_MChamcong->getdanhsach($sHoten, date("m", strtotime($thang)), $this->_ThongtincoquanId);
+		if(count($jsonObj) > 0){
+			foreach ($jsonObj as $row){
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Manhanvien'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Hoten'], $colIndex );
+				/**************************begin ngay 01********************************************/
+				if(date("d", strtotime($date)) == '01' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay1'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/***********************end ngay 01*************************************************/
+				/**********************begin ngay 02**************************************************/
+				if(date("d", strtotime($date)) == '02' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay2'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/*****************************************end ngay 02*******************************************/
+				/**********************************begin ngay 03******************************************/
+				if(date("d", strtotime($date)) == '03' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay3'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/************************************end ngay 03**********************************************/
+				/********************************begin ngay 04************************************************/
+				if(date("d", strtotime($date)) == '04' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay4'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 04****************************************/
+				/****************************************begin ngay 05***********************************/
+				if(date("d", strtotime($date)) == '05' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay5'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/***********************************end ngay 05**********************************************/
+				/****************************************begin ngay 06***********************************/
+				if(date("d", strtotime($date)) == '06' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay6'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 06***********************************/
+				/****************************************begin ngay 07***********************************/
+				if(date("d", strtotime($date)) == '07' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay7'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 07***********************************/
+				/****************************************begin ngay 08***********************************/
+				if(date("d", strtotime($date)) == '08' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay8'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 08***********************************/
+				/****************************************begin ngay 09***********************************/
+				if(date("d", strtotime($date)) == '09' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay9'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 09***********************************/
+				/****************************************begin ngay 10***********************************/
+				if(date("d", strtotime($date)) == '10' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay10'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 10***********************************/
+				/****************************************begin ngay 11***********************************/
+				if(date("d", strtotime($date)) == '11' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay11'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 11***********************************/
+				/****************************************begin ngay 12***********************************/
+				if(date("d", strtotime($date)) == '12' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay12'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 12***********************************/
+				/****************************************begin ngay 13***********************************/
+				if(date("d", strtotime($date)) == '13' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay13'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 13***********************************/
+				/****************************************begin ngay 14***********************************/
+				if(date("d", strtotime($date)) == '14' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay14'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 14***********************************/
+				/****************************************begin ngay 15***********************************/
+				if(date("d", strtotime($date)) == '15' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay15'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 15***********************************/
+				/****************************************begin ngay 16***********************************/
+				if(date("d", strtotime($date)) == '16' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay16'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 16***********************************/
+				/****************************************begin ngay 17***********************************/
+				if(date("d", strtotime($date)) == '17' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay17'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 17***********************************/
+				/****************************************begin ngay 18***********************************/
+				if(date("d", strtotime($date)) == '18' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay18'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 18***********************************/
+				/****************************************begin ngay 19***********************************/
+				if(date("d", strtotime($date)) == '19' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay19'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 19***********************************/
+				/****************************************begin ngay 20***********************************/
+				if(date("d", strtotime($date)) == '20' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay20'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 20***********************************/
+				/****************************************begin ngay 21***********************************/
+				if(date("d", strtotime($date)) == '21' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay21'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 21***********************************/
+				/****************************************begin ngay 22***********************************/
+				if(date("d", strtotime($date)) == '22' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay22'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 22***********************************/
+				/****************************************begin ngay 23***********************************/
+				if(date("d", strtotime($date)) == '23' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay23'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 23***********************************/
+				/****************************************begin ngay 24***********************************/
+				if(date("d", strtotime($date)) == '24' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay24'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 24***********************************/
+				/****************************************begin ngay 25***********************************/
+				if(date("d", strtotime($date)) == '25' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay25'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 25***********************************/
+				/****************************************begin ngay 26***********************************/
+				if(date("d", strtotime($date)) == '26' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay26'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 26***********************************/
+				/****************************************begin ngay 27***********************************/
+				if(date("d", strtotime($date)) == '27' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay27'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 27***********************************/
+				/****************************************begin ngay 28***********************************/
+				if(date("d", strtotime($date)) == '28' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay28'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 28***********************************/
+				/****************************************begin ngay 29***********************************/
+				if(date("d", strtotime($date)) == '29' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay29'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 29***********************************/
+				/****************************************begin ngay 30***********************************/
+				if(date("d", strtotime($date)) == '30' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay30'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 30***********************************/
+				/****************************************begin ngay 31***********************************/
+				if(date("d", strtotime($date)) == '31' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay31'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 31***********************************/
+				$helpExport->setStyle_9_TNR_N_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$helpExport->setStyle_Align_Center ( $sheet, 'C' . $rowIndex, 'AG' . $rowIndex );
+			}
+		}
+		////////////////////////////
+		
+		//set border cho danh sach//
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'AG' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'AG' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		////////////////////////////
+		
+		////set dinh dang giay a4 cho ban in ra////////////
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setOrientation ( PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE );
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4 );
+		$pageMargin = $sheet->getPageMargins ();
+		$pageMargin->setTop ( .5 );
+		$pageMargin->setLeft ( .2 );
+		$pageMargin->setRight ( .2 );
+		////////////////////////////////////////////////////
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="Bang_cham_cong_nhan_vien_'.$this->TblThongtincoquanbyId[0]['Tencoquan'].'(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+	
+	/**
+	 * Phadh 
+	 * Tao file view bang cham cong nhan vien
+	 */
+	public function printviewdsAction(){
+		$this->_helper->layout()->disableLayout();
+		//Dieu kien tim kiem//////////////////////////////
+		$sHoten = $this->_getParam('sHoten');
+		$sNgaythang = $this->_getParam('sNgaythang');
+		if($sNgaythang != ''){
+			$sNgaythang = $this->convertDateSearch($sNgaythang);
+		}
+		$thang = $this->_getParam('sNgaythang');
+		if($thang != ''){
+			list ( $date, $month, $year ) = explode ( "$", $thang );
+			$thang = $year . '-' . $month . '-' . $date;
+		}
+		$date = date("Y-m-d");
+		//////////////////////////////////////////////////////
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+		/*
+		 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+		* tĩnh.
+		*/
+		$sheet->setCellValue('A1', mb_strtoupper($this->TblThongtincoquanbyId[0]['Tencoquan'], 'UTF-8'));
+		$sheet->mergeCellsByColumnAndRow(0, 1, 3, 1);
+		$helpExport->setStyle_11_TNR_N_L($sheet, 'A1', 'A1');
+		
+		$sheet->setCellValue('A3', "BẢNG CHẤM CÔNG THÁNG ". date("m", strtotime($thang)));
+		$sheet->mergeCellsByColumnAndRow(0, 3, 32, 3);
+		$helpExport->setStyle_14_TNR_B_C($sheet, 'A3', 'A3');
+		////////////////////////////////////////////////////////
+		
+		$rowStart = 5;
+		$colStart = 'A';
+		$rowIndex = $rowStart;
+		$colIndex = $colStart;
+		$sheet = $objPHPExcel->getActiveSheet ();
+		$sheet->getColumnDimension ( 'A' )->setWidth ( 5.71 );
+		$sheet->getColumnDimension ( 'B' )->setWidth ( 19.57 );
+		$sheet->getColumnDimension ( 'C' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'D' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'E' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'F' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'G' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'H' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'I' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'J' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'K' )->setWidth ( 3.71);
+		$sheet->getColumnDimension ( 'L' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'M' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'N' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'O' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'P' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'Q' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'R' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'S' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'T' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'U' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'V' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'W' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'X' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'Y' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'Z' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AA' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AB' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AC' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AD' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AE' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AF' )->setWidth ( 3.71 );
+		$sheet->getColumnDimension ( 'AG' )->setWidth ( 3.71 );
+		$sheet->getRowDimension('1')->setRowHeight(21);
+		$sheet->getRowDimension('3')->setRowHeight(25.5);
+		
+		//set tieu de cho tung cot
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'MNV', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(0, $rowIndex, 0, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Họ tên', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(1, $rowIndex, 1, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(2, $rowIndex, 2, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(3, $rowIndex, 3, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(4, $rowIndex, 4, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '4', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(5, $rowIndex, 5, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '5', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(6, $rowIndex, 6, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '6', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(7, $rowIndex, 7, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '7', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(8, $rowIndex, 8, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '8', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(9, $rowIndex, 9, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '9', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(10, $rowIndex, 10, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '10', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(11, $rowIndex, 11, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '11', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(12, $rowIndex, 12, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '12', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(13, $rowIndex, 13, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '13', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(14, $rowIndex, 14, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '14', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(15, $rowIndex, 15, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '15', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(16, $rowIndex, 16, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '16', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(17, $rowIndex, 17, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '17', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(18, $rowIndex, 18, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '18', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(19, $rowIndex, 19, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '19', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(20, $rowIndex, 20, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '20', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(21, $rowIndex, 21, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '21', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(22, $rowIndex, 22, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '22', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(23, $rowIndex, 23, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '23', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(24, $rowIndex, 24, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '24', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(25, $rowIndex, 25, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '25', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(26, $rowIndex, 26, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '26', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(27, $rowIndex, 27, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '27', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(28, $rowIndex, 28, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '28', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(29, $rowIndex, 29, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '29', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(30, $rowIndex, 30, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '30', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(31, $rowIndex, 31, $rowIndex);
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '31', $colIndex );
+		$sheet->mergeCellsByColumnAndRow(32, $rowIndex, 32, $rowIndex);
+		$helpExport->setStyle_10_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+		////////////////////////////
+		
+		//Lay du lieu///////////////
+		$jsonObj = $this->_MChamcong->getdanhsach($sHoten, date("m", strtotime($thang)), $this->_ThongtincoquanId);
+		if(count($jsonObj) > 0){
+			foreach ($jsonObj as $row){
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Manhanvien'], $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row['Hoten'], $colIndex );
+				/**************************begin ngay 01********************************************/
+				if(date("d", strtotime($date)) == '01' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay1'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/***********************end ngay 01*************************************************/
+				/**********************begin ngay 02**************************************************/
+				if(date("d", strtotime($date)) == '02' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay2'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/*****************************************end ngay 02*******************************************/
+				/**********************************begin ngay 03******************************************/
+				if(date("d", strtotime($date)) == '03' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay3'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/************************************end ngay 03**********************************************/
+				/********************************begin ngay 04************************************************/
+				if(date("d", strtotime($date)) == '04' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay4'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 04****************************************/
+				/****************************************begin ngay 05***********************************/
+				if(date("d", strtotime($date)) == '05' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay5'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/***********************************end ngay 05**********************************************/
+				/****************************************begin ngay 06***********************************/
+				if(date("d", strtotime($date)) == '06' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay6'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 06***********************************/
+				/****************************************begin ngay 07***********************************/
+				if(date("d", strtotime($date)) == '07' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay7'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 07***********************************/
+				/****************************************begin ngay 08***********************************/
+				if(date("d", strtotime($date)) == '08' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay8'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 08***********************************/
+				/****************************************begin ngay 09***********************************/
+				if(date("d", strtotime($date)) == '09' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay9'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 09***********************************/
+				/****************************************begin ngay 10***********************************/
+				if(date("d", strtotime($date)) == '10' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay10'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 10***********************************/
+				/****************************************begin ngay 11***********************************/
+				if(date("d", strtotime($date)) == '11' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay11'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 11***********************************/
+				/****************************************begin ngay 12***********************************/
+				if(date("d", strtotime($date)) == '12' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay12'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 12***********************************/
+				/****************************************begin ngay 13***********************************/
+				if(date("d", strtotime($date)) == '13' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay13'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 13***********************************/
+				/****************************************begin ngay 14***********************************/
+				if(date("d", strtotime($date)) == '14' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay14'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 14***********************************/
+				/****************************************begin ngay 15***********************************/
+				if(date("d", strtotime($date)) == '15' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay15'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 15***********************************/
+				/****************************************begin ngay 16***********************************/
+				if(date("d", strtotime($date)) == '16' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay16'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 16***********************************/
+				/****************************************begin ngay 17***********************************/
+				if(date("d", strtotime($date)) == '17' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay17'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 17***********************************/
+				/****************************************begin ngay 18***********************************/
+				if(date("d", strtotime($date)) == '18' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay18'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 18***********************************/
+				/****************************************begin ngay 19***********************************/
+				if(date("d", strtotime($date)) == '19' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay19'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 19***********************************/
+				/****************************************begin ngay 20***********************************/
+				if(date("d", strtotime($date)) == '20' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay20'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 20***********************************/
+				/****************************************begin ngay 21***********************************/
+				if(date("d", strtotime($date)) == '21' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay21'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 21***********************************/
+				/****************************************begin ngay 22***********************************/
+				if(date("d", strtotime($date)) == '22' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay22'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 22***********************************/
+				/****************************************begin ngay 23***********************************/
+				if(date("d", strtotime($date)) == '23' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay23'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 23***********************************/
+				/****************************************begin ngay 24***********************************/
+				if(date("d", strtotime($date)) == '24' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay24'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 24***********************************/
+				/****************************************begin ngay 25***********************************/
+				if(date("d", strtotime($date)) == '25' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay25'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 25***********************************/
+				/****************************************begin ngay 26***********************************/
+				if(date("d", strtotime($date)) == '26' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay26'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 26***********************************/
+				/****************************************begin ngay 27***********************************/
+				if(date("d", strtotime($date)) == '27' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay27'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 27***********************************/
+				/****************************************begin ngay 28***********************************/
+				if(date("d", strtotime($date)) == '28' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay28'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 28***********************************/
+				/****************************************begin ngay 29***********************************/
+				if(date("d", strtotime($date)) == '29' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay29'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 29***********************************/
+				/****************************************begin ngay 30***********************************/
+				if(date("d", strtotime($date)) == '30' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay30'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 30***********************************/
+				/****************************************begin ngay 31***********************************/
+				if(date("d", strtotime($date)) == '31' || date("m", strtotime($date)) != date("m", strtotime($thang))){
+					if($row['ngay31'] == null){
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'x', $colIndex );
+					}else{
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'o', $colIndex );
+					}
+				}else{
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex );
+				}
+				/****************************************end ngay 31***********************************/
+				$helpExport->setStyle_9_TNR_N_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$helpExport->setStyle_Align_Center ( $sheet, 'C' . $rowIndex, 'AG' . $rowIndex );
+			}
+		}
+		////////////////////////////
+		
+		//set border cho danh sach//
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'AG' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'AG' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		////////////////////////////
+		
+		////set dinh dang giay a4 cho ban in ra////////////
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setOrientation ( PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE );
+		$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4 );
+		$pageMargin = $sheet->getPageMargins ();
+		$pageMargin->setTop ( .5 );
+		$pageMargin->setLeft ( .2 );
+		$pageMargin->setRight ( .2 );
+		////////////////////////////////////////////////////
+		$f = 'example.html';
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'HTML' );
+		$objWriter->save ( 'public/media/temp/' . $f );
+		echo file_get_contents ( 'public/media/temp/' . $f );
+	}
+}

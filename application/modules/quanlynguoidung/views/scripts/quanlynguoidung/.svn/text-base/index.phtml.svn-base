@@ -1,0 +1,288 @@
+<script type="text/javascript">
+	var url;
+	var myself = false;
+	$('#Email').validatebox({  
+	    required: true,  
+	    validType: 'email'  
+	});  
+	/*  longnp  */
+	$(function(){
+		$('#dg').edatagrid({
+			url: 'Quanlynguoidung/json',
+			border:false,
+			fit:true,
+			singleSelect:true,
+			fitColumns:false,
+			selectOnCheck:false,
+			checkOnSelect:false,
+			toolbar:"#toolbar",
+			pagination:true,
+			idField: 'id',
+			rownumbers: true,
+			nowrap:true
+		});
+	});
+
+	function add(){
+		$('#dlg').dialog('open').dialog('setTitle','Thêm người dùng');	
+		$('#fm').form('clear');
+		data = $('#CoquanId').combobox('getData');
+		$('#CoquanId').combobox('setValue', data[0]['Id']);
+		document.getElementById('KichhoatUS').checked = true;
+		url = 'Quanlynguoidung/add';
+		myself = false;
+	}
+
+	function edit(){
+		var row = $('#dg').datagrid('getSelected');
+		if (row){
+			var kichhoat = row.Kichhoat;
+			if(kichhoat == 1)
+			{
+				$('#KichhoatUS').attr('checked','checked');
+			}
+			else
+			{
+				$('#KichhoatUS').removeAttr('checked');
+			}
+			$('#CoquanId').combobox('setValue', row.CoquanId);
+			$('#dlg').dialog('open').dialog('setTitle','Sửa thông tin người dùng');
+			$('#fm').form('load',row);
+			url = 'Quanlynguoidung/update/Id/'+ row.Id +'/user/'+ row.User ;
+			if(row['User'] == '<?php echo $this->User;?>'){
+				myself = true;
+			}
+		}else{
+			show_messager('Không có bản ghi nào được chọn!');
+		}
+	}
+
+	function del(){
+		var rows = $('#dg').datagrid('getChecked');
+		numberrow = rows.length;
+		if (numberrow > 0){
+			for(var i = 0; i < numberrow; i++){
+				if(rows[i]['User'] == '<?php echo $this->User;?>'){
+					show_messager('Bạn không thể xóa chính bạn!');
+					return;
+				}
+			}
+			$.messager.confirm('Thông báo','Bạn có chắc chắn muốn xóa '+numberrow+' phần tử?',function(r){
+				if (r){
+					$.post('Quanlynguoidung/del',{items:rows},function(result){
+						if (result.success){
+							$('#dg').datagrid('reload');	
+							show_messager('Xóa tài khoản thành công!');
+						} else {
+							show_messager('Bạn không thể xóa tài khoản này!');
+						}
+					},'json');
+				}
+			});
+		}else{
+			show_messager('Không có bản ghi nào được chọn!');
+		}
+	}
+
+	function save(){
+		$('#fm').form('submit',{
+			url: url,
+			onSubmit: function(){
+				if($(this).form('validate')){
+					if(!checkValue())
+						return false;
+					return true;
+				} else
+					return false;
+			},
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success){
+					if(myself) {
+						show_messager('Bạn đã thay đổi thông tin của mình, hệ thống sẽ tự động Đăng xuất!');
+						window.location.href = 'index/logout';
+					}
+					$('#dlg').dialog('close');		
+					$('#dg').datagrid('reload');	
+					show_messager('Cập nhật dữ liệu thành công!');
+				} else {
+					show_messager('Cập nhật dữ liệu không thành công!');
+				}
+			}
+		});
+	}
+
+	function checkValue(){
+		var re = new RegExp(/^\d+$/);
+		if($('#User').val().length < 6){
+			show_messager('Tên người dùng phải dài từ 6-24 ký tự');
+			return false;
+		}
+		if($('#Pass').val().length < 6){
+			show_messager('Mật khẩu phải dài từ 6-32 ký tự');
+			return false;
+		}
+		if($('#Phone').val().length > 0){
+			if(!re.test($('#Phone').val())){
+				show_messager('Số điện thoại phải là chữ số có dạng: 11111111111...');
+				return false;
+			}
+		}
+		if($('#Fax').val().length > 0){
+			if(!re.test($('#Fax').val())){
+				show_messager('Số Fax phải là chữ số có dạng: 11111111111...');
+				return false;
+			}
+		}
+		return true;
+	}
+	function sttAct(val, row){
+		if (val > 0){
+			return '<input type="checkbox" id="Kichhoat"  name="Kichhoat" checked disabled="disabled"/>';
+		} else {
+			return '<input type="checkbox" id="Kichhoat"  name="Kichhoat" disabled="disabled"/>';
+		}
+	}
+	
+	function formatCol(val, row){
+		if (val == 0)
+			return 'PGD';
+		else
+			return 'Trường';
+	}
+
+	
+	/**********************************Phadh kiem tra ky tu nhap vao*********************************************************/
+	var mikExp = /[ ]/;
+	function dodacheck(val) {
+	var strPass = val.value;
+	var strLength = strPass.length;
+	var lchar = val.value.charAt((strLength) - 1);
+	if(lchar.search(mikExp) != -1) {
+	var tst = val.value.substring(0, (strLength) - 1);
+	val.value = tst;
+	   }
+	}
+
+	/************************************************************************************************************************/
+
+</script>
+<!-- Begin Datagrid -->
+<table id="dg" title="Quản lý người dùng" style="width: 100%;"
+	toolbar="#toolbar" pagination="false" idField="id" rownumbers="true"
+	fitColumns="false" singleSelect="true" nowrap="true"
+	data-options="border:false,fit:true">
+	<thead>
+		<tr>
+			<th data-options="field:'ck',checkbox:true"></th>
+			<th field="User" width="120" sortable="true">Tên Người Dùng</th>
+			<th field="Email" width="150" sortable="true">Email</th>
+			<th field="Fullname" width="150" sortable="true">Tên đầy đủ</th>
+			<th field="Tencoquan" width="120" sortable="true">Đơn vị</th>
+			<th field="Address" width="150">Địa chỉ</th>
+			<th field="Phone" width="120">Số điện thoại</th>
+			<th field="Fax" width="120">Fax</th>
+			<th field="Kichhoat" align="center" formatter="sttAct">Trạng thái</th>
+			<th field="Id" data-options="hidden:true">Id</th>
+		</tr>
+	</thead>
+</table>
+<div id="toolbar" style="padding: 5px; height: auto;">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"
+		onclick="add()">Thêm</a> <a href="#" class="easyui-linkbutton"
+		iconCls="icon-edit" plain="true" onclick="edit()">Sửa</a> <a href="#"
+		class="easyui-linkbutton" iconCls="icon-remove" plain="true"
+		onclick="del()">Xóa</a>
+</div>
+<!-- End DataGrid -->
+
+<!-- Begin Form -->
+
+<div id="dlg" class="easyui-dialog"
+	style="width: 550px; height: 270px; background: #e7e7ef; padding: 10px;"
+	closed="true" modal="true" buttons="#dlg-buttons">
+
+
+	<form id="fm" method="post" name="xyz" enctype="multipart/form-data">
+		<table border="0" width="auto" cellspacing="0" cellpadding="4"
+			class="tblForm">
+			<tr>
+				<td width="100px;">
+					<div>Tên người dùng:</div>
+				</td>
+				<td class="2Col"><input id="User" name="User" maxlength="24"
+					data-options="required:true" class="easyui-validatebox"
+					style="width: 150px" onkeypress="return alpha(event)"></td>
+				<td>
+					<div>Tên đầy đủ:</div>
+				</td>
+				<td class="2Col"><input id="Fullname" name="Fullname"
+					data-options="required:true" class="easyui-text"
+					style="width: 150px"></td>
+			</tr>
+			<tr>
+				<td>
+					<div>Mật khẩu:</div>
+				</td>
+				<td><input id="Pass" name="Pass" data-options="required:true" maxlength="32"
+					class="easyui-validatebox" style="width: 150px" type="password"
+					onclick="this.value='';" /></td>
+				<td>
+					<div>Điện thoại:</div>
+				</td>
+				<td class="2Col"><input id="Phone" name="Phone"
+					class="easyui-validatebox" maxlength="14" style="width: 150px"></td>
+			</tr>
+			<tr>
+				<td>
+					<div>Nhập lại MK:</div>
+				</td>
+				<td><input id="CPass" name="CPass" class="easyui-validatebox"
+					style="width: 150px" data-options="required:true" type="password" /></td>
+				<td>
+					<div>Email:</div>
+				</td>
+				<td class="2Col"><input id="Email" name="Email"
+					data-options="validType:'email'" class="easyui-validatebox"
+					style="width: 150px"></td>
+			</tr>
+			<tr>
+				<td>
+					<div>Fax:</div>
+				</td>
+				<td class="2Col"><input id="Fax" name="Fax" class="easyui-text"
+					style="width: 150px;"></td>
+
+				<td>
+					<div>Tên đơn vị</div>
+				</td>
+				<td><input id="CoquanId" name="CoquanId"
+					data-options="required:true" url="thongtincoquan/combobyphuluc"
+					class="easyui-combobox" data-options="required:true"
+					valueField="Id" textField="Tencoquan" style="width: 153px"></td>
+
+			</tr>
+			<tr>
+				<td>
+					<div>Địa chỉ:</div>
+				</td>
+				<td class="2Col"><input id="Address" name="Address"
+					class="easyui-text" style="width: 150px;"></td>
+				<td>
+					<div>Kích hoạt</div>
+				</td>
+				<td class="2Col"><input id="KichhoatUS" name="KichhoatUS"
+					type="checkbox" /></td>
+			</tr>
+
+
+
+		</table>
+	</form>
+</div>
+<div id="dlg-buttons">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"
+		onclick="save()">Câp nhật</a> <a href="#" class="easyui-linkbutton"
+		iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Hủy</a>
+</div>
+<!-- End From -->

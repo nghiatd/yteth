@@ -1,0 +1,163 @@
+body {
+	font: normal 12px/23px "Segoe UI", Arial, sans-serif;
+	color: black;
+}
+
+.logo_company {
+	width: 15%;
+	display: block;
+	float: left;
+	height: 30px;
+	background: url('Untitled-1.png') no-repeat;
+}
+
+.nav-menu-item {
+	padding: 2px;
+	width: 98%;
+}
+
+.nav-menu-item a {
+	font-weight: bold;
+}
+
+a:hover.l-btn-plain {
+	border: 1px solid #f7d74a;
+	background-image: linear-gradient(bottom, rgb(255, 247, 206) 37%,
+		rgb(255, 226, 140) 69% );
+	background-image: -o-linear-gradient(bottom, rgb(255, 247, 206) 37%,
+		rgb(255, 226, 140) 69% );
+	background-image: -moz-linear-gradient(bottom, rgb(255, 247, 206) 37%,
+		rgb(255, 226, 140) 69% );
+	background-image: -webkit-linear-gradient(bottom, rgb(255, 247, 206) 37%,
+		rgb(255, 226, 140) 69% );
+	background-image: -ms-linear-gradient(bottom, rgb(255, 247, 206) 37%,
+		rgb(255, 226, 140) 69% );
+}
+
+.s-pec {
+	height: 26px;
+	width: 1px;
+	background: url('images/s-pec.png') repeat-x;
+}
+
+.fback {
+	
+}
+
+.tblForm { /*background: black;*/
+	
+}
+
+.tblForm td {
+	border-right: 0px;
+	border-bottom: 0px;
+}
+
+.titback {
+	background: #EFEFEF;
+	/*width: 100%;*/
+	padding-left: 5px;
+	color: red;
+}
+
+.tblForm  2Col {
+	
+}
+
+.tblForm  1Col {
+	
+}
+
+#nav-top {
+	height: 33px;
+	border-bottom: 1px solid #9cbaef;
+}
+
+#nav-menu-top {
+	width: 100%;
+	float: right;
+	background-image: linear-gradient(bottom, rgb(210, 220, 245) 37%,
+		rgb(234, 238, 247) 69% );
+	background-image: -o-linear-gradient(bottom, rgb(210, 220, 245) 37%,
+		rgb(234, 238, 247) 69% );
+	background-image: -moz-linear-gradient(bottom, rgb(210, 220, 245) 37%,
+		rgb(234, 238, 247) 69% );
+	background-image: -webkit-linear-gradient(bottom, rgb(210, 220, 245) 37%,
+		rgb(234, 238, 247) 69% );
+	background-image: -ms-linear-gradient(bottom, rgb(210, 220, 245) 37%,
+		rgb(234, 238, 247) 69% );
+}
+
+a.l-btn {
+	color: #15428b;
+}
+
+#menu {
+	height: 28px;
+	float: left;
+}
+
+#menu img {
+	border: 0px;
+}
+
+#menu div {
+	float: left;
+}
+
+#menu div a {
+	text-decoration: none;
+	color: #15428b;
+	height: 20px;
+	padding: 3px 5px;
+	display: block;
+}
+
+#menu div a:hover {
+	background: -moz-linear-gradient(center bottom, #FFF7CE 37%, #FFE28C 69%);
+	border-radius: 5px;
+	border: 1px solid #FFE28C;
+}
+
+.welcome-css img {
+	vertical-align: middle;
+	margin-left: 2px;
+}
+
+.easyui-layout .panel-body.panel-body-noheader.layout-body img.welcome-img-page
+	{
+	height: 100%;
+}
+
+.easyui-layout .panel-body.panel-body-noheader.layout-body .bg-indexpage
+	{
+	height: 100%;
+	text-align: center;
+	width: 100%;
+}
+
+.dv-table td {
+	border: 0;
+}
+
+.dv-label {
+	font-weight: bold;
+	color: #15428B;
+	width: 110px;
+}
+
+.dv-text {
+	color: #15428B;
+	width: 130px;
+}
+
+.dv-parent-detail {
+	font-style: italic;
+	padding: 15px;
+}
+form fieldset legend {
+	font-weight: bold;
+}
+.combogrid-nhankhau {
+	height: 90;
+}

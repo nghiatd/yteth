@@ -1,0 +1,71 @@
+<?php
+/*******
+ * Create by Phadh
+ */
+
+class Model_Phuongphapdieutri
+{
+	protected $db;
+	
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	//lay tat ca du lieu trong bang phuong phap dieu tri
+	public function getFetObj($sort, $order, $offset, $rows)
+	{
+		$result = array ();
+		$query = $this->db->query ( 'SELECT COUNT(*) AS Total FROM tbldm_phuongphapdieutri' );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		
+		$query = $this->db->query ( "SELECT Id, Tenphuongphap FROM tbldm_phuongphapdieutri
+				order by $sort $order limit $offset, $rows" );
+		
+		$result ['rows'] = $query->fetchAll ();
+		
+		return $result;
+	}
+	
+	//them moi phuong phap dieu tri 
+	
+	public function addObj($data)
+	{
+		$id = $this->db->insert ( 'tbldm_phuongphapdieutri', $data );
+		return $id;
+	}
+	
+	// update phuong phap dieu tri
+	public function updateObj($id, $data)
+	{
+		$Id = $this->db->update ( 'tbldm_phuongphapdieutri', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// lay thong tin ve id va ten doi tuong
+	public function getIdName() {
+		$query = $this->db->query ("SELECT Id, Tenphuongphap FROM tbldm_phuongphapdieutri" );
+		return $query->fetchAll ();
+	}
+	
+	// kiem tra trung lap
+	public function dupliObj($id, $Tenphuongphap)
+	{
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phuongphapdieutri WHERE Tenphuongphap = '$Tenphuongphap'" );
+		if($id != 0){
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phuongphapdieutri WHERE Tenphuongphap = '$Tenphuongphap'
+										AND Id != $id" );
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	// xoa phuong phap dieu tri
+	public function delObj($id)
+	{
+		$idDel = $this->db->delete ( 'tbldm_phuongphapdieutri', 'Id = ' . $id );
+		return $idDel;
+	}
+	
+}

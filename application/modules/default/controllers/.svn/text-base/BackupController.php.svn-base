@@ -1,0 +1,127 @@
+<?php
+include 'PublicdetailController.php';
+class BackupController extends PublicdetailController {
+	private $_MBackup;
+	protected $db;
+	private $kthandle;
+	private $ktfile;
+public function init() {
+		$this->initValue ();
+	}
+	/*
+	 * public function indexAction(){ $this->_helper->layout()->disableLayout();
+	 * $backup = new Model_Backup(); $jsonObj = $backup -> backup(); return
+	 * $this->view->jsonObj = $jsonObj; }
+	 */
+	public function indexAction() {
+	}
+	public function stripUnicode ($str){
+		$marTViet=array("à","á","ạ","ả","ã","â","ầ","ấ","ậ","ẩ","ẫ","ă","ằ","ắ","ặ","ẳ","ẵ",
+				"è","é","ẹ","ẻ","ẽ","ê","ề","ế","ệ","ể","ễ",
+				"ì","í","ị","ỉ","ĩ",
+				"ò","ó","ọ","ỏ","õ","ô","ồ","ố","ộ","ổ","ỗ","ơ","ờ","ớ","ợ","ở","ỡ",
+				"ù","ú","ụ","ủ","ũ","ư","ừ","ứ","ự","ử","ữ",
+				"ỳ","ý","ỵ","ỷ","ỹ",
+				"đ",
+				"À","Á","Ạ","Ả","Ã","Â","Ầ","Ấ","Ậ","Ẩ","Ẫ","Ă"
+				,"Ằ","Ắ","Ặ","Ẳ","Ẵ",
+				"È","É","Ẹ","Ẻ","Ẽ","Ê","Ề","Ế","Ệ","Ể","Ễ",
+				"Ì","Í","Ị","Ỉ","Ĩ",
+				"Ò","Ó","Ọ","Ỏ","Õ","Ô","Ồ","Ố","Ộ","Ổ","Ỗ","Ơ"
+				,"Ờ","Ớ","Ợ","Ở","Ỡ",
+				"Ù","Ú","Ụ","Ủ","Ũ","Ư","Ừ","Ứ","Ự","Ử","Ữ",
+				"Ỳ","Ý","Ỵ","Ỷ","Ỹ",
+				"Đ"," ");
+		$marKoDau=array("a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a",
+				"e","e","e","e","e","e","e","e","e","e","e",
+				"i","i","i","i","i",
+				"o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o",
+				"u","u","u","u","u","u","u","u","u","u","u",
+				"y","y","y","y","y",
+				"d",
+				"A","A","A","A","A","A","A","A","A","A","A","A"
+				,"A","A","A","A","A",
+				"E","E","E","E","E","E","E","E","E","E","E",
+				"I","I","I","I","I",
+				"O","O","O","O","O","O","O","O","O","O","O","O"
+				,"O","O","O","O","O",
+				"U","U","U","U","U","U","U","U","U","U","U",
+				"Y","Y","Y","Y","Y",
+				"D","-");
+		$str=str_replace($marTViet,$marKoDau,$str);
+		return $str;
+	}
+	public function backupAction() {
+		$db = Zend_Registry::get ( 'db' );
+		$db->setFetchMode ( Zend_Db::FETCH_NUM );
+		// $kq=0;
+		$sqlTable = 'SHOW TABLES';
+		$tableALL = $db->fetchAll ( $sqlTable );
+		foreach ( $tableALL as $table ) :
+			$ketqua = $db->fetchAll ( 'SELECT * FROM ' . $table [0] );
+			$return .= 'DROP TABLE IF EXISTS ' . $table [0] . ' CASCADE;';
+			
+			$select = $db->select ()->from ( $table [0] );
+			
+			$stmt = $db->query ( $select );
+			$num_fields = $stmt->columnCount ();
+			
+			$sqlSelectTable = 'SHOW CREATE TABLE ' . $table [0];
+			$resultSelectTable = $db->fetchAll ( $sqlSelectTable );
+			foreach ( $resultSelectTable as $kqSelectTable ) :
+				$return .= "\n\n" . $kqSelectTable [1] . ";\n\n";
+			endforeach
+			;
+			
+			foreach ( $ketqua as $kqInsert ) :
+				$return .= 'INSERT INTO ' . $table [0] . ' VALUES(';
+				for($j = 0; $j < $num_fields; $j ++) {
+					$kqInsert [$j] = addslashes ( $kqInsert [$j] );
+					$kqInsert [$j] = ereg_replace ( "\n", "\\n", $kqInsert [$j] );
+					if (isset ( $kqInsert [$j] )) {
+						$return .= '"' . $kqInsert [$j] . '"';
+					} else {
+						$return .= '""';
+					}
+					if ($j < ($num_fields - 1)) {
+						$return .= ',';
+					}
+				}
+				$return .= ");\n";
+			endforeach
+			;
+			$return .= "\n\n\n";
+		endforeach
+		;
+		/*$name = 'Backup-' . date ( "j-m-y,Day,H-i-s" ) . '.sql.gz';
+		
+		$this->kthandle = @opendir ( 'D:/backup/' );
+		$this->ktfile = readdir ( $this->kthandle );
+		while ( $this->ktfile ) {
+			if ($this->ktfile == str_replace ( " ", "", $this->TblThongtincoquanbyId [0] ['Tenviettat'] ) ) {
+				$handle = fopen ( 'D:/backup/' . str_replace ( " ", "", $this->TblThongtincoquanbyId [0] ['Tenviettat'] ) . '/' . $name, 'w+' );
+				fwrite ( $handle, $return );
+				$jsonObj ['success'] = true;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			} else {
+				mkdir ( "D:/backup/" . str_replace ( " ", "", $this->TblThongtincoquanbyId [0] ['Tenviettat'] ) );
+				$handle = fopen ( 'D:/backup/' . str_replace ( " ", "", $this->TblThongtincoquanbyId [0] ['Tenviettat'] ) . '/' . $name, 'w+' );
+				fwrite ( $handle, $return );
+				$jsonObj ['success'] = true;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}
+		}*/
+		$folder = $this->stripUnicode($this->TblThongtincoquanbyId[0]['Tencoquan']);
+		$ten = str_replace(" ", "-", $folder);
+		$name= $ten.'-Backup-'.date("d-m-Y-H-i-s").'.sql.gz';
+		$handle = fopen('D:/backup/'.$name,'w+');
+		fwrite($handle,$return);
+		fclose($handle);
+		
+		/*
+		 * $handle = fopen('D:/backup/'.$name,'w+'); fwrite($handle,$return);
+		 * fclose($handle); $jsonObj ['success'] = true; return
+		 * $this->view->jsonObj = json_encode ( $jsonObj );
+		 */
+	}
+}

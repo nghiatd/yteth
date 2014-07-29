@@ -1,0 +1,80 @@
+<?php
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class Model_Mucdokhuyettat{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get('db');
+	}
+	
+	// thomnd
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_mucdokhuyettat" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Tenmucdokhuyettat FROM tbldm_mucdokhuyettat ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	//phadh
+	public function CheckValueObj($id, $varTenmucdokhuyettat) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_mucdokhuyettat WHERE Tenmucdokhuyettat = '$varTenmucdokhuyettat'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_mucdokhuyettat WHERE Id !=$id and Tenmucdokhuyettat = '$varTenmucdokhuyettat'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($varTenmucdokhuyettat) {
+		$data = array (
+				'Tenmucdokhuyettat' => $varTenmucdokhuyettat
+		);
+		$Id = $this->db->insert ( 'tbldm_mucdokhuyettat', $data );
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id, $varTenmucdokhuyettat) {
+		$data = array (
+				'Tenmucdokhuyettat' => $varTenmucdokhuyettat
+		)
+		;
+		$this->db->update ( 'tbldm_mucdokhuyettat', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_mucdokhuyettat', 'Id=' . $Id );
+		return $Iddel;
+	}
+	
+	// hien thi du lieu combo
+	public function getNamebyId(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tenmucdokhuyettat FROM tbldm_mucdokhuyettat ORDER BY Tenmucdokhuyettat ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// hien thi du lieu combo
+	public function getName(){
+		$result = array();
+		$query = $this->db->query("SELECT Id AS MucdokhuyettatIdch, Tenmucdokhuyettat FROM tbldm_mucdokhuyettat ORDER BY Tenmucdokhuyettat ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// hien thi du lieu combo
+	public function getNamenhankhau(){
+		$result = array();
+		$query = $this->db->query("SELECT Id AS MucdokhuyettatId, Tenmucdokhuyettat FROM tbldm_mucdokhuyettat ORDER BY Tenmucdokhuyettat ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

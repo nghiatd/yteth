@@ -1,0 +1,60 @@
+<?php
+/*
+ * Create By thomnd
+ */
+
+include 'PublicdetailController.php';
+class DongiacholankhamController extends PublicdetailController {
+	public function indexAction() {
+	}
+	private $ThongtincoquanId;
+	private $Namhoatdong;
+	private $_MHistory;
+	public function init() {
+		$this->initValue ();
+		$this->ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_MHistory = new Model_History ();
+	}
+	
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$mDongiacholankham = new Model_Dongiacholankham ();
+		$jsonObj = json_encode ( $mDongiacholankham->getFetObj ( $this->ThongtincoquanId, $this->Namhoatdong, $sort, $order, $offset, $rows ) );
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$Giatien = str_replace ( ",", "", $_REQUEST ['Giatien'] );
+		$Tienthuthuat = str_replace ( ",", "", $_REQUEST ['Tienthuthuat'] );
+		
+		$Tendongia = 'thomnd';
+		$mDongiacholankham = new Model_Dongiacholankham ();
+		$id = $mDongiacholankham->addObj ( $Tendongia, $Giatien, $Tienthuthuat, $this->ThongtincoquanId, $this->Namhoatdong );
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_dongia', 'Cập nhật', $this->UserIP );
+		$jsonObj ["success"] = true;
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		
+		$id = $this->_getParam ( 'Id' );
+		$Giatien = str_replace ( ",", "", $_REQUEST ['Giatien'] );
+		$Tienthuthuat = str_replace ( ",", "", $_REQUEST ['Tienthuthuat'] );
+		
+		$mDongiacholankham = new Model_Dongiacholankham ();
+		$mDongiacholankham->updateObj ( $id, $Giatien, $Tienthuthuat );
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_dongia', 'Cập nhật', $this->UserIP );
+		$jsonObj ["success"] = true;
+		
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+}

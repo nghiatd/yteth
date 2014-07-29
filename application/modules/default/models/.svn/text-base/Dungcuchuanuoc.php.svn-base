@@ -1,0 +1,64 @@
+<?php
+class Model_Dungcuchuanuoc
+{
+protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+
+	public function getFetObj($sort,$order,$offset,$rows)
+	{		
+		$result = array ();
+		$query = $this->db->query ("SELECT COUNT(*)AS Total FROM tbldm_dungcuchuanuoc");
+		$row = $query->fetchAll ();
+		$query=$this->db->query("SELECT Id,Tendungcuchuanuoc FROM tbldm_dungcuchuanuoc");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($tendungcuchuanuoc) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM  tbldm_dungcuchuanuoc WHERE Tendungcuchuanuoc='$tendungcuchuanuoc'" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function CheckValueObj($id, $tendungcuchuanuoc) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dungcuchuanuoc WHERE Tendungcuchuanuoc = '$tendungcuchuanuoc'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dungcuchuanuoc WHERE Id != $id and Tendungcuchuanuoc = '$tendungcuchuanuoc'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function AddObj($data) {
+		$Id = $this->db->insert ('tbldm_dungcuchuanuoc',$data );
+		return $Id;
+	}
+	
+	public function updateObj($id, $data) {
+		$id=$this->db->update ( 'tbldm_dungcuchuanuoc', $data, 'Id = ' . $id );
+		return $id; 
+	}
+	
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_dungcuchuanuoc', 'Id=' . $Id );
+		return $Iddel;
+	}
+	public function getDungcuchuanuoc()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id,Tendungcuchuanuoc FROM tbldm_dungcuchuanuoc");
+		$result= $query->fetchAll ();
+		return $result;
+	}	
+	public function getdungcusxh()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id AS DungcuchuanuocId,Tendungcuchuanuoc FROM tbldm_dungcuchuanuoc");
+		$result= $query->fetchAll ();
+		return $result;
+	}
+}

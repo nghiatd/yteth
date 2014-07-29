@@ -1,0 +1,91 @@
+<?php
+class Model_Bctiemchung2{
+	protected $db;
+	public function __construct(){
+		$this->db= Zend_Registry::get("db");
+	}
+	/*
+	public function gettiemchung2Obj($thongtincoquanid, $namhethong){
+		$query = $this->db->query("SELECT Id, 			
+			(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,
+				
+			IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) ='Nam', 
+					DATE_FORMAT((SELECT Ngaysinh FROM tblnhankhau WHERE Id = NhankhauId), '%d/%m/%Y'), ' ') AS Nam , 
+						
+			IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nữ', 
+					DATE_FORMAT((SELECT Ngaysinh FROM tblnhankhau WHERE Id = NhankhauId), '%d/%m/%Y'), ' ') AS Nu,
+										
+			(SELECT tblchuhodan.Tenchuho FROM tblchuhodan, tblnhankhau WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan 
+							AND tblnhankhau.Id = tbltiemchungmorong.NhankhauId) AS Hotenchame,
+				
+			(SELECT tblchuhodan.Diachi FROM tblchuhodan, tblnhankhau WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan 
+							AND tblnhankhau.Id = tbltiemchungmorong.NhankhauId) AS Diachigiadinh,
+			
+			'-' AS Mui1, '-' AS Mui2, '-' AS Mui3, '-' AS Lan1, '-' AS Lan2, '-' AS Thuonghan,
+			Vacin, Dottiem,Lantiem, Ghichu, 
+			(SELECT Tenmuctiemchung FROM tbldm_muctiemchung WHERE Id = MuctiemchungId) AS Tenmuctiemchung 
+			FROM tbltiemchungmorong WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhethong ");
+		return $query->fetchAll();
+	}*/
+	public function gettiemchung2Obj($thongtincoquanid, $namhethong){
+		$query = $this->db->query("
+						
+				select Hoten, 
+				IF( Gioitinh ='Nam', 
+					DATE_FORMAT(Ngaysinh,'%d/%m/%Y'), ' ') AS Nam ,
+				IF( Gioitinh ='Nữ', 
+					DATE_FORMAT(Ngaysinh,'%d/%m/%Y'), ' ') AS Nu ,
+					(SELECT tblchuhodan.Tenchuho FROM tblchuhodan WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanid) AS Hotenchame,
+ 
+				(select concat(Diachi,', ', (select Tenthonto from tbldm_thonto where Id=tblchuhodan.ThontoId) )  from tblchuhodan where Mahodan =tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanid) as Diachigiadinh,
+				(
+select DATE_FORMAT(ngaytiemchung,'%d/%m/%Y') from tbltiemchungmorong  where 
+ tblnhankhau.Id= tbltiemchungmorong.NhankhauId and  
+tbltiemchungmorong.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm não%')
+and tbltiemchungmorong.Lantiem=1 and  tbltiemchungmorong.ThongtincoquanId=$thongtincoquanid 
+) as Ngaytiem_Viemnao1,
+
+				(
+select DATE_FORMAT(ngaytiemchung,'%d/%m/%Y') from tbltiemchungmorong  where 
+ tblnhankhau.Id= tbltiemchungmorong.NhankhauId and  
+tbltiemchungmorong.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm não%')
+and tbltiemchungmorong.Lantiem=2 and  tbltiemchungmorong.ThongtincoquanId=$thongtincoquanid 
+) as Ngaytiem_Viemnao2,
+				
+				(
+select DATE_FORMAT(ngaytiemchung,'%d/%m/%Y') from tbltiemchungmorong  where 
+ tblnhankhau.Id= tbltiemchungmorong.NhankhauId and  
+tbltiemchungmorong.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Viêm não%')
+and tbltiemchungmorong.Lantiem=3 and  tbltiemchungmorong.ThongtincoquanId=$thongtincoquanid 
+) as Ngaytiem_Viemnao3,
+
+(
+select DATE_FORMAT(ngaytiemchung,'%d/%m/%Y') from tbltiemchungmorong  where 
+ tblnhankhau.Id= tbltiemchungmorong.NhankhauId and  
+tbltiemchungmorong.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Tả%')
+and tbltiemchungmorong.Lantiem=1 and  tbltiemchungmorong.ThongtincoquanId=$thongtincoquanid 
+) as Ngaytiem_Ta1,
+(
+select DATE_FORMAT(ngaytiemchung,'%d/%m/%Y') from tbltiemchungmorong  where 
+ tblnhankhau.Id= tbltiemchungmorong.NhankhauId and  
+tbltiemchungmorong.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Tả%')
+and tbltiemchungmorong.Lantiem=2 and  tbltiemchungmorong.ThongtincoquanId=$thongtincoquanid 
+) as Ngaytiem_Ta2,
+				
+(
+select DATE_FORMAT(ngaytiemchung,'%d/%m/%Y') from tbltiemchungmorong  where 
+ tblnhankhau.Id= tbltiemchungmorong.NhankhauId and  
+tbltiemchungmorong.MuctiemchungId in (select Id from tbldm_muctiemchung where Tenmuctiemchung LIKE '%Thương hàn%')
+and tbltiemchungmorong.Lantiem=1 and  tbltiemchungmorong.ThongtincoquanId=$thongtincoquanid 
+) as Ngaytiem_Thuonghan1,
+(select Ghichu from tbltiemchungmorong  where NhankhauId =tblnhankhau.Id limit 1) as Ghichu		
+				from tblnhankhau where  Id in 
+				(select distinct NhankhauId from tbltiemchungmorong where ThongtincoquanId=$thongtincoquanid and Namhoatdong=$namhethong)
+									
+			
+				
+
+ 			");
+		return $query->fetchAll();
+	}
+}

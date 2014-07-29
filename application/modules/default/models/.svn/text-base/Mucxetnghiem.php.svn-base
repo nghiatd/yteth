@@ -1,0 +1,114 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_Mucxetnghiem {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 *
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, Tenmuc, Giatrithuongtu, Giatrithuongden ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muckiemtra WHERE Kieu = 1" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muckiemtra WHERE Kieu = 1 ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tendangthuoc        	
+	 * @return String
+	 */
+	public function dupliObj($id, $tenmuc) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muckiemtra WHERE Tenmuc = '$tenmuc' AND Kieu = 1" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muckiemtra WHERE Id != $id AND Tenmuc = '$tenmuc' AND Kieu = 1" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 *
+	 * @return Array item
+	 */
+	public function getInforObj() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_muckiemtra WHERE Kieu = 1" );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_muckiemtra', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_muckiemtra', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_muckiemtra', 'Id = ' . $id );
+		return $Id;
+	}
+	
+	/**
+	 * Phadh tim kiem muc xet nghiem 
+	 * @param unknown_type $sMucxn
+	 * @param unknown_type $sort
+	 * @param unknown_type $order
+	 * @param unknown_type $offset
+	 * @param unknown_type $rows
+	 * @return multitype:NULL
+	 */
+	public function searObj($sMucxn, $sort, $order, $offset, $rows){
+		$where = "Tenmuc LIKE '%$sMucxn%'";
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_muckiemtra WHERE Kieu = 1 AND $where " );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ("SELECT Id, Tenmuc, Giatrithuongtu, Giatrithuongden FROM tbldm_muckiemtra WHERE Kieu = 1 AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+}
+?>

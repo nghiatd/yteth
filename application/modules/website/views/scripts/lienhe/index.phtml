@@ -1,0 +1,161 @@
+<script type="text/javascript">
+	var url;
+	
+	$(function(){
+		$('#dg').edatagrid({
+			url: 'lienhe/json'
+		});
+	});
+	
+	
+
+	function edit(){
+		var row = $('#dg').datagrid('getSelected');
+		$.post('lienhe/setread', {Id:row.Id});
+		if (row){
+			$('#dlg').dialog('open').dialog('setTitle','Xem');
+			$('#fm').form('load',row);
+			url = 'lienhe/update/Id/'+ row.Id +'/TieuDe/'+ row.TieuDe 
+				+'/TrangThai/'+row.TrangThai;
+			
+		}else{
+			$.messager.show({
+				title:'Thông báo',
+				msg:'Không có bản ghi nào được chọn!',
+				timeout:5000,
+				showType:'slide'
+			});
+		}
+	}
+
+	function del(){
+		var rows = $('#dg').datagrid('getChecked');
+		
+		
+		items = rows.length;
+		if (items > 0){
+			$.messager.confirm('Thông báo','Bạn có chắc chắn muốn '+items+' phần tử xóa?',function(r){
+				if (r){
+					$.post('lienhe/del',{items:rows},function(result){
+						if (result.success){
+							$('#dg').datagrid('reload');	
+							show_messager('Cập nhật dữ liệu thành công!');
+						} else {
+							show_messager('Cập nhật dữ liệu không thành công!');
+						}
+					},'json');
+				}
+			});
+		}else{
+			show_messager('Không có bản ghi nào được chọn!');
+		}
+	}
+
+	function read(){
+		var rows = $('#dg').datagrid('getChecked');
+		
+		
+		items = rows.length;
+		if (items > 0){
+			
+				
+					$.post('lienhe/setread',{items:rows},function(result){
+						if (result.success){
+							$('#dg').datagrid('reload');	
+							show_messager('Cập nhật dữ liệu thành công!');
+						} else {
+							show_messager('Cập nhật dữ liệu không thành công!');
+						}
+					},'json');
+				
+			
+		}else{
+			show_messager('Không có bản ghi nào được chọn!');
+		}
+	}
+
+	function save(){
+		$('#fm').form('submit',{
+			url: url,
+			onSubmit: function(){
+				return $(this).form('validate');
+			},
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success){
+					$('#dlg').dialog('close');		
+					$('#dg').datagrid('reload');	
+				} else {
+					$.messager.show({
+						title: 'Error',
+						msg: result.msg
+					});
+				}
+			}
+		});
+	}
+</script>
+<!-- Begin Datagrid -->
+<table id="dg" title="Hình Ảnh" style="width: 100%;" toolbar="#toolbar"
+	pagination="true" idField="id" rownumbers="true" nowrap="true"
+	data-options="border:false,fit:true,singleSelect:true,fitColumns:false,selectOnCheck:false,checkOnSelect:false">
+	<thead>
+		<tr>
+			<th data-options="field:'ck',checkbox:true"></th>
+			<th field="Ten" width="200" sortable="true">Họ & Tên</th>
+			<th field="Email" width="150" sortable="true">Email</th>
+			<th field="ChuDe" width="150" sortable="true">Chủ Đề</th>
+			<th field="NgayTao" width="150" sortable="true">Thời Gian</th>
+			<th field="D" width="150" sortable="true">Trạng Thái</th>
+			<th field="DaDoc" width="150" sortable="true">Trạng Thái</th>
+			<th field="Id" width="1px" data-options="hidden:true">Id</th>
+		</tr>
+	</thead>
+</table>
+<div id="toolbar" style="padding: 5px; height: auto;">
+	<a href="#" class="easyui-linkbutton"
+		iconCls="icon-edit" plain="true" onclick="edit()">Xem</a>	
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true"
+		onclick="del()">Xóa</a>
+		
+	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true"
+		onclick="read()">Đánh dấu chưa đọc</a>
+			
+</div>
+<!-- End DataGrid -->
+
+<!-- Begin Form -->
+<div id="dlg" class="easyui-dialog"
+	style="width: 900px; height: 450px; background: #e7e7ef; padding: 10px;"
+	closed="true" buttons="#dlg-buttons" modal="true">
+	<form id="fm" method="post" enctype="multipart/form-data">
+		<table border="0" width="100%" cellspacing="0" cellpadding="4"
+			class="tblForm">
+			<tr>
+				<td width="100px;">
+					<div>Chủ Đề:</div>
+				</td>
+				<td class="2Col"><input id="TieuDe" name="ChuDe"
+					class="easyui-validatebox" style="width: 600px"
+					onkeypress="return beta(event)" readonly="readonly"></td>
+			</tr>
+			
+			<tr>
+				<td>
+					<div>Nội Dung:</div>
+				</td>
+				<td class="2Col">
+					<!-- thay doi ten class easyui-text thanh  easyui-validatebox--> <textarea
+						rows="200" style="height: 200px; overflow: hidden;" cols="100"
+						name="NoiDung" id="NoiDung" readonly="readonly"></textarea>
+				</td>
+			</tr>
+			
+		</table>
+	</form>
+</div>
+<div id="dlg-buttons">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"
+		onclick="save()">Đóng</a> 
+</div>
+<!-- End From -->

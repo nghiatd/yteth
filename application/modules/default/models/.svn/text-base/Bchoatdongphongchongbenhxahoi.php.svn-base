@@ -1,0 +1,246 @@
+<?php
+/**
+ *
+* Lê văn kiên
+* Edit By Daitk
+*/
+class Model_Bchoatdongphongchongbenhxahoi {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Lây thông tin về Sốt rét
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 * @param Number $tinhId        	
+	 */
+	public function getSotret($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong, $tinhId) {
+		$str_query = "SELECT COUNT(NhankhauId) AS TSSR, 
+				(
+					SELECT COUNT(DISTINCT tblxetnghiem.Sophieukcb) FROM tblxetnghiem, tblchitietxetnghiem, tbldm_muckiemtra WHERE tblxetnghiem.ThongtincoquanId = $thongtincoquanId AND tblxetnghiem.Namhoatdong = $namhoatdong 
+					AND tblxetnghiem.Id = tblchitietxetnghiem.XetnghiemId AND tblchitietxetnghiem.MucxetnghiemId = tbldm_muckiemtra.Id AND tbldm_muckiemtra.Tenmuc = 'Sốt rét' AND (EXTRACT( YEAR_MONTH FROM tblxetnghiem.Ngayxetnghiem) 
+					BETWEEN $thangnamBatdau AND $thangnamKetthuc)
+				) AS TSXetnghiem, 
+				(
+					SELECT COUNT(DISTINCT tblxetnghiem.Sophieukcb) FROM tblxetnghiem, tblchitietxetnghiem, tbldm_muckiemtra WHERE tblxetnghiem.ThongtincoquanId = $thongtincoquanId AND tblxetnghiem.Namhoatdong = $namhoatdong 
+					AND tblxetnghiem.Id = tblchitietxetnghiem.XetnghiemId AND tblchitietxetnghiem.MucxetnghiemId = tbldm_muckiemtra.Id AND tbldm_muckiemtra.Tenmuc = 'Sốt rét' AND (EXTRACT( YEAR_MONTH FROM tblxetnghiem.Ngayxetnghiem) 
+					BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND tblchitietxetnghiem.Ketqua = 'Có KSTRT'
+				) AS TSXetnghiemCoKSTRT, 
+				(
+					SELECT COUNT(sr1.Id) FROM tblsotret AS sr1 WHERE sr1.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr1.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND (Ketquaxetnghiem IS NOT NULL AND Ketquaxetnghiem != '')
+				) AS TSBNXetnghiem, 
+				(
+					SELECT COUNT(sr2.Id) FROM tblsotret AS sr2 WHERE sr2.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr2.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr2.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Vanglai = 1 AND XaId NOT IN (SELECT Id FROM tbldm_xa WHERE HuyenId 
+					IN (SELECT Id FROM tbldm_huyen WHERE TinhId = $tinhId)))
+				) AS TSSRNgoaitinh, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan IN ('Sốt rét lâm sàng', 'Sốt rét có KST')
+				) AS TSSRThuong, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét lâm sàng'
+				) AS TSSRLamsang, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét lâm sàng' AND sr3.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) < 5))) AS TSSRLamsang5, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét lâm sàng' AND sr3.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) BETWEEN 5 AND 14))
+				) AS TSSRLamsang5_14, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét lâm sàng' AND sr3.Cothai = 1
+				) AS TSSRLamsangCothai, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét có KST'
+				) AS TSSRKST,
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét có KST' AND sr3.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) < 5))
+				) AS TSSRKST5, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét có KST' AND sr3.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) BETWEEN 5 AND 14))
+				) AS TSSRKST5_14, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét có KST' AND sr3.Cothai = 1
+				) AS TSSRKSTCothai, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan IN ('Sốt rét ác tính', 'Sốt rét ác tính có KST')
+				) AS TSSRActinh, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét ác tính' AND sr3.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) < 5))
+				) AS TSSRActinh5, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét ác tính' AND sr3.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) BETWEEN 5 AND 14))
+				) AS TSSRActinh5_14, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét ác tính' AND sr3.Cothai = 1
+				) AS TSSRActinhCothai, 
+				(
+					SELECT COUNT(sr3.NhankhauId) FROM tblsotret AS sr3 WHERE sr3.ThongtincoquanId = tblsotret.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM sr3.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND sr3.Chuandoan = 'Sốt rét ác tính có KST'
+				) AS TSSRActinhKST, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND Nguyennhan LIKE 'Sốt rét%'
+				) AS TSChetSR, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND Nguyennhan LIKE 'Sốt rét%' AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) < 5))
+				) AS TSChetSR5, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND Nguyennhan LIKE 'Sốt rét%' AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND (($namhoatdong - YEAR(Ngaysinh)) BETWEEN 5 AND 14))
+				) AS TSChetSR5_14, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) 
+					AND Nguyennhan LIKE 'Sốt rét%' AND NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Id IN (SELECT NhankhauId FROM tblsotret WHERE ThongtincoquanId = $thongtincoquanId AND 
+					Namhoatdong = $namhoatdong AND Cothai = 1))
+				) AS TSChetSRCothai 
+				 FROM tblsotret WHERE ThongtincoquanId = $thongtincoquanId AND (EXTRACT( YEAR_MONTH FROM Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND Namhoatdong = $namhoatdong";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Lây thông tin về HIV/AIDS
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getHIV_AIDS($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$str_query = "SELECT COUNT(Id) AS SLHivAIDS, 
+				(
+					SELECT COUNT(hiv1.NhankhauId) FROM tblhiv AS hiv1 WHERE hiv1.ThongtincoquanId = tblhiv.ThongtincoquanId AND hiv1.Hienmac = 1 AND hiv1.NhankhauId NOT IN 
+					(SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tblhiv WHERE tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tblhiv.NhankhauId 
+					AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong) AND (EXTRACT( YEAR_MONTH FROM hiv1.Ngaythang) <= $thangnamKetthuc)
+				) AS TSHivHienmac, 
+				(
+					SELECT COUNT(hiv1.NhankhauId) FROM tblhiv AS hiv1 WHERE hiv1.ThongtincoquanId = tblhiv.ThongtincoquanId AND hiv1.Namhoatdong = tblhiv.Namhoatdong AND hiv1.Hienmac = 1 AND 
+					(EXTRACT( YEAR_MONTH FROM hiv1.Ngaythang) <= $thangnamKetthuc) AND hiv1.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND 
+					Namhoatdong <= $namhoatdong AND Vanglai = 0 AND Gioitinh = 'Nữ') AND hiv1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tblhiv WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tblhiv.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSHivHienmacNu, 
+				(
+					SELECT COUNT(hiv1.NhankhauId) FROM tblhiv AS hiv1 WHERE hiv1.ThongtincoquanId = tblhiv.ThongtincoquanId AND hiv1.Namhoatdong = tblhiv.Namhoatdong AND hiv1.Hienmac = 1 AND 
+					hiv1.Trangthai = 1 AND (EXTRACT( YEAR_MONTH FROM hiv1.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc)
+				) AS TSHivHienmacMPH, 
+				(
+					SELECT COUNT(aids1.NhankhauId) FROM tblhiv AS aids1 WHERE aids1.ThongtincoquanId = tblhiv.ThongtincoquanId AND aids1.Namhoatdong = tblhiv.Namhoatdong AND aids1.Hienmac = 2 AND 
+					(EXTRACT( YEAR_MONTH FROM aids1.Ngaythang) <= $thangnamKetthuc) AND aids1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tblhiv WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tblhiv.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSAidsHienmac, 
+				(
+					SELECT COUNT(aids1.NhankhauId) FROM tblhiv AS aids1 WHERE aids1.ThongtincoquanId = tblhiv.ThongtincoquanId AND aids1.Namhoatdong = tblhiv.Namhoatdong AND aids1.Hienmac = 2 AND 
+					(EXTRACT( YEAR_MONTH FROM aids1.Ngaythang) <= $thangnamKetthuc) AND aids1.NhankhauId IN (SELECT Id FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND 
+					Namhoatdong <= $namhoatdong AND Vanglai = 0 AND Gioitinh = 'Nữ') AND aids1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tblhiv WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tblhiv.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSAidsHienmacNu, 
+				(
+					SELECT COUNT(aids1.NhankhauId) FROM tblhiv AS aids1 WHERE aids1.ThongtincoquanId = tblhiv.ThongtincoquanId AND aids1.Namhoatdong = tblhiv.Namhoatdong AND aids1.Hienmac = 2 AND 
+					aids1.Trangthai = 1 AND (EXTRACT( YEAR_MONTH FROM aids1.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc)
+				) AS TSAidsHienmacMPH, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau 
+					AND $thangnamKetthuc) AND Nguyennhan LIKE 'AIDS%'
+				) AS TSChetAids 
+				FROM tblhiv WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Lây thông tin về Bệnh nhân Tâm thần
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $thangnamBatdau        	
+	 * @param Number $thangnamKetthuc        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getTamthan($thongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $namhoatdong) {
+		$str_query = "SELECT COUNT(Id) AS TSTT, 
+				(
+					SELECT COUNT(dk1.NhankhauId) FROM tbltamthan AS dk1 WHERE dk1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM dk1.Ngaythang) <= $thangnamKetthuc) AND 
+					(dk1.Dongkinh IS NOT NULL AND dk1.Dongkinh != '') AND dk1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan WHERE tblgiaykhaitu.ThongtincoquanId
+					= $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTDongkinh, 
+				(
+					SELECT COUNT(dk1.NhankhauId) FROM tbltamthan AS dk1 WHERE dk1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM dk1.Ngaythang) <= $thangnamKetthuc) AND 
+					(dk1.Dongkinh IS NOT NULL AND dk1.Dongkinh != '') AND dk1.Quanly = 1 AND dk1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTDongkinhQL, 
+				(
+					SELECT COUNT(dk1.NhankhauId) FROM tbltamthan AS dk1 WHERE dk1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND dk1.Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM 
+					dk1.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND (dk1.Dongkinh IS NOT NULL AND dk1.Dongkinh != '') AND dk1.Trangthai = 1
+				) AS TSTTDongkinhMPH, 
+				(
+					SELECT COUNT(dk1.NhankhauId) FROM tbltamthan AS dk1 WHERE dk1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM dk1.Ngaythang) <= $thangnamKetthuc) AND 
+					(dk1.Dongkinh IS NOT NULL AND dk1.Dongkinh != '') AND dk1.Dangdieutri = 1 AND dk1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTDongkinhDDT, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND Nguyennhan LIKE 'Động kinh%'
+				) AS TSTTDongkinhChet, 
+				(
+					SELECT COUNT(pl1.NhankhauId) FROM tbltamthan AS pl1 WHERE pl1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM pl1.Ngaythang) <= $thangnamKetthuc) AND 
+					(pl1.Tamthanphanliet IS NOT NULL AND pl1.Tamthanphanliet != '') AND pl1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTPhanliet, 
+				(
+					SELECT COUNT(pl1.NhankhauId) FROM tbltamthan AS pl1 WHERE pl1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM pl1.Ngaythang) <= $thangnamKetthuc) AND 
+					(pl1.Tamthanphanliet IS NOT NULL AND pl1.Tamthanphanliet != '') AND pl1.Quanly = 1 AND pl1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan 
+					WHERE tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTPhanlietQL, 
+				(
+					SELECT COUNT(pl1.NhankhauId) FROM tbltamthan AS pl1 WHERE pl1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND pl1.Namhoatdong = $namhoatdong AND 
+					(EXTRACT( YEAR_MONTH FROM pl1.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND (pl1.Tamthanphanliet IS NOT NULL AND pl1.Tamthanphanliet != '') AND pl1.Trangthai = 1
+				) AS TSTTPhanlietMPH, 
+				(
+					SELECT COUNT(pl1.NhankhauId) FROM tbltamthan AS pl1 WHERE pl1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM pl1.Ngaythang) <= $thangnamKetthuc) 
+					AND (pl1.Tamthanphanliet IS NOT NULL AND pl1.Tamthanphanliet != '') AND pl1.Dangdieutri = 1 AND pl1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan 
+					WHERE tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTPhanlietDDT, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND Nguyennhan LIKE 'Tâm thần phân liệt%'
+				) AS TSTTPhanlietChet, 
+				(
+					SELECT COUNT(tc1.NhankhauId) FROM tbltamthan AS tc1 WHERE tc1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM tc1.Ngaythang) <= $thangnamKetthuc) AND 
+					(tc1.Tramcam IS NOT NULL AND tc1.Tramcam != '') AND tc1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan WHERE tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND 
+					tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTTramcam, 
+				(
+					SELECT COUNT(tc1.NhankhauId) FROM tbltamthan AS tc1 WHERE tc1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM tc1.Ngaythang) <= $thangnamKetthuc) AND 
+					(tc1.Tramcam IS NOT NULL AND tc1.Tramcam != '') AND tc1.Quanly = 1 AND tc1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan WHERE 
+					tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTTramcamQL, 
+				(
+					SELECT COUNT(tc1.NhankhauId) FROM tbltamthan AS tc1 WHERE tc1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND tc1.Namhoatdong = $namhoatdong AND 
+					(EXTRACT( YEAR_MONTH FROM tc1.Ngaythang) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND (tc1.Tramcam IS NOT NULL AND tc1.Tramcam != '') AND tc1.Trangthai = 1
+				) AS TSTTTramcamMPH, 
+				(
+					SELECT COUNT(tc1.NhankhauId) FROM tbltamthan AS tc1 WHERE tc1.ThongtincoquanId = tbltamthan.ThongtincoquanId AND (EXTRACT( YEAR_MONTH FROM tc1.Ngaythang) <= $thangnamKetthuc) AND 
+					(tc1.Tramcam IS NOT NULL AND tc1.Tramcam != '') AND tc1.Dangdieutri = 1 AND tc1.NhankhauId NOT IN (SELECT tblgiaykhaitu.NhankhauId FROM tblgiaykhaitu, tbltamthan 
+					WHERE tblgiaykhaitu.ThongtincoquanId = $thongtincoquanId AND tblgiaykhaitu.NhankhauId = tbltamthan.NhankhauId AND YEAR(tblgiaykhaitu.Ngaychet) < $namhoatdong)
+				) AS TSTTTramcamDDT, 
+				(
+					SELECT COUNT(NhankhauId) FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND (EXTRACT( YEAR_MONTH FROM Ngaychet) BETWEEN $thangnamBatdau AND $thangnamKetthuc) AND Nguyennhan LIKE 'Trầm cảm%'
+				) AS TSTTTramcamChet
+				FROM tbltamthan WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

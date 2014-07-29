@@ -1,0 +1,35 @@
+<?php
+class DelBaocao {
+	public static function Delete($_tenmucbaocao, $_kynopid, $_namhoatdong, $_thongtincoquan) {
+		$_MBaocao = new Model_Baocao ();
+		$_tblname = '';
+		if ($_tenmucbaocao == 'Đơn vị hành chính, dân số và tình hình sinh tử') {
+			$_MBaocao->delObj ( 'tbl_bch_1', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_3_1', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			return true;
+		} elseif ($_tenmucbaocao == 'Tình hình thu chi ngân sách y tế') {
+			$_MBaocao->delObj ( 'tbl_bch_2', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			return true;
+		} elseif ($_tenmucbaocao == 'Hoạt động khám chữa bệnh') {
+			$_MBaocao->delObj ( 'tbl_bch_3', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_12', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_12_1', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			return true;
+		} elseif ($_tenmucbaocao == 'Hoạt động tiêm chủng mở rộng') {
+			$_MBaocao->delObj ( 'tbl_bch_10', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_11', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			return true;
+		} elseif ($_tenmucbaocao == 'Hoạt động chăm sóc bà mẹ, trẻ em và kế hoạch hóa gia đình') {
+			$_MBaocao->delObj ( 'tbl_bch_5', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_6', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_7', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_8', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			$_MBaocao->delObj ( 'tbl_bch_9', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			return true;
+		} elseif ($_tenmucbaocao == 'Tình hình nhân lực y tế Xã/Phường') {
+			$_MBaocao->delObj ( 'tbl_bch_4', $_kynopid, $_namhoatdong, $_thongtincoquan );
+			return true;
+		}
+		return false;
+	}
+}

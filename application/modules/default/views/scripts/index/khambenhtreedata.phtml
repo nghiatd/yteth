@@ -1,0 +1,716 @@
+<style>
+a {
+	text-decoration: none;
+	text-shadow: none
+}
+</style>
+<div id="khambenhtt" class="easyui-tree">
+	<li>
+		<div class="tree-node" node-id="10" style="cursor: pointer;">
+			<span class="tree-hit tree-expanded"></span> <span
+				class="tree-icon tree-folder tree-folder-open"></span> <span
+				class="tree-title"><?php echo $this->Tencoquan;?></span>
+		</div>
+		<ul>
+			
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Chu trình</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/tongthe">Phiếu khám</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/sokham">Sơ khám</a></span>
+						</div></li>
+					<!-- <li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/ketluan">Kết luận</a></span>
+						</div></li>		
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/ketluan">Biên lai - hóa đơn</a></span>
+						</div></li>		-->	
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/capphatthuoc">Cấp phát thuốc</a></span>
+						</div></li>		
+					<!-- <li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/tongthe">Khám tổng thể</a></span>
+						</div></li>	-->
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/dinhduong">Dinh dưỡng</a></span>
+						</div></li>		
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="#">Khám sức khỏe</a></span>
+						</div></li>			
+				</ul></li>
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Định hướng</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="3" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/chuyenvien">Chuyển viện</a></span>
+						</div></li>
+					
+					
+				</ul></li>
+			
+		
+				
+				
+			
+			<!--<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Bảo hiểm y tế</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" node-id="4" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="Nhapkho">Thông tin chung</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="4" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span><span
+								class="tree-indent"></span><span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="Nhapthietbi">Diễn biến</a></span>
+						</div></li>
+					
+				</ul></li>-->
+			<!--  -->
+				<li><div class="tree-node tree-node-hover" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Báo cáo</span>
+				</div>
+				<ul>
+					<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">Báo cáo</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bchoatdongchamsoc">Hoạt động chăm sóc bà mẹ, trẻ em và kế hoạch hóa gia đình</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bckhambenh">Hoạt động khám chữa bệnh</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bchoatdongtiemchungmorong">Hoạt động tiêm chủng mở rộng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcbenhtruyennhiem">Các bệnh truyền nhiễm gây dịch và bệnh quan trọng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bchoatdongphongchongbenhxahoi">Hoạt động phòng chống bệnh xã hội</a></span></div>
+						</ul>
+					</li>
+					
+					<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">Báo cáo BHYT</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcbhytkcbncdntt">Danh sách người bệnh BHYT khám chữa bệnh ngoại trú đề nghị thanh toán</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctkcpkcbncndt">T/k chi phí KCB ngoại trú các nhóm đối tượng theo tuyến chuyên môn kỹ thuật</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/baocaothcpkcbbhytnt">Tổng hợp chi phí khám chữa bệnh BHYT ngoại trú</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcbkdsctbhyt">Bảng kê danh sách chuyển tuyến BHYT</a></span></div>
+						</ul>
+					</li>
+					
+					<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">Sổ ghi chép YTCS</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctamthan">Sổ theo dõi bệnh tâm thần</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcsotheodoisotret">Sổ theo dõi bệnh sốt rét</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcsotheodoituvong">Sổ theo dõi tử vong</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcphathai">Sổ phá thai</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bckehoachhoagiadinh">Sổ cung cấp dịch vụ kế hoạch hóa gia đình</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcsode">Sổ đẻ</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/thongkebaocao/bcsokhamthai/sokhamthai">Sổ khám thai</a></span></div>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcsokhambenh">Sổ khám bệnh</a></span></div>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcsoyhoccotruyen">Sổ y học cổ truyền</a></span></div>
+							
+						</ul>
+					</li>
+					
+					<!-- <li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">Sổ ghi chép tổng hợp</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Tình hình sử dụng thuốc</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Chi phí thuốc theo tháng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Bản kiêm kê thuốc</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Bảng quyết toán thuốc</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ cung ứng thuốc vật tư và sử dụng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ kiểm nhập thuốc vật tư</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ kiểm nhập thuốc vật tư theo mục</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ quản lý cán bộ y tế</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ quản lý sổ sách - tài liệu chuyên môn</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ quản lý nhập xuất thuốc vật tư trong năm</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Bảng dự trù thuốc</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ theo dõi đào tạo, tập huấn cán bộ</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ quản lý theo dõi vệ sinh thực phẩm</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ quản lý đối tượng HIV</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ phát kim tiêm, bcs</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ theo dõi truyền thông gián tiếp</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Sổ theo dõi truyền thông trực tiếp</a></span></div>
+						</ul>
+					</li>-->
+					
+					<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">25 - 2006</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctainanthuongtichquy">Báo cáo tai nạn thương tích theo quý</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctainanthuongtich">Báo cáo tai nạn thương tích theo ngày</a></span></div>
+						</ul>
+					</li>
+					
+					<!--<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">40 - 2006</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Hệ thống chỉ tiêu thông kê ngành y tế</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu tiêm chủng mở rộng và chăm sóc trẻ em</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu về dinh dưỡng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu phòng chống phong và dia liễu</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu về tâm thần</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu phòng chống bệnh bươu cổ</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu phòng chống bênh sốt rét</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu phòng chống bệnh lao</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu cơ sở và nhân lực y tế</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu điều trị</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu về chăm sóc sức khỏe BMTE/KHHGD</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu y học cổ truyền</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu tài khoản y tế quốc gia</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu về hoạt động dược</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu DL, TNTT và bệnh nghề nghiệp</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu phòng chống bênh HIV/AIDS</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="Sotret">Danh mục chỉ tiêu về an toàn thực phẩm</a></span></div>
+						</ul>
+					</li>-->
+					
+					<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">40 - 2006</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcngaytinhhinhbenhdich">Báo cáo ngày tình hình bệnh dịch</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcbenhtruyennhiemtuan">Báo cáo bệnh truyền nhiễm tuần</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcbenhsotrettuan">Báo cáo bệnh sốt rét tuần</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctinhhinhbenhtruyennhiemtuan">Báo cáo tình hình bệnh truyền nhiễm tuần</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctinhhinhbenhtruyennhiemthang">Báo cáo tình hình bênh truyền nhiễm tháng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcbenhsotretthang">Báo cáo bệnh sốt rét tháng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctonghopbenhtruyennhiemnam">Báo cáo tổng hợp bênh truyền nhiễm 12 tháng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctongketdichvunam">Báo cáo tổng kết vụ dịch năm</a></span></div>
+						</ul>
+					</li>
+					
+					<li><div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span><span class="tree-indent"></span>
+							<span class="tree-hit tree-expanded"></span>
+							<span class="tree-icon tree-folder tree-folder-open"></span>
+							<span class="tree-title">Báo cáo tổng hợp</span>
+						</div>
+						<ul>
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcxetnghiemhiv">Báo cáo xét nghiệm HIV</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcdanhsachccssuvss">Báo cáo danh sách ca chết sơ sinh, uốn ván sơ sinh hàng tháng</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bcdsbenhnhanlietmemcap">Báo cáo danh sách bệnh nhân liệt mềm cấp tính nghi ngờ bại liệt</a></span></div>
+							
+							<div class="tree-node" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span>
+							<span class="tree-title"><a href="<?php echo $this->baseUrl();?>/khambenh/bctinhinhbenhtruyennhiemtreem">Báo cáo tình hình bệnh truyền nhiễm trẻ em</a></span></div>
+							
+						</ul>
+					</li>
+				</ul>
+			</li>
+				<!--  -->
+				
+		</ul>
+	</li>
+</div>

@@ -1,0 +1,20 @@
+<?php
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class Model_Doituong{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get('db');
+	}
+	
+	// combodu lieu
+	public function getNamebyId(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tendoituongtruyenthong FROM tbldm_doituongtruyenthong ORDER BY Tendoituongtruyenthong ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

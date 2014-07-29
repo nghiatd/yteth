@@ -1,0 +1,94 @@
+<?php
+/**
+ * 
+ * @author Lê Văn Kiên
+ *
+ */
+class Model_Phanloaixa {
+	/**
+	 * - Kết nối DB
+	 * 
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 * 
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, Tenphanloai ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phanloaixa" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_phanloaixa ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tenphanloai        	
+	 * @return String
+	 */
+	public function dupliObj($id, $tenphanloai) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phanloaixa WHERE Tenphanloai = '$tenphanloai'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_phanloaixa WHERE Id != $id AND Tenphanloai = '$tenphanloai'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 * 
+	 * @return Array item
+	 */
+	public function getIdName() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_phanloaixa" );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_phanloaixa', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_phanloaixa', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_phanloaixa', 'Id = ' . $id );
+		return $Id;
+	}
+}
+?>

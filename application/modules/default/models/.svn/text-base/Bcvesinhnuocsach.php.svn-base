@@ -1,0 +1,79 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+class Model_Bcvesinhnuocsach{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	public function getbcvesinhnuocsach($t1,$t2,$thongtincoquanId, $namhoatdong)
+	{
+		$result = array();
+		$query = $this->db->query("
+			SELECT 
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Giếng đào' AND Dat=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Giengdaod,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Giếng khoan' AND Dat=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Giengkhoand,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Máng lần tự chảy' AND Dat=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Manglantuchayd,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Bể nước mưa' AND Dat=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Benuocmuad,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Loại khác' AND Dat=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Loaikhacd,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Giếng đào' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Giengdao,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Giếng khoan' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Giengkhoan,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Máng lần tự chảy' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Manglantuchay,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Bể nước mưa' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Benuocmua,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Loại khác' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Loaikhac,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Giếng đào' AND Kiemtra=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Giengdaokt,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Giếng khoan' AND Kiemtra=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Giengkhoankt,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Máng lần tự chảy' AND Kiemtra=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Manglantuchaykt,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Bể nước mưa' AND Kiemtra=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Benuocmuakt,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loaigieng='Loại khác' AND Kiemtra=1 AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Loaikhackt,
+				
+				(
+					SELECT COUNT(*) 
+					FROM 
+						(SELECT DISTINCT Mahodan FROM  tblnhankhau WHERE ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong') 
+					AS nhankhau
+				) AS Soho,
+				
+				
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu!='' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocnt,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Trangthai='Nhà tiêu HVS' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocnthvs,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Trangthai='Nhà tiêu HVS mới xây dựng' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocntmx,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Trangthai='Nhà tiêu HVS bị xuống cấp' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocntxc,
+				
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu tự hoại' AND Trangthai='Nhà tiêu HVS' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohothhvs,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu tự hoại' AND Trangthai='Nhà tiêu HVS mới xây dựng' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohothmx,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu tự hoại' AND Trangthai='Nhà tiêu HVS bị xuống cấp' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohothxc,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu tự hoại' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohoth,
+				
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu thấm dội' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohotd,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu thấm dội' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohotdhvs,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu thấm dội' AND Trangthai='Nhà tiêu HVS mới xây dựng' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohotdmx,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu thấm dội' AND Trangthai='Nhà tiêu HVS bị xuống cấp' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohotdxc,
+				
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu hai ngăn' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohohn,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu hai ngăn' AND Trangthai='Nhà tiêu HVS' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohohnhvs,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu hai ngăn' AND Trangthai='Nhà tiêu HVS mới xây dựng' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohohnmx,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu hai ngăn' AND Trangthai='Nhà tiêu HVS bị xuống cấp' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohohnxc,
+				
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu chìm có ống thông hơi' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohoc,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu chìm có ống thông hơi' AND Trangthai='Nhà tiêu HVS' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohochvs,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu chìm có ống thông hơi' AND Trangthai='Nhà tiêu HVS mới xây dựng' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocmx,
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Nhà tiêu chìm có ống thông hơi' AND Trangthai='Nhà tiêu HVS bị xuống cấp' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocxc,
+				
+				(SELECT COUNT(*) FROM tblvesinh_nuocsach WHERE Loainhatieu='Loại khác' AND ThongtincoquanId=$thongtincoquanId AND Namhoatdong='$namhoatdong' AND Ngaynhap=t1.Ngaynhap)AS Sohocntth
+			FROM 
+				(
+					SELECT Id,MAX(Ngaynhap) AS Ngaynhap 
+					FROM  tblvesinh_nuocsach
+					GROUP BY Mahodan
+				)AS t1 
+			INNER JOIN 
+				tblvesinh_nuocsach AS vsns ON t1.Ngaynhap=vsns.Ngaynhap
+			WHERE MONTH(t1.Ngaynhap)>$t1 AND MONTH(t1.Ngaynhap)<=$t2
+		");
+		$result = $query->fetchAll();
+		return $result;
+		
+	}
+}

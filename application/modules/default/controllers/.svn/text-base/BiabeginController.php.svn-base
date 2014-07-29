@@ -1,0 +1,108 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BiabeginController extends PublicdetailController{
+	private $_MBiabegin;
+	private $_ThongtincoquanName;
+	private $_ThongtincoquanId;
+	private $_Huyen;
+	private $_Namhoatdong;
+	
+	public function init(){
+		$this->initValue();
+		$this->_MBiabegin = new Model_Biabegin();
+		$this->_ThongtincoquanName = $this->TblThongtincoquanbyId[0]['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+		
+	}
+	
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	public function biabeginAction(){
+		$this->_helper->layout()->disableLayout();
+		$helpExport = new HelpFuncExportExcel();
+		$objReader = PHPExcel_IOFactory::createReader("Excel5");
+		
+		$colIndex = '';
+		$rowindex = 0;
+		$objPHPExcel = new PHPExcel();
+		$sheet  = $objPHPExcel->getActiveSheet();
+		$jsonObj = $this->_MBiabegin->gethuyenObj($this->_ThongtincoquanId,$this->TblThongtincoquanbyId[0]['Phuluc']);
+
+		/*
+		 * 	 Bắt đầu set các giá trị
+		*/
+		$sheet->setCellValue('A1', 'PHÒNG Y TẾ/TRUNG TÂM Y TẾ');
+		$sheet->mergeCellsByColumnAndRow(0, 1, 0, 1);
+		$sheet->setCellValue('A2', 'HUYỆN(QUẬN): ' . $jsonObj[0]['Huyen']);
+		$sheet->mergeCellsByColumnAndRow(0, 2, 0, 2);
+		$sheet->setCellValue('A3', 'CƠ QUAN: '.$this->_ThongtincoquanName);
+		$sheet->mergeCellsByColumnAndRow(0, 3, 0, 3);
+ 
+		$sheet->setCellValue('B1', 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM');
+		$sheet->mergeCellsByColumnAndRow(1, 1, 6, 1);
+		$sheet->setCellValue('B2', 'ĐỘC LẬP - TỰ DO - HẠNH PHÚC');
+		$sheet->mergeCellsByColumnAndRow(1, 2, 6, 2); 
+		$helpExport->setStyle_16_TNR_B_C($sheet, 'B1', 'G1');
+		$helpExport->setStyle_16_TNR_I_C($sheet, 'B2', 'G2');
+		$helpExport->setStyle_16_TNR_I_C($sheet, 'A1', 'A3');
+
+		$sheet->setCellValue('A14', 'BÁO CÁO');
+		$sheet->mergeCellsByColumnAndRow(0, 14, 6, 14);
+		$sheet->setCellValue('A15', 'THỐNG KÊ Y TẾ XÃ, PHƯỜNG');
+		$sheet->mergeCellsByColumnAndRow(0, 15, 6, 15);
+		$sheet->setCellValue('A16', '... tháng, Năm ' . $this->_Namhoatdong);
+		$sheet->mergeCellsByColumnAndRow(0, 16, 6, 16);
+		$sheet->setCellValue('A17', '(Ban hành kèm theo Quyết định của Bộ trưởng Bộ Y tế số 3440/QĐ-BYT');
+		$sheet->mergeCellsByColumnAndRow(0, 17, 6, 17);
+		$sheet->setCellValue('A18', 'Ngày... tháng... năm '. $this->_Namhoatdong . ')');
+		$sheet->mergeCellsByColumnAndRow(0, 18, 6, 18);
+		$helpExport->setStyle_40_TNR_B_C($sheet, 'A14', 'E15');
+		$helpExport->setStyle_16_TNR_B_C($sheet, 'A16', 'A16');
+		$helpExport->setStyle_12_TNR_I_C($sheet, 'A17', 'E18');		
+
+		$sheet->setCellValue('A24', 'Ngày nhận báo cáo:       Từ ngày 01 đến ngày 05 tháng đầu quý sau');
+		$sheet->mergeCellsByColumnAndRow(0, 24, 5, 24);
+		$sheet->setCellValue('A25', '          Đơn vị báo cáo:             Trạm Y tế Xã, Phường');
+		$sheet->mergeCellsByColumnAndRow(0, 25, 3, 25);
+		$sheet->setCellValue('A26', '            Nơi nhận báo cáo:          Phòng Y tế/ Trung tâm Y tế/ Bệnh viện quận/ Huyện');
+		$sheet->mergeCellsByColumnAndRow(0, 26, 5, 26);
+		$helpExport->setStyle_16_TNR_I_C($sheet, 'A24', 'E26');
+		
+		
+		$sheet = $objPHPExcel->getActiveSheet ();
+		// BEGIN set width for colums
+		$sheet->getColumnDimension ( 'A' )->setWidth ( 40 );
+		$sheet->getColumnDimension ( 'B' )->setWidth ( 20 );
+		$sheet->getColumnDimension ( 'C' )->setWidth ( 20 );
+		$sheet->getColumnDimension ( 'D' )->setWidth ( 20 );
+		$sheet->getColumnDimension ( 'E' )->setWidth ( 20 );
+		$sheet->getColumnDimension ( 'F' )->setWidth ( 20 );
+		$sheet->getColumnDimension ( 'G' )->setWidth ( 20 );
+		
+		
+		$objPHPExcel->getActiveSheet ()->setTitle ( 'Bìa Begin' );
+		$objPHPExcel->setActiveSheetIndex ( 0 );
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="BiaBegin(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+	
+	
+}

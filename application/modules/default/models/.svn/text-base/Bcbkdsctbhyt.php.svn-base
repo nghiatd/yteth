@@ -1,0 +1,22 @@
+<?php
+/*************
+ * Create by Daitk
+ * BẢNG KÊ DANH SÁCH CHUYỂN TUYẾN BHYT
+ */
+class Model_Bcbkdsctbhyt {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getInfor($thongtincoquanId, $namhoatdong, $ngaybatdau, $ngayketthuc, $nhombhyt) {
+		$str_query = "SELECT (SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId AND Vanglai = 0) AS Hoten, 
+				(SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId) AS Namsinh, 
+				(SELECT if(Vanglai=0,(select Tenthonto from tbldm_thonto,tblchuhodan where tbldm_thonto.Id=tblchuhodan.ThontoId and tblchuhodan.Mahodan=tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=tblchuhodan.ThongtincoquanId and tblchuhodan.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId),Diachi) FROM tblnhankhau WHERE Id = NhankhauId) AS Diachi, Sobaohiem, 
+				DATE_FORMAT(Ngaylapphieu, '%d/%m/%Y') AS Ngaykham, Chuandoan, 
+				(SELECT Noiden FROM tblchuyenvien WHERE Sophieukcb = tblphieukhambenh.Sophieukcb) AS Chuyenden, 
+				(SELECT tblnhansu.Hoten FROM tblnhansu, tblchuyenvien WHERE tblnhansu.Id = tblchuyenvien.NhansuId AND tblchuyenvien.Sophieukcb = tblphieukhambenh.Sophieukcb) AS Nguoichuyen 
+				FROM tblphieukhambenh WHERE ThongtincoquanId = $thongtincoquanId AND Chutrinhdieutri = 2 AND Ngaylapphieu BETWEEN '$ngaybatdau' AND '$ngayketthuc' AND (SUBSTRING(Sobaohiem, 1, 2) IN ($nhombhyt)) ORDER BY Ngaykham";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

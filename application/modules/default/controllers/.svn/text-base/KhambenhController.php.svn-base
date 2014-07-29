@@ -1,0 +1,1078 @@
+<?php
+include 'PublicdetailController.php';
+
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class KhambenhController extends PublicdetailController {
+	private $_MKhambenh;
+	private $_MNhankhau;
+	private $_Sophieukb;
+	private $_NhankhauId;
+	private $_LoaihinhkhamId;
+	private $_Sobaohiem;
+	private $_Mabenhnhan;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Dskb;
+	private $_sotret;
+	private $_hiv;
+	private $_tamthan;
+	private $_sinhsan;
+	private $_phathai;
+	private $_khhgd;
+	private $_thuongtich;
+	private $_khamthai;
+	private $_chantaymieng;
+	private $_MHistory;
+	private $_Khambenh = array ();
+	private $soret = array ();
+	private $hiv = array();
+	private $tamthan = array();
+	private $sinhsan = array();
+	private $phathai = array();
+	private $khhgd = array();
+	private $thuongtich = array();
+	private $khamthai = array();
+	private $ctkhamthai = array();
+	private $chantaymieng = array();
+	private $_MCtkhamthai;
+	public function init() {
+		$this->initValue ();
+		$this->_MHistory = new Model_History ();
+		$this->_MKhambenh = new Model_Khambenh ();
+		$this->_MNhankhau = new Model_Nhankhau ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_MCtkhamthai = new Model_CTKhamthai();
+		$this->view->headScript ()->appendFile ( $this->view->baseUrl () . '/public/js/scripts/khambenh.js', 'text/javascript' );
+		
+		if (isset ( $_REQUEST ['Sophieukcb'] ) && $_REQUEST ['Sophieukcb'] != '') {
+			$this->_Sophieukb = $_REQUEST ['Sophieukcb'];
+			$this->_NhankhauId = $_REQUEST ['NhankhauId'];
+			$this->_LoaihinhkhamId = $_REQUEST ['LoaihinhkhamId'];
+			$_Ngaykham = (isset ( $_REQUEST ["Ngaylapphieu"] ) && $_REQUEST ["Ngaylapphieu"] != "") ? $_REQUEST ["Ngaylapphieu"] : "";
+			$_Ngaykham = ($_Ngaykham != '') ? $this->convertDate ( $_Ngaykham ) : $_Ngaykham;
+			$_Doituong = (isset ( $_REQUEST ["Doituong"] ) && $_REQUEST ["Doituong"] != "") ? $_REQUEST ["Doituong"] : "";
+			$_Yhct = (isset ( $_POST ["YHCT"] ) && $_POST ["YHCT"] != "") ? $_POST ["YHCT"] : "";
+			//kiem tra checkbox tab
+			$this->_sotret = (isset ( $_POST ["sotret"] ) && $_POST ["sotret"] != "") ? $_POST ["sotret"] : "";
+			$this->_hiv = (isset ( $_POST ["hiv"] ) && $_POST ["hiv"] != "") ? $_POST ["hiv"] : "";
+			$this->_tamthan = (isset ( $_POST ["tamthan"] ) && $_POST ["tamthan"] != "") ? $_POST ["tamthan"] : "";
+			$this->_sinhsan = (isset ( $_POST ["sinhsan"] ) && $_POST ["sinhsan"] != "") ? $_POST ["sinhsan"] : "";
+			$this->_phathai = (isset ( $_POST ["phathai"] ) && $_POST ["phathai"] != "") ? $_POST ["phathai"] : "";
+			$this->_khhgd = (isset ( $_POST ["khhgd"] ) && $_POST ["khhgd"] != "") ? $_POST ["khhgd"] : "";
+			$this->_thuongtich = (isset ( $_POST ["thuongtich"] ) && $_POST ["thuongtich"] != "") ? $_POST ["thuongtich"] : "";
+			$this->_khamthai = (isset ( $_POST ["khamthai"] ) && $_POST ["khamthai"] != "") ? $_POST ["khamthai"] : "";
+			$this->_chantaymieng = (isset ( $_POST ["ctm"] ) && $_POST ["ctm"] != "") ? $_POST ["ctm"] : "";
+			//end//
+			$_Yhct = ($_Yhct == 'on') ? 1 : 0;
+			$this->_Sobaohiem = ($_Doituong == '1') ? $_REQUEST ["Sobaohiem"] : "";
+			$this->_Mabenhnhan = $_REQUEST ['Mabenhnhan'];
+			//kiem tra checkbox cua sotret
+			$_cothai = (isset ( $_POST ["Cothai1"] ) && $_POST ["Cothai1"] != "") ? $_POST ["Cothai1"] : "";
+			$_cosot = (isset ( $_POST ["Cosot1"] ) && $_POST ["Cosot1"] != "") ? $_POST ["Cosot1"] : "";
+			$_kst = (isset ( $_POST ["KST1"] ) && $_POST ["KST1"] != "") ? $_POST ["KST1"] : "";
+			$_srat = (isset ( $_POST ["SRAT1"] ) && $_POST ["SRAT1"] != "") ? $_POST ["SRAT1"] : "";
+			$_bieuhien = (isset ( $_POST ["Bieuhien1"] ) && $_POST ["Bieuhien1"] != "") ? $_POST ["Bieuhien1"] : "";
+			if($_cothai == 'on'){$cothai = 1;}else{$cothai = 0;}
+			if($_cosot == 'on'){$cosot = 1;}else{$cosot = 0;}
+			if($_kst == 'on'){$kst = 1;}else{$kst = 0;}
+			if($_srat == 'on'){$srat = 1;}else{$srat = 0;}
+			if($_bieuhien == 'on'){$bieuhien = 1;}else{$bieuhien = 0;}
+			///////end/////
+			//kiem tra checkbox cua hiv//
+			$_somoi = (isset ( $_POST ["TrangthaiHiv"] ) && $_POST ["TrangthaiHiv"] != "") ? $_POST ["TrangthaiHiv"] : "";
+			if($_somoi == 'on'){$somoi = 1;}else{$somoi = 0;}
+			////end//
+			//kiem tra checkbox cua tam than
+			$_trangthai = (isset ( $_POST ["Trangthai1"] ) && $_POST ["Trangthai1"] != "") ? $_POST ["Trangthai1"] : "";
+			$_dangdieutri = (isset ($_POST["Dangdieutri1"]) && $_POST["Dangdieutri1"] != "") ? $_POST["Dangdieutri1"] : "";
+			$_quannly = (isset ($_POST["Quanly1"]) && $_POST["Quanly1"] != "") ? $_POST["Quanly1"] : "";
+			if($_trangthai == 'on'){$trangthai = 1;}else{$trangthai = 0;}
+			if($_dangdieutri == 'on'){$dangdieutri = 1;}else{$dangdieutri = 0;}
+			if($_quannly == 'on'){$quanly = 1;}else{$quanly = 0;}
+			/////end ////
+			// kiem tra check box cua sinh san
+			$_gioitinh = (isset ( $_POST ["Gioitinh"] ) && $_POST ["Gioitinh"] != "") ? $_POST ["Gioitinh"] : "";
+			$_uonvan = (isset ( $_POST ["Tiemuvdulieu1"] ) && $_POST ["Tiemuvdulieu1"] != "") ? $_POST ["Tiemuvdulieu1"] : "";
+			$_quanly = (isset ( $_POST ["Duocquanly1"] ) && $_POST ["Duocquanly1"] != "") ? $_POST ["Duocquanly1"] : "";
+			$_tiemk1 = (isset ( $_POST ["Tiemk11"] ) && $_POST ["Tiemk11"] != "") ? $_POST ["Tiemk11"] : "";
+			$_chet = (isset ( $_POST ["Chettu22tuan"] ) && $_POST ["Chettu22tuan"] != "") ? $_POST ["Chettu22tuan"] : "";
+			if($_gioitinh == 'on'){$gioitinh = 1;}else{$gioitinh = 0;}
+			if($_uonvan == 'on'){$uonvan = 1;}else{$uonvan = 0;}
+			if($_quanly == 'on'){$ql = 1;}else{$ql = 0;}
+			if($_tiemk1 == 'on'){$tiem = 1;}else{$tiem = 0;}
+			if($_chet == 'on'){$chet = 1;}else{$chet = 0;}
+			////end/////
+			//kiem tra checkbox cua pha thai
+			$_honnhan = (isset ( $_POST ["Tinhtranghonnhan"] ) && $_POST ["Tinhtranghonnhan"] != "") ? $_POST ["Tinhtranghonnhan"] : "";
+			$_chuyentuyen = (isset ( $_POST ["Chuyentuyen"] ) && $_POST ["Chuyentuyen"] != "") ? $_POST ["Chuyentuyen"] : "";
+			$_khamlai = (isset ( $_POST ["Khamlaisau2tuan"] ) && $_POST ["Khamlaisau2tuan"] != "") ? $_POST ["Khamlaisau2tuan"] : "";
+			if($_honnhan == 'on'){$honnhan = 1;}else{$honnhan = 0;}
+			if($_chuyentuyen == 'on'){$chuyentuyen = 1;}else{$chuyentuyen = 0;}
+			if($_khamlai == 'on'){$khamlai = 1;}else{$khamlai = 0;}
+			//end////
+			////kiem tra checkbox cua kehoachhoagiadinh
+			$_baocaosu = (isset ( $_POST ["Baocaosu"] ) && $_POST ["Baocaosu"] != "") ? $_POST ["Baocaosu"] : "";
+			$_trietsan = (isset ( $_POST ["Trietsan"] ) && $_POST ["Trietsan"] != "") ? $_POST ["Trietsan"] : "";
+			$_nguyco = (isset ( $_POST ["Doituongnguyco"] ) && $_POST ["Doituongnguyco"] != "") ? $_POST ["Doituongnguyco"] : "";
+			$_bomkimtiem = (isset ( $_POST ["Bomkimtiem"] ) && $_POST ["Bomkimtiem"] != "") ? $_POST ["Bomkimtiem"] : "";
+			$_chetkh = (isset ( $_POST ["Chetkh"] ) && $_POST ["Chetkh"] != "") ? $_POST ["Chetkh"] : "";
+			$_chuyentuyen = (isset ( $_POST ["Chuyentuyen"] ) && $_POST ["Chuyentuyen"] != "") ? $_POST ["Chuyentuyen"] : "";
+			$_moithuchien = (isset ( $_POST ["Moithuchien"] ) && $_POST ["Moithuchien"] != "") ? $_POST ["Moithuchien"] : "";
+			if($_baocaosu == 'on'){$baocaosu = 1;}else{$baocaosu = 0;}
+			if($_trietsan == 'on'){$trietsan = 1;}else{$trietsan = 0;}
+			if($_nguyco == 'on'){$nguyco = 1;}else{$nguyco = 0;}
+			if($_bomkimtiem == 'on'){$bomkimtiem = 1;}else{$bomkimtiem = 0;}
+			if($_chetkh == 'on'){$chetkh = 1;}else{$chetkh = 0;}
+			if($_chuyentuyen == 'on'){$chuyentuyen = 1;}else{$chuyentuyen = 0;}
+			if($_moithuchien == 'on'){$moithuchien = 1;}else{$moithuchien = 0;}
+			//end ///
+			// kiem tra check box cua tai nan thuong tich
+			$_daumat = (isset ( $_POST ["Daumatco1"] ) && $_POST ["Daumatco1"] != "") ? $_POST ["Daumatco1"] : "";
+			$_thanminh = (isset ( $_POST ["Thanminh1"] ) && $_POST ["Thanminh1"] != "") ? $_POST ["Thanminh1"] : "";
+			$_chi = (isset ( $_POST ["Chi1"] ) && $_POST ["Chi1"] != "") ? $_POST ["Chi1"] : "";
+			$_chanthuong = (isset ( $_POST ["Dachanthuong1"] ) && $_POST ["Dachanthuong1"] != "") ? $_POST ["Dachanthuong1"] : "";
+			$_khac = (isset ( $_POST ["Khac1"] ) && $_POST ["Khac1"] != "") ? $_POST ["Khac1"] : "";
+			if($_daumat == 'on'){$daumat = 1;}else{$daumat = 0;}
+			if($_thanminh == 'on'){$thanminh = 1;}else{$thanminh = 0;}
+			if($_chi == 'on'){$chi = 1;}else{$chi = 0;}
+			if($_chanthuong == 'on'){$chanthuong = 1;}else{$chanthuong = 0;}
+			if($_khac == 'on'){$khac = 1;}else{$khac = 0;}
+			//end ///////
+			$this->_Khambenh = array (
+					'Sophieukcb' => $this->_Sophieukb,
+					'NhankhauId' => $this->_NhankhauId,
+					'LoaihinhkhamId' => $this->_LoaihinhkhamId,
+					'Ngaylapphieu' => $_Ngaykham,
+					'Doituong' => $_Doituong,
+					'Noigioithieu' => $_REQUEST ['Noigioithieu'],
+					'Lienhe' => $_REQUEST ['Lienhe'],
+					'DiadiemId' => $_REQUEST ['DiadiemId'],
+					'Trieuchung' => $_REQUEST ['Trieuchung'],
+					'Chuandoan' => $_REQUEST ['Chuandoan'],
+					'Sobaohiem' => $this->_Sobaohiem,
+					'PhuongphapdieutriId' => $_REQUEST ['PhuongphapdieutriId'],
+					'Chutrinhdieutri' => $_REQUEST ['Chutrinhdieutri'],
+					'BenhdichId' => $_REQUEST ['BenhdichId'],
+					'YHCT' => $_Yhct,
+					'NhansuId' => $_REQUEST ['NhansuId'],
+					'Ghichu' => $_REQUEST ['Ghichu'],
+					'Songaynoitru' => $_REQUEST ['Songaynoitru'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong,
+					'Tienthuthuat' => $_REQUEST ['Tienthuthuat'],
+					'Nguoibenhchi' => $_REQUEST['Nguoibenhchi'],
+					'Vattutieuhao' => $_REQUEST['Vattutieuhao'],
+					'Vattuthaythe' => $_REQUEST['Vattuthaythe'],
+					'Dichvuktc' => $_REQUEST['Dichvuktc'],
+					'Thuockctg' => $_REQUEST['Thuockctg'],
+					'Mau' => $_REQUEST['Mau']
+			);
+			isset ( $_REQUEST ['Giatritu'] ) ? ($this->_Khambenh ['Giatritu'] = $this->convertDate ( $_REQUEST ['Giatritu'] )) : '';
+			isset ( $_REQUEST ['Giatriden'] ) ? ($this->_Khambenh ['Giatriden'] = $this->convertDate ( $_REQUEST ['Giatriden'] )) : '';
+			// cap nhat thong tin sot ret
+			$this->soret = array(
+							'Sophieukcb' => $this->_Sophieukb,
+							'NhankhauId' => $this->_NhankhauId,
+							'Ngaythang' => $this->convertDate($_REQUEST['Ngaylapphieu']),
+							'Xetnghiemlamquethu' => $_REQUEST['Xetnghiemlamquethu'],
+							'Ketquaxetnghiem' => $_REQUEST['Ketquaxetnghiem'],
+							'Noiphathien' => $_REQUEST['Noiphathien'],
+							'Chuandoan' => $_REQUEST['Chuandoansr'],
+							'ThuocSRdieutri' => $_REQUEST['ThuocSRdieutri'],
+							'ThuocSRtudieutri' => $_REQUEST['ThuocSRtudieutri'],
+							'Ketquadieutri' => $_REQUEST['Ketquadieutrisr'],
+							'Ghichu' => $_REQUEST['Ghichu'],
+							'Bieuhien' => $bieuhien,
+							'ThongtincoquanId' => $this->_ThongtincoquanId,
+							'Namhoatdong' => $this->_Namhoatdong,
+							'KST' => $kst,
+							'Cosot' => $cosot,
+							'Cothai' => $cothai,
+							'SRAT' => $srat,
+							'NhansuId' => $_REQUEST['NhansuId']
+					);
+			// cap nhat thong tin hiv
+			$this->hiv = array(
+					'Hienmac' => $_REQUEST['Hienmac'],
+					'Trangthai' => $somoi,
+					'Ngaydieutri' => $this->convertDate($_REQUEST['Ngaydieutri']),
+					'Ghichu' => $_REQUEST['Ghichuhiv'],
+					'NhankhauId' => $this->_NhankhauId,
+					'NhansuId' =>$_REQUEST['NhansuId'],
+					'Sophieukcb' => $this->_Sophieukb,
+					'Ngaythang' => $this->convertDate($_REQUEST['Ngaylapphieu']),
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong
+					);
+			// cap nhat thong tin tam than
+			$this->tamthan = array(
+					'Sophieukcb' => $this->_Sophieukb,
+					'NhankhauId' => $this->_NhankhauId,
+					'Ngaythang' => $this->convertDate($_REQUEST['Ngaylapphieu']),
+					'Tamthanphanliet' => $_REQUEST['Tamthanphanliet'],
+					'Dongkinh' => $_REQUEST['Dongkinh'],
+					'Tramcam' => $_REQUEST['Tramcam'],
+					'Phuongphapdieutri' => $_REQUEST['Phuongphapdieutri'],
+					'Ketquadieutri' => $_REQUEST['Ketquadieutrith'],
+					'Ghichu' => $_REQUEST['Ghichutt'],
+					'NhansuId' => $_REQUEST['NhansuId'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong,
+					'Trangthai' => $trangthai,
+					'Quanly' => $quanly,
+					'Dangdieutri' => $dangdieutri
+					);
+			// cap nhat thong tin sinh san
+			$this->sinhsan = array(
+					'Sophieukcb' => $this->_Sophieukb,
+					'NhankhauId' => $this->_NhankhauId,
+					'Tiemuvdulieu' => $uonvan,
+					'Kiemtrabathoiky' => $_REQUEST['Kiemtrabathoiky'],
+					'Duocquanly' => $ql,
+					'DiadiemId' => $_REQUEST['DiadiemIdss'],
+					'Solancothai' => $_REQUEST['Solancothai'],
+					'Solande' => $_REQUEST['Solande'],
+					'Soconhienco' => $_REQUEST['Soconhienco'],
+					'HinhthucsinhsanId' => $_REQUEST['HinhthucsinhsanId'],
+					'Cannang' => $_REQUEST['Cannang'],
+					'TaibiensinhsanId' => $_REQUEST['TaibiensinhsanId'],
+					'Bumetronggiodau' => $_REQUEST['Bumetronggiodau'],
+					'Tiemk1' => $tiem,
+					'Khamtuandau' => $_REQUEST['Khamtuandau'],
+					'Kham7den42' => $_REQUEST['Kham7den42'],
+					'Chettu22tuan' => $chet,
+					'Gioitinh' => $gioitinh,
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong,
+					'NhansuId' => $_REQUEST['NhansuId'],
+					'Ngaysinhsan' => $this->convertDate($_REQUEST['Ngaysinh'])
+					
+					);
+			// cap nhat thong tin phathai
+			$this->phathai = array(
+					'Sophieukcb' => $this->_Sophieukb,
+					'NhankhauId' => $this->_NhankhauId,
+					'Ngaypha' =>$this->convertDate($_REQUEST['Ngaylapphieu']),
+					'Tinhtranghonnhan' => $honnhan,
+					'Soconhienco' => $_REQUEST['Soconhienco1'],
+					'Ngaykinhcuoi' => $this->convertDate($_REQUEST['Ngaykinhcuoi']),
+					'Xetnghiemthai' => $_REQUEST['Xetnghiemthai'],
+					'Ketquasoimo' => $_REQUEST['Ketquasoimo'],
+					'Phuongphappha' => $_REQUEST['Phuongphappha'],
+					'Khamlaisau2tuan' => $khamlai,
+					'Ghichu' => $_REQUEST['Ghichupt'],
+					'Taibien' => $_REQUEST['Taibien'],
+					'DiadiemId' => $_REQUEST['DiadiemIdpt'],
+					'Tuanthai' => $_REQUEST['Tuanthai'],
+					'NhansuId' => $_REQUEST['NhansuId'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong,
+					'Chuyentuyen' => $chuyentuyen
+					);
+			// cap nhat thong tin kehoachhoagiadinh
+			$this->khhgd = array(
+					'Sophieukcb' => $this->_Sophieukb,
+					'NhankhauId' => $this->_NhankhauId,
+					'Ngaythang' => $this->convertDate($_REQUEST['Ngaylapphieu']),
+					'Soconhienco' => $_REQUEST['Soconhiencokh'],
+					'DatDCTC' => $_REQUEST['DatDCTC'],
+					'DangthuocId' => $_REQUEST['DangthuocId'],
+					'Baocaosu' => $baocaosu,
+					'Trietsan' => $trietsan,
+					'NhansuId' => $_REQUEST['NhansuId'],
+					'Ghichu' => $_REQUEST['Ghichukh'],
+					'Taibien' => $_REQUEST['Taibien'],
+					'Chet' => $chetkh,
+					'DiadiemId' => $_REQUEST['DiadiemIdkh'],
+					'Moithuchien' => $moithuchien,
+					'Chuyentuyen' => $chuyentuyen,
+					'Doituongnguyco' => $nguyco,
+					'Bomkimtiem' => $bomkimtiem,
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong
+					);
+			// cap nhat thong tin tainanthuongtich
+			$this->thuongtich = array(
+					'NhankhauId' => $this->_NhankhauId,
+					'Ngaytainan' => $this->convertDate($_REQUEST['Ngaytainan']),
+					'Vaohoi' => $_REQUEST['Vaohoi'],
+					'Noitainan' => $_REQUEST['Noitainan'],
+					'Sophieukcb' => $this->_Sophieukb,
+					'DiadiemtainanId' => $_REQUEST['DiadiemtainanId'],
+					'Daumatco' => $daumat,
+					'Thanminh' => $thanminh,
+					'Chi' => $chi,
+					'Dachanthuong' => $chanthuong,
+					'Khac' => $khac,
+					'NguyennhantainanId' => $_REQUEST['NguyennhantainanId'],
+					'Dienbiensautainan' => $_REQUEST['Dienbiensautainan'],
+					'XulytainanId' => $_REQUEST['XulytainanId'],
+					'NhansuId' => $_REQUEST['NhansuId'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong
+					);
+			// cap nhat thong tin kham thai
+			$this->khamthai = array(
+					'NhankhauId' => $this->_NhankhauId,
+					'Sophieukcb' => $this->_Sophieukb,
+					'Soconhienco' => $_REQUEST['Soconhiencokt'],
+					'Lancothaithu' => $_REQUEST['Lancothaithu'],
+					'Tiensuckhoevasinhde' => $_REQUEST['Tiensuckhoevasinhde'],
+					'Ngaykinhcuoi' => $this->convertDate($_REQUEST['Ngaykinhcuoikt']),
+					'Tinhtrang' => $_REQUEST['Tinhtrang'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong
+					);
+			// cap nhat thong tin chan tay mieng
+			$this->chantaymieng = array(
+					'Sophieukcb' => $this->_Sophieukb,
+					'NhankhauId' => $this->_NhankhauId,
+					'NhansuId' => $_REQUEST['NhansuId'],
+					'Ngaykhoiphat' => $this->convertDate($_REQUEST['Ngaykhoiphat']),
+					'Ngaynhapvien' => $this->convertDate($_REQUEST['Ngaylapphieu']),
+					'PhandoLS' => $_REQUEST['PhandoLS'],
+					'Loaicabenh' => $_REQUEST['Loaicabenh'],
+					'Laymauvakqxn' => $_REQUEST['Laymauvakqxn'],
+					'Codihoc' => $_REQUEST['Codihoc'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Namhoatdong' => $this->_Namhoatdong
+					);
+		}
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MKhambenh->getFetObj ( $this->_Namhoatdong, $this->_ThongtincoquanId, $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - View dữ liệu bởi Id.
+	 *
+	 * @return string json
+	 */
+	public function getobjbyidAction() {
+		$sophieukcb = $this->_getParam ( 'Sophieukcb' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MKhambenh->getFetObjById ( $sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Trả dữ liệu về cho combogrid.
+	 *
+	 * @return string json
+	 */
+	public function combogridAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$smasophieu = $this->_getParam ( 'smasophieu' );
+		$shoten = $this->_getParam ( 'shoten' );
+		$jsonObj = json_encode ( $this->_MKhambenh->getInforObj ( $smasophieu, $shoten, $this->_ThongtincoquanId, $this->_Namhoatdong, $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - View chi tiết dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function detailAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$mahodan = $this->_getParam ( 'mahodan' );
+		return $this->view->mahodan = $mahodan;
+	}
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$nhankhau = array ();
+
+			$dup = $this->_MKhambenh->dupliObj ( 0, $this->_Sophieukb, $this->_ThongtincoquanId );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+				    alert('Mã phiếu khám chữa bệnh này đã có!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}
+			
+			// Phadh Kiem tra tinh trang cua nhan khau
+			$dupli = $this->_MKhambenh->dupliObjbytinhtrang ( $this->_NhankhauId, $this->_ThongtincoquanId, $this->_Namhoatdong );
+			if ($dupli > 0) {
+				echo "<script type=\"text/javascript\">
+				    alert('Bệnh nhân này đã chết, không thể thực hiện khám chữa bệnh được!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}
+			
+			$dup = $this->_MNhankhau->dupliObjMabenhnhan ( $this->_NhankhauId, $this->_Mabenhnhan, $this->_ThongtincoquanId );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+				    alert('Mã bệnh nhân này đã có, hãy nhập lại!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			} else {
+				$temp = $this->_MKhambenh->addObj ( $this->_Khambenh );
+				if ($temp > 0 && $this->_Sobaohiem != '') {
+					$nhankhau ['Sobaohiem'] = $this->_Sobaohiem;
+				}
+				// them moi sot ret
+				if($this->_sotret == 'on'){
+					$sotret = new Model_Sotret();
+					$sotret->addObj($this->soret);
+				}
+				// them moi hiv
+				if($this->_hiv == 'on'){
+					$hiv = new Model_Hiv();
+					$hiv->AddObj($this->hiv);
+				}
+				// them moi tamthan
+				if($this->_tamthan == 'on'){
+					$tamthan = new Model_Tamthan();
+					$tamthan->addObj($this->tamthan);
+				}
+				// them moi sinh san
+				if($this->_sinhsan == 'on'){
+					$sinhsan = new Model_Sinhsan();
+					$sinhsan->addObj($this->sinhsan);
+				}
+				// them moi pha thai
+				if($this->_phathai == 'on'){
+					$phathai = new Model_Phathai();
+					$phathai->addObj($this->phathai);
+				}
+				// them moi kehoachhoagiadinh
+				if($this->_khhgd == 'on'){
+					$kehoach = new Model_Kehoachhoagiadinh();
+					$kehoach->addObj($this->khhgd);
+				}
+				// them moi tai nan thuong tich
+				if($this->_thuongtich == 'on'){
+					$thuongtich = new Model_Tainanthuongtich();
+					$thuongtich->addObj($this->thuongtich);
+				}
+				// them moi kham thai
+				if($this->_khamthai == 'on'){
+					$khamthai = new Model_Khamthai();
+					$khamthai->addObj($this->khamthai);
+					$ctkhamthai = new Model_CTKhamthai();
+					$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['kt'] ) : $_REQUEST ['kt'];
+					$khamthai = json_decode ( $stringJSON, true );
+					foreach ( $khamthai as $item ) {
+						//kiem tra cac checkbox cua chi tiet kham thai
+						$_Thieumau = (isset ( $item ['Tinhtrangthieumau'] ) && $item ['Tinhtrangthieumau'] != '') ? $item ['Tinhtrangthieumau'] : '';
+						$_Thieumau = ($_Thieumau == 'on') ? 1 : 0;
+						$_Uongsat = (isset ( $item ['Uongviensat'] ) && $item ['Uongviensat'] != '') ? $item ['Uongviensat'] : '';
+						$_Uongsat = ($_Uongsat == 'on') ? 1 : 0;
+						$_DKdethuong = (isset ( $item ['Dethuong'] ) && $item ['Dethuong'] != '') ? $item ['Dethuong'] : '';
+						$_DKdethuong = ($_DKdethuong == 'on') ? 1 : 0;
+						$_Khamtainha = (isset ( $item ['Khamtainha'] ) && $item ['Khamtainha'] != '') ? $item ['Khamtainha'] : '';
+						$_Khamtainha = ($_Khamtainha == 'on') ? 1 : 0;
+						//end////////////
+						$this->ctkhamthai = array(
+								'Ngaykham' => $this->convertDate($item['Ngaykham']),
+								'Sophieukcb' => $this->_Sophieukb,
+								'Tuanthai' => $item['Tuanthai'],
+								'Dukienngaysinh' => $this->convertDate($item['Dukienngaysinh']),
+								'Trongluongme' => $item['Trongluongme'],
+								'Vongbung' => $item['Vongbung'],
+								'CaoTC' => $item['CaoTC'],
+								'Khungchau' => $item['Khungchau'],
+								'Proteinnieu' => $item['Proteinnieu'],
+								'Huyetap' => $item['Huyetap'],
+								'Tinhtrangthieumau' => $_Thieumau,
+								'Uongviensat' => $item,
+								'SomuitiemUV' => $item['SomuitiemUV'],
+								'Timthai' => $item['Timthai'],
+								'Ngoithai' => $item['Ngoithai'],
+								'Dethuong' => $_DKdethuong,
+								'Conguyco' => $item['Conguyco'],
+								'NhansuId' => $_REQUEST['NhansuId'],
+								'Khamtainha' => $_Khamtainha,
+								'Ghichu' => $item['Ghichu'],
+								'ThongtincoquanId' => $this->_ThongtincoquanId
+						);
+						$ctkhamthai->addObj($this->ctkhamthai);
+					}
+				}
+				// them moi du lieu chan tay mieng
+				if($this->_chantaymieng == 'on'){
+					$chantaymieng = new Model_Chantaymieng();
+					$chantaymieng->AddObj($this->chantaymieng);
+				}
+				$nhankhau ['Mabenhnhan'] = $this->_Mabenhnhan;
+				$this->_MNhankhau->updateObj ( $this->_NhankhauId, $nhankhau );
+				$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblphieukhambenh', 'Thêm phiếu', $this->UserIP );
+				$jsonObj ["success"] = true;
+			}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$nhankhau = array ();
+		$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['kt'] ) : $_REQUEST ['kt'];
+		$khamthai1 = json_decode ( $stringJSON, true );
+		/*foreach ($khamthai1 as $item){
+			$id = $item['Id'];
+			echo "<script type=\"text/javascript\">
+			alert('$id');
+			</script>";
+			$jsonObj ["success"] = false;
+		}*/
+			$dupli = $this->_MKhambenh->dupliObjbytinhtrang ( $this->_NhankhauId, $this->_ThongtincoquanId, $this->_Namhoatdong );
+			if ($dupli > 0) {
+				echo "<script type=\"text/javascript\">
+				    alert('Bệnh nhân này đã chết, không thể thực hiện khám chữa bệnh được!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}
+			
+			$dup = $this->_MKhambenh->dupliObj ( $id, $this->_Sophieukb, $this->_ThongtincoquanId );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+				    alert('Mã phiếu khám chữa bệnh này đã có!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}
+			$dup = $this->_MNhankhau->dupliObjMabenhnhan ( $this->_NhankhauId, $this->_Mabenhnhan, $this->_ThongtincoquanId );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+				    alert('Mã bệnh nhân này đã có, hãy nhập lại!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			} else {
+				$temp = $this->_MKhambenh->updateObj ( $id, $this->_Khambenh );
+				if ($temp > 0 && $this->_Sobaohiem != '') {
+					$nhankhau ['Sobaohiem'] = $this->_Sobaohiem;
+				}
+				// cap nhat sot ret
+				if($this->_sotret == 'on'){
+					$sotret = new Model_Sotret();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupsr = $sotret->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupsr > 0){
+						$sotret->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->soret);
+					}else{
+						$sotret->addObj($this->soret);
+					}
+				}else{
+					$sotret = new Model_Sotret();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$sotret->del($sophieukcb);
+				}
+				// cap nhat hiv
+				if($this->_hiv == 'on'){
+					$hiv = new Model_Hiv();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$duphiv = $hiv->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($duphiv > 0){
+						$hiv->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->hiv);
+					}else{
+						$hiv->AddObj($this->hiv);
+					}
+				}else{
+					$hiv = new Model_Hiv();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$hiv->del($sophieukcb);
+				}
+				// cap nhat tamthan
+				if($this->_tamthan == 'on'){
+					$tamthan = new Model_Tamthan();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$duptamthan = $tamthan->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($duptamthan > 0){
+						$tamthan->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->tamthan);
+					}else{
+						$tamthan->addObj($this->tamthan);
+					}
+				}else{
+					$tamthan = new Model_Tamthan();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$tamthan->del($sophieukcb);
+				}
+				// them moi sinh san
+				if($this->_sinhsan == 'on'){
+					$sinhsan = new Model_Sinhsan();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupsinhsan = $sinhsan->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupsinhsan > 0){
+						$sinhsan->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->sinhsan);
+					}else{
+						$sinhsan->addObj($this->sinhsan);
+					}
+				}else{
+					$sinhsan = new Model_Sinhsan();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$sinhsan->del($sophieukcb);
+				}
+				// them moi pha thai
+				if($this->_phathai == 'on'){
+					$phathai = new Model_Phathai();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupphathai = $phathai->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupphathai > 0){
+						$phathai->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->phathai);
+					}else{
+						$phathai->addObj($this->phathai);
+					}
+				}else{
+					$phathai = new Model_Phathai();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$phathai->del($sophieukcb);
+				}
+				// them moi kehoachhoagiadinh
+				if($this->_khhgd == 'on'){
+					$kehoach = new Model_Kehoachhoagiadinh();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupkhhgd = $kehoach->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupkhhgd > 0){
+						$kehoach->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->khhgd);
+					}else{
+						$kehoach->addObj($this->khhgd);
+					}
+				}else{
+					$kehoach = new Model_Kehoachhoagiadinh();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$kehoach->del($sophieukcb);
+				}
+				// them moi tai nan thuong tich
+				if($this->_thuongtich == 'on'){
+					$thuongtich = new Model_Tainanthuongtich();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupthuongtich = $thuongtich->dupObj($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupthuongtich > 0){
+						$thuongtich->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->thuongtich);
+					}else{
+						$thuongtich->addObj($this->thuongtich);
+					}
+				}else{
+					$thuongtich = new Model_Tainanthuongtich();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$thuongtich->del($sophieukcb);
+				}
+				// cap nhat kham thai
+				if($this->_khamthai == 'on'){
+					$khamthai = new Model_Khamthai();
+					$ctkhamthai = new Model_CTKhamthai();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupkhamthai = $khamthai->dupkhamthai($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupkhamthai > 0){
+						$khamthai->update($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong, $this->khamthai);
+					}else{
+						$khamthai->addObj($this->khamthai);
+					}
+				}else{
+					$khamthai = new Model_Khamthai();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$khamthai->del($sophieukcb);
+				}
+				// cap nhat du lieu chan tay mieng
+				if($this->_chantaymieng == 'on'){
+					$chantaymieng = new Model_Chantaymieng();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$dupchantaymieng = $chantaymieng->duplichantaymieng($sophieukcb, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupchantaymieng > 0){
+						$chantaymieng->update($sophieukcb, $this->chantaymieng);
+					}else{
+						$chantaymieng->AddObj($this->chantaymieng);
+					}
+				}else{
+					$chantaymieng = new Model_Chantaymieng();
+					$sophieukcb = $this->_getParam('Sophieukcb');
+					$chantaymieng->del($sophieukcb);
+				}
+				$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['kt'] ) : $_REQUEST ['kt'];
+				$khamthai1 = json_decode ( $stringJSON, true );
+				foreach ($khamthai1 as $item){
+					//kiem tra cac checkbox cua chi tiet kham thai
+					$_Thieumau = (isset ( $item ['Tinhtrangthieumau'] ) && $item ['Tinhtrangthieumau'] != '') ? $item ['Tinhtrangthieumau'] : '';
+					$_Thieumau = ($_Thieumau == 'on') ? 1 : 0;
+					$_Uongsat = (isset ( $item ['Uongviensat'] ) && $item ['Uongviensat'] != '') ? $item ['Uongviensat'] : '';
+					$_Uongsat = ($_Uongsat == 'on') ? 1 : 0;
+					$_DKdethuong = (isset ( $item ['Dethuong'] ) && $item ['Dethuong'] != '') ? $item ['Dethuong'] : '';
+					$_DKdethuong = ($_DKdethuong == 'on') ? 1 : 0;
+					$_Khamtainha = (isset ( $item ['Khamtainha'] ) && $item ['Khamtainha'] != '') ? $item ['Khamtainha'] : '';
+					$_Khamtainha = ($_Khamtainha == 'on') ? 1 : 0;
+					//end////////////
+							if($item['Id'] != null && $item['Id'] != ''){
+							$this->ctkhamthai = array(
+									'Ngaykham' => $this->convertDate($item['Ngaykham']),
+									'Sophieukcb' => $this->_Sophieukb,
+									'Tuanthai' => $item['Tuanthai'],
+									'Dukienngaysinh' => $this->convertDate($item['Dukienngaysinh']),
+									'Trongluongme' => $item['Trongluongme'],
+									'Vongbung' => $item['Vongbung'],
+									'CaoTC' => $item['CaoTC'],
+									'Khungchau' => $item['Khungchau'],
+									'Proteinnieu' => $item['Proteinnieu'],
+									'Huyetap' => $item['Huyetap'],
+									'Tinhtrangthieumau' => $_Thieumau,
+									'Uongviensat' => $_Uongsat,
+									'SomuitiemUV' => $item['SomuitiemUV'],
+									'Timthai' => $item['Timthai'],
+									'Ngoithai' => $item['Ngoithai'],
+									'Dethuong' => $_DKdethuong,
+									'Conguyco' => $item['Conguyco'],
+									'NhansuId' => $_REQUEST['NhansuId'],
+									'Khamtainha' => $_Khamtainha,
+									'Ghichu' => $item['Ghichu'],
+									'ThongtincoquanId' => $this->_ThongtincoquanId
+							);
+							$this->_MCtkhamthai->updateObj($item['Id'], $this->ctkhamthai);
+						}else{
+							$this->ctkhamthai1 = array(
+									'Ngaykham' => $this->convertDate($item['Ngaykham']),
+									'Sophieukcb' => $this->_Sophieukb,
+									'Tuanthai' => $item['Tuanthai'],
+									'Dukienngaysinh' => $this->convertDate($item['Dukienngaysinh']),
+									'Trongluongme' => $item['Trongluongme'],
+									'Vongbung' => $item['Vongbung'],
+									'CaoTC' => $item['CaoTC'],
+									'Khungchau' => $item['Khungchau'],
+									'Proteinnieu' => $item['Proteinnieu'],
+									'Huyetap' => $item['Huyetap'],
+									'Tinhtrangthieumau' => $_Thieumau,
+									'Uongviensat' => $_Uongsat,
+									'SomuitiemUV' => $item['SomuitiemUV'],
+									'Timthai' => $item['Timthai'],
+									'Ngoithai' => $item['Ngoithai'],
+									'Dethuong' => $_DKdethuong,
+									'Conguyco' => $item['Conguyco'],
+									'NhansuId' => $_REQUEST['NhansuId'],
+									'Khamtainha' => $_Khamtainha,
+									'Ghichu' => $item['Ghichu'],
+									'ThongtincoquanId' => $this->_ThongtincoquanId
+							);
+							$this->_MCtkhamthai->addObj($this->ctkhamthai1);
+						}
+				}
+				$nhankhau ['Mabenhnhan'] = $this->_Mabenhnhan;
+				$this->_MNhankhau->updateObj ( $this->_NhankhauId, $nhankhau );
+				$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblphieukhambenh', 'Sửa phiếu', $this->UserIP );
+				$jsonObj ["success"] = true;
+			}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false 
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_MKhambenh->delObj ( $item ['Id'] );
+				$jsonObj = array (
+						'success' => true 
+				);
+			}
+		}
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblphieukhambenh', 'Xóa phiếu', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Thêm dữ liệu đơn thuốc.
+	 *
+	 * @return String json
+	 */
+	public function adddonthuocAction() {
+		if (isset ( $_REQUEST ['SophieukcbĐT'] )) {
+			$this->_helper->layout ()->disableLayout ();
+			$_MNhapkho = new Model_Nhapkho ();
+			$_MCTPhieunhap = new Model_CTPhieunhap ();
+			$_data_ctphieunhap = array ();
+			$jsonObj = array ();
+			// try {
+			$_Mahoadon = $_REQUEST ['Maphieunhap'];
+			$_Nguoinhapxuat = $_REQUEST ['Nguoinhapxuat'];
+			$_Ghichu = $_REQUEST ['Ghichu'];
+			
+			$_Ngaynhapxuat = (isset ( $_REQUEST ["Ngaynhapxuat"] ) && $_REQUEST ["Ngaynhapxuat"] != "") ? $_REQUEST ["Ngaynhapxuat"] : "";
+			if ($_Ngaynhapxuat != '') {
+				list ( $date, $month, $year ) = explode ( "/", $_Ngaynhapxuat );
+				$_Ngaynhapxuat = $year . '-' . $month . '-' . $date;
+			}
+			
+			$_data = array (
+					'PhieukhambenhId' => $_REQUEST ['SophieukcbĐT'],
+					'Mahoadon' => $_Mahoadon,
+					'Nguoinhapxuat' => $_Nguoinhapxuat,
+					'Ngaynhapxuat' => $_Ngaynhapxuat,
+					
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Ghichu' => $_REQUEST ['Ghichu'],
+					'Dang' => 1,
+					'Trangthai' => 0,
+					'Namhoatdong' => $this->_Namhoatdong 
+			);
+			$dup = $_MNhapkho->dupliObj ( 0, $_Mahoadon, $this->_ThongtincoquanId );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+				    	alert('Mã phiếu nhập của bạn đã có trong danh sách, hãy nhập lại!');
+					</script>";
+			} else {
+				$success = $_MNhapkho->addObj ( $_data );
+				if ($success > 0) {
+					$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['thuocdc'] ) : $_REQUEST ['thuocdc'];
+					$thuocdc = json_decode ( $stringJSON, true );
+					foreach ( $thuocdc as $item ) {
+						$_Hansudung = (isset ( $item ['cHansudung'] ) && $item ['cHansudung'] != "") ? $item ['cHansudung'] : "";
+						if ($_Hansudung != "") {
+							list ( $date, $month, $year ) = explode ( "/", $_Hansudung );
+							$_Hansudung = $year . '-' . $month . '-' . $date;
+						}
+						$_data_ctphieunhap = array (
+								'Mahoadon' => $_Mahoadon,
+								'DoituongId' => $item ['cId'],
+								'Soluong' => $item ['cSoluong'],
+								'Dongia' => $item ['cDongia'],
+								'Hansudung' =>$_Hansudung,
+								'MucluutruId' => $item ['cMucluutruId'],
+								'Ghichu' => $item ['cGhichu'],
+								'ThongtincoquanId' => $this->_ThongtincoquanId,
+								'Dang' => 1 
+						);
+						$_MCTPhieunhap->addObj ( $_data_ctphieunhap );
+					}
+					$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, '', 'Thêm Đơn thuốc', $this->UserIP );
+					$jsonObj ["success"] = true;
+				} else
+					$jsonObj ["success"] = false;
+			}
+			/*
+			 * } catch ( Exception $e ) { echo "<script
+			 * type=\"text/javascript\"> alert('Thêm đơn thuốc không thành
+			 * công!'); </script>"; }
+			 */
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+	}
+	
+	/**
+	 * tạo in theo danh sách và in theo chi tiết số sổ khám bệnh
+	 */
+	/**
+	 * lê văn kiên
+	 */
+	public function searAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Sophieukcb';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$sgioitinh = $this->_getParam ( 'sgioitinh' );
+		$sThonto = $this->_getParam ( 'sThonto' );
+		
+		$Maphieu = $this->_getParam ( 'Maphieu' );
+		$Ngaylap = $this->_getParam ( 'Ngaylap' );
+		$Nguoikham = $this->_getParam ( 'Nguoikham' );
+		$Nguoibenh = $this->_getParam ( 'Nguoibenh' );
+		$Benhdich = $this->_getParam ( 'Benhdich' );
+		if ($Ngaylap != '') {
+			$Ngaylap = $this->convertDateSearch ( $Ngaylap );
+		}
+		try {
+			$jsonObj = json_encode ( $this->_MKhambenh->searObj ( $sgioitinh, $sThonto, $Maphieu, $Ngaylap, $Nguoikham, $Nguoibenh, $Benhdich, $this->_Namhoatdong, $this->_ThongtincoquanId, $sort, $order, $offset, $rows ) );
+			return $this->view->jsonObj = $jsonObj;
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+			alert('Exception!');
+			</script>";
+		}
+	}
+	public function expxlsnstytAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$sgioitinh = $this->_getParam ( 'sgioitinh' );
+		$sThonto = $this->_getParam ( 'sThonto' );
+		
+		$NoWhere = $this->_getParam ( 'NoWhere' );
+		$Maphieu = $this->_getParam ( 'Maphieu' );
+		$Ngaylap = $this->_getParam ( 'Ngaylap' );
+		$Nguoikham = $this->_getParam ( 'Nguoikham' );
+		$Nguoibenh = $this->_getParam ( 'Nguoibenh' );
+		$Benhdich = $this->_getParam ( 'Benhdich' );
+		if ($Ngaylap != '') {
+			$Ngaylap = $this->convertDateSearch ( $Ngaylap );
+		}
+		$colIndex = '';
+		$rowIndex = 0;
+		try {
+			$objPHPExcel = new PHPExcel ();
+			$sheet = $objPHPExcel->getActiveSheet ();
+			$this->_Dskb = new Model_Khambenh ();
+			$jsonObj = $this->_Dskb->getDs ( $NoWhere, $sgioitinh, $sThonto, $Maphieu, $Ngaylap, $Nguoikham, $Nguoibenh, $Benhdich, $this->_Namhoatdong, $this->_ThongtincoquanId );
+			/*
+			 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+			 * tĩnh.
+			 */
+			$sheet->setCellValue ( 'A1', $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+			$sheet->mergeCellsByColumnAndRow ( 0, 1, 8, 1 );
+			$helpExport->setStyle_13_TNR_B_L ( $sheet, 'A1' . $colIndex, 'A1' . $colIndex );
+			$sheet->setCellValue ( 'A2', 'DANH SÁCH BỆNH NHÂN KHÁM BỆNH TẠI TRẠM' );
+			$helpExport->setStyle_15_TNR_B_C ( $sheet, 'A2' . $colIndex, 'A2' . $colIndex );
+			$sheet->mergeCellsByColumnAndRow ( 0, 2, 8, 2 );
+			$sheet->setCellValue ( 'A3', 'Năm  ' . $this->_Namhoatdong );
+			$helpExport->setStyle_13_TNR_B_C ( $sheet, 'A3' . $colIndex, 'A3' . $colIndex );
+			$sheet->mergeCellsByColumnAndRow ( 0, 3, 8, 3 );
+			$sheet->setCellValue ( 'G4', 'Tổng số phiếu khám bênh :  ' . (count ( $jsonObj )) );
+			$helpExport->setStyle_11_TNR_B_C ( $sheet, 'G4' . $colIndex, 'G4' . $colIndex );
+			$sheet->mergeCellsByColumnAndRow ( 6, 4, 7, 4 );
+			
+			$rowStart = 5;
+			$colStart = 'A';
+			$rowIndex = $rowStart;
+			$colIndex = $colStart;
+			$sheet = $objPHPExcel->getActiveSheet ();
+			// BEGIN set width for column
+			$sheet->getColumnDimension ( 'A' )->setWidth ( 5 );
+			$sheet->getColumnDimension ( 'B' )->setWidth ( 10 );
+			$sheet->getColumnDimension ( 'C' )->setWidth ( 13 );
+			$sheet->getColumnDimension ( 'D' )->setWidth ( 22 );
+			$sheet->getColumnDimension ( 'E' )->setWidth ( 10 );
+			$sheet->getColumnDimension ( 'F' )->setWidth ( 20 );
+			$sheet->getColumnDimension ( 'G' )->setWidth ( 15 );
+			$sheet->getColumnDimension ( 'H' )->setWidth ( 20 );
+			$sheet->getColumnDimension ( 'I' )->setWidth ( 10.5 );
+			$sheet->getRowDimension ( '2' )->setRowHeight ( 30 );
+			
+			// END set width for column
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số PKB', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ngày khám', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Họ tên', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Địa chỉ', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Bệnh dịch', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chu trình điều trị', $colIndex );
+			$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Bác sĩ', $colIndex );
+			$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ghi chú', $colIndex );
+			$helpExport->setStyle_11_TNR_B_C ( $sheet, 'A5', 'I5' );
+			
+			if (count ( $jsonObj ) > 0) {
+				$tempIndex = $rowIndex + 1;
+				foreach ( $jsonObj as $row ) {
+					$rowIndex += 1;
+					$colIndex = $colStart;
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $rowIndex - $rowStart, $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Sophieukcb'], $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Ngaylapphieu'], $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Hoten'], $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Tenthonto'], $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Benhdich'], $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Trangthai'], $colIndex );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Nguoikham'], $colIndex );
+					$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Ghichu'], $colIndex );
+					$helpExport->setStyle_11_TNR_N_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+					$helpExport->setStyle_Align_Center ( $sheet, 'A' . $rowIndex, 'A' . $rowIndex );
+				}
+			}
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'I' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'I' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+			/*
+			 * Set active sheet index to the first sheet, so Excel opens this as
+			 * the first sheet
+			 */
+			$objPHPExcel->setActiveSheetIndex ( 0 );
+			/* Redirect output to a clientâ€™s web browser (Excel5) */
+			$objPHPExcel->getActiveSheet ()->getPageSetup ()->setOrientation ( PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE );
+			$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4 );
+			$pageMargin = $sheet->getPageMargins ();
+			$pageMargin->setTop ( .5 );
+			$pageMargin->setLeft ( .45 );
+			$pageMargin->setRight ( .45 );
+			header ( 'Content-Type: application/vnd.ms-excel' );
+			header ( 'Content-Disposition: attachment;filename="danhsach_khambenh(' . date ( "d/m/Y" ) . ').xls"' );
+			header ( 'Cache-Control: max-age=0' );
+			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+			$objWriter->save ( 'php://output' );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Exception: Export Excel!');
+					</script>";
+		}
+	}
+	/*
+	 * public function changeAction() { $this->_helper->layout ()->disableLayout
+	 * (); $id = $this->_getParam ( 'id' ); $chutrinh = $_REQUEST ['Trangthai'];
+	 * // Convert datetime to format y-m-d // list ( $date, $month, $year ) =
+	 * explode ( "/", $ngayketthuc ); // $ngayketthuc = $year . '-' . $month .
+	 * '-' . $date; // Check duplicate $data = array ( 'Chutrinhdieutri' =>
+	 * $chutrinh ); if (isset ( $id ) && $id > 0) { $this->_MKhambenh->changeObj
+	 * ( $id, $data ); $jsonObj ["success"] = true; } return
+	 * $this->view->jsonObj = json_encode ( $jsonObj ); }
+	 */
+	
+	/**
+	 * phadh
+	 *
+	 * @return string
+	 */
+	public function changechutrinhAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['Id'];
+		$chutrinh = $_REQUEST ['Chutrinh'];
+		$data = array (
+				'Chutrinhdieutri' => $chutrinh 
+		);
+		if (isset ( $id ) && $id > 0) {
+			$this->_MKhambenh->change_chutrinhObj ( $id, $data );
+			$jsonObj ["success"] = true;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+	}
+}

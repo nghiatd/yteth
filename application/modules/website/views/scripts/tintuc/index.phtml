@@ -1,0 +1,301 @@
+<script
+	src="<?php echo $this->baseUrl();?>/tinymce/js/tinymce/tinymce.min.js"></script>
+<script>
+        
+</script>
+<script type="text/javascript">
+	var url;
+	
+	$(function(){
+		$('#dg').edatagrid({
+			url: 'tintuc/json'
+		});
+
+		$('#combogrid-danhmuc-toolbar').load(
+		'nhanvien/combogridtoolbar #tbl-cbg-toolbar');
+		
+	});
+
+	function sear() {
+		var TieuDe = $('#TieuDe').val();
+		var TuNgay = $('[name="TuNgay"]').val();
+		var DenNgay = $('[name="DenNgay"]').val();
+		if(TuNgay){
+			//TuNgay = TuNgay.replace(/\//g, '-');
+			TuN = TuNgay.split('/');
+			
+			TuNgay = TuN[2] +'-'+ TuN[0] +'-'+ TuN[1] ; 
+		}	
+		
+		if(DenNgay){
+			TuN = DenNgay.split('/');
+			
+			DenNgay = TuN[2] +'-'+ TuN[0] +'-'+ TuN[1] ; 
+		}	
+			
+		if (TieuDe.length) {
+			$('#dg').datagrid('options').url = 'tintuc/sear/TieuDe/'+ TieuDe +'/TuNgay/'+ TuNgay + '/DenNgay/' + DenNgay;
+
+		} else {
+			if(TuNgay || DenNgay)
+				$('#dg').datagrid('options').url = 'tintuc/sear/TuNgay/'+ TuNgay + '/DenNgay/' + DenNgay;
+			else
+				$('#dg').datagrid('options').url = 'tintuc/json';
+		}
+		$('#dg').datagrid('reload');
+	}
+	
+	function add(){
+		$('#dlg').dialog('open').dialog('setTitle','Thêm bài đăng');	
+		$('#fm').form('clear');
+		url = 'tintuc/add';
+
+		tinymce.init({selector:'.tinymce',
+            plugins: ["advlist autolink lists link image charmap print preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table contextmenu paste jbimages","fullscreen","moxiemanager"],
+          image_advtab: true,
+          paste_data_images: true,
+          browser_spellcheck : true,
+          relative_urls: false,
+          toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen"
+          //file_browser_callback: function(field_name, url, type, win) {
+          //if(type=='image') $('#my_form input').click();
+
+			});
+		tinyMCE.activeEditor.setContent('');
+	}
+
+	function edit(){
+		tinymce.init({selector:'.tinymce',
+            plugins: ["advlist autolink lists link image charmap print preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table contextmenu paste jbimages","fullscreen","moxiemanager"],
+          image_advtab: true,
+          paste_data_images: true,
+          browser_spellcheck : true,
+          relative_urls: false,
+          toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen"
+          //file_browser_callback: function(field_name, url, type, win) {
+          //if(type=='image') $('#my_form input').click();
+
+			});
+		row = $('#dg').datagrid('getSelected');
+		
+			
+		if (row){
+			tinyMCE.activeEditor.setContent(row.ChiTiet);
+			$('#dlg').dialog('open').dialog('setTitle','Sửa bài đăng');
+			$('#HinhAnhSRC').attr('src', '<?php echo $this->baseUrl()?>/public/uploads/news/'+row.Id+'/thumb.jpg');
+			$('#fm').form('load',row);
+			url = 'tintuc/update/Id/'+ row.Id +'/TieuDe/'+ row.TieuDe 
+				+'/SapXep/'+ row.SapXep+'/TrangThai/'+row.TrangThai;
+			$('#MoTa1').hide();
+			
+			
+		}else{
+			$.messager.show({
+				title:'Thông báo',
+				msg:'Không có bản ghi nào được chọn!',
+				timeout:5000,
+				showType:'slide'
+			});
+		}
+	}
+
+	function del(){
+		var rows = $('#dg').datagrid('getChecked');
+		
+		
+		items = rows.length;
+		if (items > 0){
+			$.messager.confirm('Thông báo','Bạn có chắc chắn muốn '+items+' phần tử xóa?',function(r){
+				if (r){
+					$.post('tintuc/del',{items:rows},function(result){
+						if (result.success){
+							$('#dg').datagrid('reload');	
+							show_messager('Cập nhật dữ liệu thành công!');
+						} else {
+							show_messager('Cập nhật dữ liệu không thành công!');
+						}
+					},'json');
+				}
+			});
+		}else{
+			show_messager('Không có bản ghi nào được chọn!');
+		}
+	}
+
+	function save(){
+		$('#fm').form('submit',{
+			url: url,
+			onSubmit: function(){
+				return $(this).form('validate');
+			},
+			success: function(result){
+				var result = eval('('+result+')');
+				if (result.success){
+					$('#dlg').dialog('close');		
+					$('#dg').datagrid('reload');	
+				} else {
+					$.messager.show({
+						title: 'Error',
+						msg: result.msg
+					});
+				}
+			}
+		});
+	}
+</script>
+<!-- Begin Datagrid -->
+<table id="dg" title="Bài Đăng" style="width: 100%;" toolbar="#toolbar"
+	pagination="true" idField="id" rownumbers="true" nowrap="true"
+	data-options="border:false,fit:true,singleSelect:true,fitColumns:false,selectOnCheck:false,checkOnSelect:false">
+	<thead>
+		<tr>
+			<th data-options="field:'ck',checkbox:true"></th>
+			<th field="TieuDe" width="200" sortable="true">Tiêu Đề</th>
+			<th field="NgayTao" width="150" sortable="true">Ngày Tạo</th>
+			<th field="L" width="150" sortable="true">Loại Tin</th>
+			<th field="TM" width="50" sortable="true">Tin mới</th>
+			<th field="T" width="430" sortable="true">Trạng Thái</th>
+			<th field="Id" data-options="hidden:true">Id</th>
+		</tr>
+	</thead>
+</table>
+<div id="toolbar" style="padding: 5px; height: auto;">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"
+		onclick="add()">Thêm</a> <a href="#" class="easyui-linkbutton"
+		iconCls="icon-edit" plain="true" onclick="edit()">Sửa</a> <a href="#"
+		class="easyui-linkbutton" iconCls="icon-remove" plain="true"
+		onclick="del()">Xóa</a>
+		<table border="0" width="92%" cellspacing="0" style="padding-top: 3px;"
+		cellpadding="1" class="tblForm">
+		<tr>
+			<td width=""><span>Tiêu Đề:</span></td>
+			<td width=""><input id="TieuDe" name="TieuDe"	style="border: 1px solid #ccc; width: 120px;"></td>
+			
+			<td width=""><span>Từ Ngày:</span></td>
+			<td width="20%"><input id="TuNgay" name="TuNgay" class="easyui-datebox" style="border: 1px solid #ccc; width: 122px;"></td>
+			
+			<td width=""><span>Đến Ngày:</span></td>
+			<td width="20%"><input id="DenNgay" name="DenNgay" class="easyui-datebox" style="border: 1px solid #ccc; width: 122px;"></td>
+			
+		</tr>
+		<tr>
+			
+			<td width="13%"><a href="#" class="easyui-linkbutton"
+				iconCls="icon-search" plain="true" onclick="sear()">Tìm kiếm</a></td>
+		</tr>
+		
+	</table>
+</div>
+<!-- End DataGrid -->
+
+<!-- Begin Form -->
+<div id="dlg" class="easyui-dialog" style="width: 1000px; height: 600px; background: #e7e7ef; padding: 10px;"
+	closed="true" buttons="#dlg-buttons" modal="true">
+	<form id="fm" method="post" enctype="multipart/form-data">
+		<table border="0" width="100%" cellspacing="0" cellpadding="4"
+			class="tblForm">
+			<tr>
+				<td width="100px;">
+					<div>Tiêu Đề:</div>
+				</td>
+				<td class="2Col"><input id="TieuDe" name="TieuDe"
+					data-options="required:true" class="easyui-validatebox"
+					style="width: 200px" onkeypress="return beta(event)"></td>
+			</tr>
+
+			<tr>
+				<td>
+					<div>Mô tả:</div>
+				</td>
+				<td class="2Col">
+					<!-- thay doi ten class easyui-text thanh  easyui-validatebox--> <textarea
+						rows="200" style="height: 200px; overflow: hidden;" cols="50"
+						name="MoTa" id="MoTa"></textarea>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<div>Chi tiết:</div>
+				</td>
+				<td class="2Col">
+					<!-- thay doi ten class easyui-text thanh  easyui-validatebox--> <textarea
+						rows="200" style="height: 200px; overflow: hidden;" cols="50"
+						name="ChiTiet" id="ChiTiet" class="tinymce"></textarea>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<div>Hình ảnh:</div>
+				</td>
+				<td class=""><input type="file" id="HinhAnh" name="HinhAnh" /><img src="" width="60px" width=  '60px' id="HinhAnhSRC"/></td>
+			</tr>
+
+
+			<tr>
+				<td>
+					<div>Danh mục:</div>
+				</td>
+				<td class=""><input id="DanhMucId" name="DanhMucId"
+					style="border: 1px solid #ccc; width: 120px;"
+					class="easyui-combobox easyui-validatebox" url="danhmuc/combo"
+					textField="TieuDe" valueField="Id" /></td>
+			</tr>
+			<!-- 
+			<tr>
+				<td>
+					<div>Loại tin:</div>
+				</td>
+				<td class=""><select id="Loai" name="Loai" data-options="required:true"
+					style="width: 200px;">
+						<option value="Tin tức">Tin tức</option>
+						<option value="Tin mới">Tin mới</option>
+						<option value="Thông báo">Thông báo</option>
+						<option value="Lịch làm việc">Lịch làm việc</option>
+				</select></td>
+			</tr>
+			 -->
+
+			<tr>
+				<td>
+					<div>Loại tin:</div>
+				</td>
+				<td class=""><input id="Loai" name="Loai"
+					style="border: 1px solid #ccc; width: 120px;"
+					class="easyui-combobox easyui-validatebox" url="tintuc/loaitin"
+					textField="TieuDe" valueField="Id" /></td>
+			</tr>
+			<tr>
+				<td width="100px;">
+					<div>Tin mới:</div>
+				</td>
+				<td class="2Col"><input id="TinMoi" name="TinMoi" type="checkbox"
+					class="easyui-validatebox" style="width: 15px"
+					onkeypress="return beta(event)"></td>
+			</tr>
+			<tr>
+				<td>
+					<div>Trạng Thái:</div>
+				</td>
+				<td class=""><select id="TrangThai" name="TrangThai"
+					style="width: 200px;" class="easyui-combobox">
+						<option selected="selected" value="1">Cho phép</option>
+						<option value="0">Không cho phép</option>
+				</select></td>
+			</tr>
+		</table>
+	</form>
+</div>
+<div id="dlg-buttons">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-ok"
+		onclick="save()">Câp nhật</a> <a href="#" class="easyui-linkbutton"
+		iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Hủy
+		bỏ</a>
+</div>
+
+<!-- End From -->

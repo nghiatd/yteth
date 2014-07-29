@@ -1,0 +1,127 @@
+<?php
+/*
+ * kiên lê
+ */
+class NguyennhanController extends Zend_Controller_Action
+{
+	//phadh sua phan trang
+	public function jsonAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		$mNguyennhan = new Model_Nguyennhan();
+		$jsonObj = json_encode($mNguyennhan->getFetObj($sort, $order, $offset, $rows));
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function indexAction()
+	{
+		
+	}
+	
+	
+	// Begin daitk
+	public function comboAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		$mNguyennhan = new Model_Nguyennhan();
+		$snguyennhan = $this->_getParam('snguyennhan');
+		$q = isset ( $_POST ['q'] ) ? strval ( $_POST ['q'] ) : '';
+		$jsonObj = json_encode($mNguyennhan->getIdName($snguyennhan, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// End daitk
+	
+	public function addAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+	
+	
+		$Tennguyennhan = $_REQUEST['Tennguyennhan'];
+	
+		$mNguyennhan = new Model_Nguyennhan();
+		$dup = $mNguyennhan->CheckValueObj(0,$Tennguyennhan);
+		if($dup > 0)
+		{
+			echo "<script type=\"text/javascript\">
+					    alert('Tên bạn nhập đã có trong dữ liệu!');
+					</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}
+		else
+		{
+			$id = $mNguyennhan->addObj($Tennguyennhan);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function updateAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('idNguyennhan');
+		$Tennguyennhan = $_REQUEST['Tennguyennhan'];
+		$jsonObj = array();
+		$mNguyennhan = new Model_Nguyennhan();
+		if(isset($id) && $id > 0)
+		{
+				
+			$dup = $mNguyennhan->CheckValueObj($id, $Tennguyennhan);
+			if($dup > 0)
+			{
+				echo "<script type=\"text/javascript\">
+					    alert('Tên đã có trong danh sách!');
+					</script>";
+				$jsonObj["success"] = false;
+				return $this->view->jsonObj = json_encode($jsonObj);
+			}
+			else
+			{
+				$id = $mNguyennhan->updateObj($id, $Tennguyennhan);
+				$jsonObj["success"] = true;
+			}
+				
+		}else return;
+	
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function delAction()
+	{
+		$id = $_REQUEST['idNguyennhan'];
+		$delId = null;
+		$jsonObjv = null;
+	
+		if(isset($id) && $id > 0)
+		{
+			$mNguyennhan = new Model_Nguyennhan();
+			$delId = $mNguyennhan->delObj($id);
+		}
+		else
+		{
+			return;
+		}
+	
+		if(!$delId)
+		{
+			$jsonObj = json_encode(array('success'=>false));
+		}
+		else
+		{
+			$jsonObj = json_encode(array('success'=>true));
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

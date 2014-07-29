@@ -1,0 +1,41 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_BCSokhambenh {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - SỔ KHÁM BỆNH
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getSKB($thongtincoquanId, $namhoatdong) {
+		$str_query = "SELECT (SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten, 
+		
+		 (SELECT Sobaohiem FROM tblnhankhau WHERE Id = NhankhauId) as
+		Sobaohiem,
+		IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nam', (YEAR(Ngaylapphieu) 
+		- (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nam, 
+		IF((SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) = 'Nữ', (YEAR(Ngaylapphieu)  
+		- (SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId)), ' ') AS Nu, 
+		 IF((SELECT Vanglai FROM tblnhankhau WHERE Id = NhankhauId) = 0, 
+		(SELECT tblchuhodan.Diachi FROM tblchuhodan, tblnhankhau WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan 
+		AND tblnhankhau.Id = NhankhauId and tblchuhodan.ThongtincoquanId=$thongtincoquanId), (SELECT tblnhankhau.Diachi FROM tblnhankhau WHERE Id = NhankhauId)) AS Diachi, 
+		(SELECT Nghenghiep FROM tblnhankhau WHERE Id = NhankhauId) AS Nghenghiep, 
+		IF((SELECT Thieuso FROM tbldm_dantoc, tblnhankhau WHERE tbldm_dantoc.Id = 
+		tblnhankhau.DantocId AND tblnhankhau.Id = NhankhauId) = 1, 'x', ' ') AS Dantocitnguoi,
+		(SELECT Tenphuongphap FROM tbldm_phuongphapdieutri WHERE Id = PhuongphapdieutriId) AS Phuongphapdieutri,
+		(SELECT Hoten FROM tblnhansu WHERE Id = NhansuId) AS YBSKham, Trieuchung, Chuandoan, 
+		DATE_FORMAT(Ngaylapphieu, '%d/%m/%Y') AS Ngaylapphieu 
+		FROM tblphieukhambenh WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+		ORDER BY Month(Ngaylapphieu),Ngaylapphieu ASC";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

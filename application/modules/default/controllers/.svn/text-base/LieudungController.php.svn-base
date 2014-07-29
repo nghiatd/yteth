@@ -1,0 +1,97 @@
+<?php
+
+include 'PublicdetailController.php';
+/**
+ *
+ * @author thomnd
+ *        
+ */
+class LieudungController extends PublicdetailController {
+	private $_MLieudung;
+	private $_Tenlieudung;
+	private $_Lieudung = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MLieudung = new Model_Lieudung ();
+		
+		if (isset ( $_REQUEST ['Tenlieudung'] ) && $_REQUEST ['Tenlieudung'] != '') {
+			$this->_Tenlieudung = $_REQUEST ['Tenlieudung'];
+			$this->_Lieudung = array (
+					'Tenlieudung' => $_REQUEST ['Tenlieudung'] 
+			);
+		}
+	}
+	
+	
+	public function indexAction() {
+	}
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MLieudung->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MLieudung->getNameIdObj () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$dup = $this->_MLieudung->dupObj ( 0, $this->_Tenlieudung );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MLieudung->addObj ( $this->_Lieudung );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MLieudung->dupObj ( $id, $this->_Tenlieudung );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MLieudung->updateObj ( $id, $this->_Lieudung );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObj = null;
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MLieudung->delObj ( $id );
+		} else {
+			return;
+		}
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

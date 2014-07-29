@@ -1,0 +1,80 @@
+<?php
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class Model_Dangkhuyettat{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get('db');
+	}
+	
+	// thomnd
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dangkhuyettat" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Tendangkhuyettat FROM tbldm_dangkhuyettat ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	//phadh
+	//combo dangkhuyettat
+	public function getNamebyId(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tendangkhuyettat FROM tbldm_dangkhuyettat ORDER BY Tendangkhuyettat ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	public function CheckValueObj($id, $varTendangkhuyettat) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dangkhuyettat WHERE Tendangkhuyettat = '$varTendangkhuyettat'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dangkhuyettat WHERE Id !=$id and Tendangkhuyettat = '$varTendangkhuyettat'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($varTendangkhuyettat) {
+		$data = array (
+				'Tendangkhuyettat' => $varTendangkhuyettat
+		);
+		$Id = $this->db->insert ( 'tbldm_dangkhuyettat', $data );
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id, $varTendangkhuyettat) {
+		$data = array (
+				'Tendangkhuyettat' => $varTendangkhuyettat
+		)
+		;
+		$this->db->update ( 'tbldm_dangkhuyettat', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_dangkhuyettat', 'Id=' . $Id );
+		return $Iddel;
+	}
+	// end thomnd
+	
+	// combodu lieu
+	public function getName(){
+		$result = array();
+		$query = $this->db->query("SELECT Id AS DangkhuyettatIdch, Tendangkhuyettat FROM tbldm_dangkhuyettat ORDER BY Tendangkhuyettat ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// combodu lieu
+	public function getNamenhankhau(){
+		$result = array();
+		$query = $this->db->query("SELECT Id AS DangkhuyettatId, Tendangkhuyettat FROM tbldm_dangkhuyettat ORDER BY Tendangkhuyettat ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

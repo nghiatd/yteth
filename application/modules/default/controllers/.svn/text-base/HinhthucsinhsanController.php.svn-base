@@ -1,0 +1,124 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Lê văn Kiên
+ *        
+ */
+class HinhthucsinhsanController extends PublicdetailController {
+	private $_Mhinhthuc;
+	private $_Tenhinhthuc;
+	private $_Hinhthuc = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_Mhinhthuc = new Model_Hinhthucsinhsan();
+		
+		if (isset ( $_REQUEST ['Tenhinhthuc'] ) && $_REQUEST ['Tenhinhthuc'] != '') {
+			$this->_Tenhinhthuc = $_REQUEST ['Tenhinhthuc'];
+			$this->_Hinhthuc = array (
+					'Tenhinhthuc' => $_REQUEST ['Tenhinhthuc'] 
+			);
+		}
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mhinhthuc->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra về Id và Tên của đối tượng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mhinhthuc->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_Mhinhthuc->dupliObj ( 0, $this->_Tenhinhthuc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên hình thức này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_Mhinhthuc->addObj ( $this->_Hinhthuc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam('id');
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_Mhinhthuc->dupliObj ( $id, $this->_Tenhinhthuc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên hình thức này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_Mhinhthuc->updateObj ( $id, $this->_Hinhthuc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_Mhinhthuc->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

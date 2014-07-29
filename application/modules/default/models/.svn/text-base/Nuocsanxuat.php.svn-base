@@ -1,0 +1,73 @@
+<?php
+/********
+ * Create by Phadh
+ */
+class Model_Nuocsanxuat
+{
+	protected $db;
+	
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	//lay tat ca du lieu trong bang nuoc san xuat
+	public function getFetObj($sort, $order, $offset, $rows)
+	{
+		$result = array ();
+		$query = $this->db->query ( 'SELECT COUNT(*) AS Total FROM tbldm_nuocsanxuat' );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+	
+		$query = $this->db->query ( "SELECT Id, Tennuocsanxuat FROM tbldm_nuocsanxuat
+				order by $sort $order limit $offset, $rows" );
+	
+		$result ['rows'] = $query->fetchAll ();
+	
+		return $result;
+	}
+	
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 *
+	 * @return Array item
+	 */
+	public function getIdName() {
+		$query = $this->db->query ("SELECT Id, Tennuocsanxuat FROM tbldm_nuocsanxuat" );
+		return $query->fetchAll ();
+	}
+	
+	//them moi nuoc san xuat
+	
+	public function addObj($data)
+	{
+		$id = $this->db->insert ( 'tbldm_nuocsanxuat', $data );
+		return $id;
+	}
+	
+	// update phuong phap dieu tri
+	public function updateObj($id, $data)
+	{
+		$Id = $this->db->update ( 'tbldm_nuocsanxuat', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xoa phuong phap dieu tri
+	public function delObj($id)
+	{
+		$idDel = $this->db->delete ( 'tbldm_nuocsanxuat', 'Id = ' . $id );
+		return $idDel;
+	}
+	
+	// kiem tra trung lap
+	public function dupliObj($id, $Tennuocsanxuat)
+	{
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_nuocsanxuat WHERE Tennuocsanxuat = '$Tennuocsanxuat'" );
+		if($id > 0){
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_nuocsanxuat WHERE Tennuocsanxuat = '$Tennuocsanxuat'
+										AND Id != $id" );
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+}

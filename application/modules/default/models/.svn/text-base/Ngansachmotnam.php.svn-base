@@ -1,0 +1,95 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_Ngansachmotnam {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 *
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, (SELECT Tencoquan FROM tblthongtincoquan WHERE Id = ThongtincoquanId) AS Tencoquan, 
+						(Ngansachnhanuoc + ThuBHYT + Thudichvukhamchuabenh + Thukhac) AS Tongthu, ThongtincoquanId, Tongsokhamduphong, 
+						(Chiluong + Chimuasam + Chidautu + Chikhac) AS Tongchi, Dientichxa, Namhoatdong, Tongsoduongbenh, 
+						Ngansachnhanuoc, Ngansachxa, ThuBHYT, Thudichvukhamchuabenh, Thukhac, Chiluong, Chimuasam, Chidautu, Chikhac ";
+	/**
+	 * - Lấy thông tin trong bảng.
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getFetObj($thongtincoquanId, $namhoatdong) {
+		$query = $this->db->query ( "SELECT IF(COUNT(Id) <= 0, 0, Id) AS Id, (SELECT Tencoquan FROM tblthongtincoquan WHERE Id = $thongtincoquanId) AS Tencoquan, 
+				(Ngansachnhanuoc + ThuBHYT + Thudichvukhamchuabenh + Thukhac + Vientro) AS Tongthu,
+				
+				Vientro,Chigiaoducvadaotao,Chiphongbenh,Chichuabenh,Chidskhhgd,Chiqlnn,Chiytequocgia,socoso
+				, ThongtincoquanId, Tongsokhamduphong, 
+				(Chigiaoducvadaotao + Chiphongbenh + Chichuabenh + Chidskhhgd + Chiqlnn + Chiytequocgia + Chiluong + Chimuasam + Chidautu + Chikhac) AS Tongchi, Dientichxa, (SELECT Namhoatdong FROM tblthongtincoquan WHERE Id = $thongtincoquanId) 
+				AS Namhoatdong, Tongsoduongbenh, Ngansachnhanuoc, Ngansachxa, ThuBHYT, Thudichvukhamchuabenh, Thukhac, Chiluong, Chimuasam, Chidautu, 
+				Chikhac FROM tblngansachmotnam WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong" );
+		return $query->fetchAll ();
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tendangthuoc        	
+	 * @return String
+	 */
+	public function dupliObj($id, $thongtincoquanId, $namhoatdong) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblngansachmotnam 
+				WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblngansachmotnam 
+					WHERE Id != $id AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblngansachmotnam', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tblngansachmotnam', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblngansachmotnam', 'Id = ' . $id );
+		return $Id;
+	}
+}
+?>

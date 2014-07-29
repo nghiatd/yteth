@@ -1,0 +1,88 @@
+<?php
+/*********
+ * Create by thomnd
+ */
+class Model_Thietbivattu {
+
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tenthietbivattu, DonvitinhId,DonvitinhIdQD,Tyle,
+				(SELECT Tendonvitinh FROM tbldm_donvitinh WHERE Id = DonvitinhId) AS Donvitinh,
+			(SELECT Tendonvitinh FROM tbldm_donvitinh WHERE Id = DonvitinhId) AS Tendonvitinh,
+			(SELECT Tendonvitinh FROM tbldm_donvitinh WHERE Id = DonvitinhIdQD) AS DonvitinhQD,
+			(SELECT Tendonvitinh FROM tbldm_donvitinh WHERE Id = DonvitinhIdQD) AS TendonvitinhQD,
+				Hinhanh ";
+	
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thietbivattu" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_thietbivattu ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($id, $Tenthietbivattu, $donvitinhid) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thietbivattu
+				WHERE Tenthietbivattu = '$Tenthietbivattu'  AND DonvitinhId = '$donvitinhid'" );
+		if($id != 0){
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thietbivattu
+					WHERE Tenthietbivattu = '$Tenthietbivattu'  AND DonvitinhId = '$donvitinhid' AND Id != $id" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+
+	public function getIdName() {
+		$query = $this->db->query ( "SELECT Id, Tenthietbivattu,  DonvitinhId FROM tdldm_thietbivattu" );
+		return $query->fetchAll ();
+	}
+	
+	// lay thong tin ci tiet 
+	
+	public function getObjById_Detail($id) {
+		$row = array ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_thietbivattu WHERE Id = $id" );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_thietbivattu', $data );
+		return $Id;
+	}
+
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_thietbivattu', $data, 'Id = ' . $id );
+		return $Id;
+	}
+
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_thietbivattu', 'Id = ' . $id );
+		return $Id;
+	}
+	
+	
+	/////////search thong tin thietbivattu
+	public function searObj($Tenthietbivattu, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = " Tenthietbivattu LIKE '%$Tenthietbivattu%' ";
+		
+		// Lay tong so ban ghi
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thietbivattu WHERE $where" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+	
+		$query = $this->db->query ( $this->str_query . " FROM tbldm_thietbivattu WHERE $where ORDER BY $sort $order LIMIT $offset, $rows" );
+	
+				$result ['rows'] = $query->fetchAll ();
+				return $result;
+	}
+}
+?>

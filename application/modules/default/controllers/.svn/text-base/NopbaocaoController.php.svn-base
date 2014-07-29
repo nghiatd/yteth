@@ -1,0 +1,253 @@
+<?php
+/**
+ * @author Phadh
+ * */
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+include 'PublicdetailController.php';
+class NopbaocaoController extends PublicdetailController {
+	private $_MNopbaocao;
+	private $_MBaocao;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_MucbaocaoId;
+	private $_KynopId;
+	private $_Ngaynop;
+	private $_File;
+	private $_Trangthai;
+	private $_Dangnop;
+	private $_MHistory;
+	private $Baocao = array ();
+	
+	// khoi tao ham dung cho class
+	public function init() {
+		$this->initValue ();
+		$this->_MHistory = new Model_History ();
+		$this->_MNopbaocao = new Model_Nopbaocao ();
+		$this->_MBaocao = new Model_Baocao ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		
+		if (isset ( $_REQUEST ['MucbaocaoId'] ) && $_REQUEST ['MucbaocaoId'] != '') {
+			$this->_MucbaocaoId = $_REQUEST ['MucbaocaoId'];
+			$this->_KynopId = $_REQUEST ['KynopId'];
+			$this->_Ngaynop = $_REQUEST ['Ngaynop'];
+			$this->_Trangthai = 'Chờ xử lý';
+			$this->_Dangnop = 0;
+			$this->_File = $this->getFile ();
+			if ($this->_Ngaynop != '') {
+				list ( $date, $month, $year ) = explode ( "/", $this->_Ngaynop );
+				$this->_Ngaynop = $year . '-' . $month . '-' . $date;
+			}
+		}
+		if ($this->_Dangnop == 0) {
+			$this->Baocao = array (
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'MucbaocaoId' => $this->_MucbaocaoId,
+					'KynopId' => $this->_KynopId,
+					'Ngaynop' => $this->_Ngaynop,
+					'Trangthai' => $this->_Trangthai,
+					'Dangnop' => $this->_Dangnop,
+					'Namhoatdong' => $this->_Namhoatdong,
+					'File' => $this->_File 
+			);
+		} else {
+			$this->Baocao = array (
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'MucbaocaoId' => $this->_MucbaocaoId,
+					'KynopId' => $this->_KynopId,
+					'Ngaynop' => $this->_Ngaynop,
+					'Trangthai' => $this->_Trangthai,
+					'Dangnop' => $this->_Dangnop,
+					'Namhoatdong' => $this->_Namhoatdong,
+					'File' => $this->_File 
+			);
+		}
+	}
+	public function indexAction() {
+	}
+	
+	// hein thi du lieu theo phan trang
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MNopbaocao->getFetObj ( $sort, $order, $offset, $rows, $this->TblThongtincoquanbyId [0] ['Id'], $this->TblThongtincoquanbyId [0] ['Namhoatdong'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi du lieu bao cao
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj ["success"] = false;
+		try {
+			$dup = $this->_MNopbaocao->dupliObj ( $this->_KynopId, $this->_MucbaocaoId, $this->_ThongtincoquanId, $this->_Namhoatdong );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+					    alert('Trong một kỳ, mục báo cáo không được nộp 2 báo cáo!');
+					</script>";
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			} else {
+				$_MMucbaocao = new Trungtam_Model_Mucbaocao ();
+				$tenmucbaocao = trim ( $_MMucbaocao->getNameById ( $this->_MucbaocaoId ) );
+				if ($tenmucbaocao != '') {
+					include 'AddBaocao.php';
+					$file = (isset ( $_FILES ['excel'] ['tmp_name'] ) && $_FILES ['excel'] ['tmp_name'] != "") ? $_FILES ['excel'] ['tmp_name'] : "";
+					$success = AddBaocao::Add ( $tenmucbaocao, $file, $this->_KynopId, $this->_Namhoatdong, $this->_ThongtincoquanId );
+					if ($success) {
+						$this->_MNopbaocao->addObj ( $this->Baocao );
+						$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, ' ', 'Nộp báo cáo', $this->UserIP );
+						$jsonObj ["success"] = true;
+					}
+				}
+			}
+		} catch ( Exception $e ) {
+		}
+		unset ( $dup );
+		unset ( $_MMucbaocao );
+		unset ( $tenmucbaocao );
+		unset ( $file );
+		unset ( $success );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	// cap nhat du lieu bao cao
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj ['success'] = false;
+		$id = $_REQUEST ['Id'];
+		$MucbaocaoId = $_REQUEST ['MucbaocaoId'];
+		$KynopId = $_REQUEST ['KynopId'];
+		$Ngaynop = $_REQUEST ['Ngaynop'];
+		$Trangthai = 'Chờ xử lý';
+		$file = (isset ( $_FILES ['excel'] ['tmp_name'] ) && $_FILES ['excel'] ['tmp_name'] != '') ? $_FILES ['excel'] ['tmp_name'] : '';
+		if ($Ngaynop != '') {
+			list ( $date, $month, $year ) = explode ( "/", $Ngaynop );
+			$Ngaynop = $year . '-' . $month . '-' . $date;
+		}
+		if ($file == '') {
+			$data = array (
+					'ThongtincoquanbyId' => $this->TblThongtincoquanbyId [0] ['Id'],
+					'MucbaocaoId' => $MucbaocaoId,
+					'KynopId' => $KynopId,
+					'Ngaynop' => $Ngaynop,
+					'Trangthai' => $Trangthai,
+					'Namhoatdong' => $this->TblThongtincoquanbyId [0] ['Namhoatdong'] 
+			);
+			
+			$this->_MNopbaocao->updateObj ( $id, $data );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, ' ', 'Cập nhật báo cáo', $this->UserIP );
+			$jsonObj ['success'] = true;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$_MMucbaocao = new Trungtam_Model_Mucbaocao ();
+			$tenmucbaocao = $_MMucbaocao->getNameById ( $this->_MucbaocaoId );
+			if ($tenmucbaocao != '') {
+				include 'AddBaocao.php';
+				$this->_MNopbaocao->updateObj ( $id, $this->Baocao );
+				$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, ' ', 'Cập nhật báo cáo', $this->UserIP );
+				$jsonObj ['success'] = AddBaocao::Add ( $tenmucbaocao, $file, $this->_KynopId, $this->_Namhoatdong, $this->_ThongtincoquanId );
+			}
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+	}
+	
+	// xao du lieu muc bao cao
+	public function delAction() {
+		include 'DelBaocao.php';
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_mucbaocaoid = $_REQUEST ['mucbaocaoid'];
+		$_kynopid = $_REQUEST ['kynopid'];
+		$_thongtincoquanid = $_REQUEST ['thongtincoquanid'];
+		$_MMucbaocao = new Trungtam_Model_Mucbaocao ();
+		$tenmucbaocao = $_MMucbaocao->getNameById ( $_mucbaocaoid );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		DelBaocao::Delete ( $tenmucbaocao, $_kynopid, $this->_Namhoatdong, $_thongtincoquanid );
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MNopbaocao->delObj ( $id );
+		} else {
+			return;
+		}
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, ' ', 'Xóa báo cáo', $this->UserIP );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// ham upload file
+	public function getFile() {
+		$file = (isset ( $_FILES ['excel'] ['tmp_name'] ) && $_FILES ['excel'] ['tmp_name'] != "") ? $_FILES ['excel'] ['tmp_name'] : "";
+		$fileData = "";
+		try {
+			if ($file != "")
+				$fileData = file_get_contents ( $file );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+				alert('Exception: Upload file!');
+				</script>";
+		}
+		return $fileData;
+	}
+	
+	// hien thi chi tiet bao cao
+	public function detailAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$jsonObj = $this->_MNopbaocao->getObjById_Detail ( $id );
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// download bao cao
+	public function getdocAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->getParam ( 'id' );
+		$jsonObj = array ();
+		try {
+			$jsonObj = $this->_MNopbaocao->getDocObjById_Detail ( $id );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Exception!');
+					</script>";
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// download mau bao cao
+	public function getmaubaocaoAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'id' );
+		$jsonObj = array ();
+		try {
+			$jsonObj = $this->_MNopbaocao->getmaubaocao ( $id );
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Exception!');
+					</script>";
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

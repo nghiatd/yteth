@@ -1,0 +1,121 @@
+<?php
+/*********
+ * Create by Phadh
+ */
+include 'PublicdetailController.php';
+class ThontoController extends PublicdetailController {
+	private $_MThonto;
+	private $_Tenthonto;
+	private $_Kieuthonban;
+	private $_Thonto = array ();
+	private $_MHistory;
+	public function init() {
+		$this->initValue ();
+		$this->_MThonto = new Model_Thonto ();
+		$this->_MHistory = new Model_History ();
+		
+		if (isset ( $_REQUEST ['Tenthonto'] ) && $_REQUEST ['Tenthonto'] != '') {
+			$this->_Tenthonto = $_REQUEST ['Tenthonto'];
+			$this->_Kieuthonban = $_REQUEST ['Kieuthonban'];
+			$this->_Thonto = array (
+					'Tenthonto' => $this->_Tenthonto,
+					'Kieuthonban' => $this->_Kieuthonban,
+					'XaId' => $_REQUEST ['XaId'] 
+			);
+		}
+	}
+	public function indexAction() {
+	}
+	
+	// lay thong tin thon to theo phan trang
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThonto->getFetObj ( $this->TblThongtincoquanbyId [0] ['CoquanId'], $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// Begin Daitk
+	public function combobyxaidAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'id' );
+		$jsonObj = json_encode ( $this->_MThonto->getIdNameByXaId ( $id ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// End Daitk
+	// thomnd
+	//----------------- cái này bao gồm text Ngoài xã
+	public function combobyidxaandaddrowAction() {
+		$this->_helper->layout ()->disableLayout ();
+		//$id = $this->_getParam ( 'id' );
+		$jsonObj = json_encode ( $this->_MThonto->getIdNameadrowByXaId ( $this->TblThongtincoquanbyId [0] ['Id'],$this->TblThongtincoquanbyId [0] ['CoquanId'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function combobyxaidnotgetparamAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThonto->getIdNameByXaId ( $this->TblThongtincoquanbyId [0] ['CoquanId'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//
+	// them moi thon to
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MThonto->dupliObj ( $this->_Tenthonto, 0, $this->TblThongtincoquanbyId [0] ['CoquanId'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên thôn/tổ này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThonto->addObj ( $this->_Thonto );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_thonto', 'Thêm', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// cap nhat thon to
+	public function updateAction() {
+		$id = $this->_getParam ( 'idthon' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MThonto->dupliObj ( $this->_Tenthonto, $id, $this->TblThongtincoquanbyId [0] ['CoquanId'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên thôn/tổ này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThonto->updateObj ( $id, $this->_Thonto );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_thonto', 'Sửa', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// xoa thong tin thon to
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false 
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_MThonto->delObj ( $item ['Id'] );
+				$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tbldm_thonto', 'Xóa', $this->UserIP );
+				$jsonObj = array (
+						'success' => true 
+				);
+			}
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+}

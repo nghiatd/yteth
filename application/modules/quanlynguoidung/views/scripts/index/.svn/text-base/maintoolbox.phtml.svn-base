@@ -1,0 +1,24 @@
+<!-- none cai nay se check quyen truoc sau do hien thi cac the div -->
+	<div id="nav-top">
+				<div id="div_nhansu" style="display:<?php echo $this->div_nhansu;?>">
+					<a href="#" class="home-btn first" onclick="OpenTab(1)"> NHÂN SỰ</a>
+				</div>
+				<div id="div_danso" style="display:<?php echo $this->div_danso;?>">
+					<a href="#" class="ht-btn" onclick="OpenTab(2)">DÂN SỐ</a>
+				</div>
+				<div id="div_kcb" style="display:<?php echo $this->div_kcb;?>">
+					<a href="#" class="ql-btn" onclick="OpenTab(3)" >KHÁM CHỮA BỆNH</a>
+				</div>
+				<div id="div_tiemchung" style="display:<?php echo $this->div_tiemchung;?>">
+					<a href="#" class="dh-btn"  onclick="OpenTab(4)">TIÊN CHỦNG</a>
+				</div>
+				<div id="div_thuoc" style="display:<?php echo $this->div_thuoc;?>">
+					<a href="#" class="nv-btn" onclick="OpenTab(5)">THUỐC VẬT TƯ HÓA CHẤT</a>
+				</div>
+				<div>
+					<a href="#" class="th-btn" >TỔNG HỢP BÁO CÁO</a>
+				</div>
+				<div>
+					<a href="#" class="tg-btn last" onclick="OpenTacgia();">TRỢ GIÚP</a>
+				</div>
+	</div>

@@ -1,0 +1,245 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_Khamthai {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 *
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, NhankhauId, Sophieukcb as Sosokhamthai, Soconhienco, Lancothaithu, Tiensuckhoevasinhde, 
+			 (DATE_FORMAT(Ngaykinhcuoi,'%d/%m/%Y')) AS Ngaykinhcuoi, 
+			(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) As Gioitinh
+		,
+		(select Tenthonto from tbldm_thonto where Id in ((select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=tblkhamthai.ThongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=tblkhamthai.ThongtincoquanId and tblnhankhau.Id=tblkhamthai.NhankhauId))) as Tenthonto
+		,
+		(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=tblkhamthai.ThongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=tblkhamthai.ThongtincoquanId and tblnhankhau.Id=tblkhamthai.NhankhauId)
+	
+		AS Diachi
+			,
+			(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,  Tinhtrang, Namhoatdong ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($namhoatdong, $thongtincoquanId, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblkhamthai WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong BETWEEN ($namhoatdong - 1) AND $namhoatdong" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tblkhamthai WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong BETWEEN ($namhoatdong - 1) AND $namhoatdong ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $id        	
+	 * @param String $sosokhamthai        	
+	 * @param Number $thongtincoquanId        	
+	 * @return String
+	 */
+	public function dupliObj($id, $sosokhamthai, $thongtincoquanId) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblkhamthai WHERE ThongtincoquanId = $thongtincoquanId AND Sophieukcb = '$sosokhamthai'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblkhamthai WHERE Id != $id AND ThongtincoquanId = $thongtincoquanId AND Sophieukcb = '$sosokhamthai'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	/**
+	 * Phadh
+	 * Kiem tra tinh trang cua nhan khau
+	 */
+	public function duplinhankhau($nhankhauId, $thongtincoquanId, $namhoatdong){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblgiaykhaitu WHERE NhankhauId = $nhankhauId AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblkhamthai', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tblkhamthai', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblkhamthai', 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * cap nhat kham thai tu form kham benh
+	 * @param unknown_type $sophieukcb
+	 * @param unknown_type $thongtincoquanId
+	 * @param unknown_type $namhostdong
+	 * @param unknown_type $data
+	 * @return unknown
+	 */
+	public function update($sophieukcb, $thongtincoquanId, $namhostdong, $data){
+		$where = array(
+				'Sophieukcb = ?' => $sophieukcb,
+				'ThongtincoquanId = ?' => $thongtincoquanId,
+				'Namhoatdong = ?' => $namhostdong
+				);
+		$Id = $this->db->update('tblkhamthai', $data, $where);
+		return $Id;
+	}
+	
+	public function dupkhamthai($sophieukcb, $thongtincoquanId, $namhoatdong){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblkhamthai WHERE Sophieukcb = '$sophieukcb' AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	public function del($sophieukcb){
+		$where = array('Sophieukcb = ?' => $sophieukcb);
+		$Id = $this->db->delete('tblkhamthai', $where);
+		return $Id;
+	}
+	
+	/**
+	 * lê văn kiên
+	 */
+	// (DATE_FORMAT(Ngaykham,'%d/%m/%Y')) AS Ngaykham, Ghichu,
+	public function getDs($sThonto, $Maphieu, $Ngaythang, $Nguoibenh, $thongtincoquanid, $namhoatdong) {
+		$result = array ();
+		$wherethonto = '';
+		if ($sThonto != '')
+			$wherethonto = " and Mahodan in (select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.Namhoatdong<=$namhoatdong and tblchuhodan.ThontoId =$sThonto) ";
+		
+		$where = " and NhankhauId in (SELECT Id FROM tblnhankhau WHERE Hoten LIKE '%$Nguoibenh%' $wherethonto)";
+		
+		$where = $where . " and Sophieukcb  LIKE '%$Maphieu%' ";
+		if ($Ngaythang != '')
+			$where = $where . " AND Sophieukcb IN (SELECT Sophieukcb from tblchitietlankhamthai where tblchitietlankhamthai.ThongtincoquanId=$thongtincoquanid and tblchitietlankhamthai.Ngaykham = '$Ngaythang' ) ";
+		$query = $this->db->query ( "SELECT DISTINCT Id, NhankhauId,Sophieukcb as Sosokhamthai, Soconhienco, Lancothaithu, Tiensuckhoevasinhde, 
+				 (DATE_FORMAT(Ngaykinhcuoi,'%d/%m/%Y')) AS Ngaykinhcuoi, 				
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) As Gioitinh,
+				(select Tenthonto from tbldm_thonto where Id in ((select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanid and tblnhankhau.Id=tblkhamthai.NhankhauId))) as Tenthonto,
+				(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanid and tblnhankhau.Id=tblkhamthai.NhankhauId) AS Diachi,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,  Tinhtrang, Namhoatdong FROM tblkhamthai
+				WHERE Namhoatdong = $namhoatdong AND ThongtincoquanId = $thongtincoquanid  $where " );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	// thong tin thai phu kham thai
+	public function getCtktinfo($sosokhamthai, $thongtincoquanid, $namhoatdong){
+		
+		$result = array();
+		$query = $this->db->query("SELECT Id, NhankhauId,Sophieukcb as Sosokhamthai , 
+				(SELECT YEAR(Ngaysinh) FROM tblnhankhau WHERE Id = NhankhauId) AS Namsinh,
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) AS Gioitinh,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,
+				(select Id from tbldm_thonto where Id in (
+				(select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau 
+				where tblchuhodan.ThongtincoquanId=$thongtincoquanid and 
+				tblchuhodan.mahodan=tblnhankhau.mahodan and 
+				tblnhankhau.thongtincoquanId=$thongtincoquanid and 
+				tblnhankhau.Id=tblkhamthai.NhankhauId))) as ThontoId,
+				(SELECT Tenthonto FROM tbldm_thonto WHERE Id = ThontoId) AS Tenthonto,
+				(SELECT XaId FROM tbldm_thonto WHERE Id = ThontoId) AS XaId,
+				(SELECT Tenxa FROM tbldm_xa WHERE Id = XaId) AS Tenxa,
+				(SELECT HuyenId FROM tbldm_xa WHERE Id = XaId) AS HuyenId,
+				(SELECT Tenhuyen FROM tbldm_huyen WHERE Id = HuyenId) AS Tenhuyen,
+				(SELECT TinhId FROM tbldm_huyen WHERE Id = HuyenId) AS TinhId,
+				(SELECT Tentinh FROM tbldm_tinh WHERE Id = TinhId) AS Tentinh
+				FROM tblkhamthai WHERE Sophieukcb = '$sosokhamthai' AND ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhoatdong");
+		$result = $query->fetchAll();
+		return $result;
+		
+	}
+	
+	public function getCtkt($sosokhamthai, $thongtincoquanid) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT Id, DATE_FORMAT(Ngaykham,'%d/%m/%Y') AS Ngaykham,Sophieukcb as Sosokhamthai, Tuanthai, DATE_FORMAT(Dukienngaysinh, '%d/%m/%Y') AS Dukienngaysinh, Trongluongme, Vongbung, CaoTC, Khungchau, Proteinnieu, Huyetap,
+IF(Tinhtrangthieumau = 1, 'x', '') AS Tinhtrangthieumau,
+IF(Uongviensat = 1, 'x', '') AS Uongviensat, SomuitiemUV, Timthai, Ngoithai,
+IF(Dethuong = 1, 'x', '') AS Dethuong, Conguyco, NhansuId,
+(SELECT Hoten FROM tblnhansu WHERE Id = NhansuId) AS Nhansu, Ghichu
+
+
+FROM tblchitietlankhamthai WHERE Sophieukcb = '$sosokhamthai' AND ThongtincoquanId = $thongtincoquanid" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	// kiênlv
+	public function searObj($sThonto, $Maphieu, $Ngaythang, $Nguoibenh, $namhoatdong, $thongtincoquanid, $sort, $order, $offset, $rows) {
+		$result = array ();
+		
+		$wherethonto = "";
+		if ($sThonto != "")
+			$wherethonto = " and Mahodan in (select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.Namhoatdong<=$namhoatdong and tblchuhodan.ThontoId =$sThonto) ";
+		$where = " and NhankhauId in (SELECT Id FROM tblnhankhau WHERE Hoten LIKE '%$Nguoibenh%' $wherethonto)";
+		$where = $where . " and Sophieukcb  LIKE '%$Maphieu%' ";
+		if ($Ngaythang != '')
+			$where = $where . " AND Sophieukcb IN (SELECT Sophieukcb from tblchitietlankhamthai where tblchitietlankhamthai.ThongtincoquanId=$thongtincoquanid and tblchitietlankhamthai.Ngaykham = '$Ngaythang' ) ";
+			
+			// Thuc hien cau lenh truy xuat du lieu
+		$query = $this->db->query ( "SELECT DISTINCT Id, NhankhauId,Sophieukcb as Sosokhamthai, Soconhienco, Lancothaithu, Tiensuckhoevasinhde, 
+				 (DATE_FORMAT(Ngaykinhcuoi,'%d/%m/%Y')) AS Ngaykinhcuoi, 				
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) As Gioitinh,
+				(select Tenthonto from tbldm_thonto where Id in ((select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanid and tblnhankhau.Id=tblkhamthai.NhankhauId))) as Tenthonto,
+				(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanid and tblnhankhau.Id=tblkhamthai.NhankhauId) AS Diachi,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId) AS Hoten,  Tinhtrang, Namhoatdong FROM tblkhamthai
+				WHERE Namhoatdong = $namhoatdong AND ThongtincoquanId = $thongtincoquanid  $where ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	// end kiênlv
+	
+	// hien thi chi tiet kham thai theo so phieu kham chua benh
+	public function getinfobyskcb($sophieukcb, $thongtincoquanId, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblchitietlankhamthai WHERE Sophieukcb = '$sophieukcb' AND ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Sophieukcb, DATE_FORMAT(Ngaykham, '%d/%m/%Y') AS Ngaykham, Tuanthai, DATE_FORMAT(Dukienngaysinh, '%d/%m/%Y') AS Dukienngaysinh,
+									Trongluongme, Vongbung, CaoTC, Khungchau, Proteinnieu, Huyetap, Tinhtrangthieumau, Uongviensat, 
+									SomuitiemUV, Timthai, Ngoithai, Dethuong, Conguyco, Khamtainha, Ghichu
+									FROM tblchitietlankhamthai WHERE Sophieukcb = '$sophieukcb' AND ThongtincoquanId = $thongtincoquanId
+									ORDER BY $sort $order LIMIT $offset, $rows
+									");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}
+?>

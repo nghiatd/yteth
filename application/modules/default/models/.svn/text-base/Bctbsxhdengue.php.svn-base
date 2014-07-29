@@ -1,0 +1,54 @@
+<?php
+/**
+ * 
+ * @author Phadh
+ *
+ */
+class Model_Bctbsxhdengue{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	// ten thon to
+	public function gettenthonto($thontoid){
+		$result = array();
+		$query = $this->db->query("SELECT Tenthonto FROM tbldm_thonto WHERE Id = $thontoid");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// nhan vien dieu tra
+	public function getnhanvien($ngaythang){
+		$result = array();
+		$query = $this->db->query("SELECT Hoten FROM tblnhansu WHERE Id = (SELECT NhansuId FROM tblphieudieutrasotxuathuyet
+				WHERE Ngaythang = '$ngaythang')");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// get du lieu bao cao
+	public function getdatabaocao($thongtincoquanId, $namhoatdong, $ngaythang, $thontoid){
+		$result = array();
+		$query = $this->db->query("SELECT Mahodan, (SELECT Tenchuho FROM tblchuhodan WHERE Mahodan = tblchitietdieutrasoxuathuyet.Mahodan AND 
+				ThongtincoquanId = tblchitietdieutrasoxuathuyet.ThongtincoquanId AND Namhoatdong = tblchitietdieutrasoxuathuyet.Namhoatdong) AS Tenchuho,
+
+				IF(ContrungId = (SELECT Id FROM tbldm_contrung WHERE Tencontrung = 'Aedes aegypti'), Soluongcontrung, 0) AS Muoi_Aedes_aegypti,
+				IF(ContrungId = (SELECT Id FROM tbldm_contrung WHERE Tencontrung = 'Aedes albopictus'), Soluongcontrung, 0) AS Muoi_Aedes_albopictus,
+				IF(ContrungId = (SELECT Id FROM tbldm_contrung WHERE Tencontrung = 'Culex quinque-fasciatus'), Soluongcontrung, 0) AS Muoi_Culex_quinque_fasciatus,
+				IF(ContrungId = (SELECT Id FROM tbldm_contrung WHERE Tencontrung = 'Anopheles spp'), Soluongcontrung, 0) AS Muoi_Anopheles_spp,
+				
+				(SELECT Tendungcuchuanuoc FROM tbldm_dungcuchuanuoc WHERE Id = DungcuchuanuocId) AS Tendungcuchuanuoc, Soluongdungcu,
+				
+				IF(ContrungId = (SELECT Id FROM tbldm_contrung WHERE Tencontrung = 'Aedes aegypti'), Chisomuoi, '0') AS Chisomuoi_Aedes_aegypti,
+				IF(ContrungId = (SELECT Id FROM tbldm_contrung WHERE Tencontrung = 'Aedes albopictus'), Chisomuoi, '0') AS Chisomuoi_Aedes_albopictus,
+				
+				IF(Tacnhansinhhoc LIKE '%Cá%', 'X', '') AS Tacnhansinhhoc_ca,
+				IF(Tacnhansinhhoc NOT LIKE '%Cá%', Tacnhansinhhoc, '') AS Tacnhansinhhoc
+				
+				FROM tblchitietdieutrasoxuathuyet WHERE Sophieudt IN (SELECT Sophieudt FROM tblphieudieutrasotxuathuyet WHERE Ngaythang = '$ngaythang')
+				AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND Mahodan IN (SELECT Mahodan FROM tblchuhodan WHERE ThontoId = $thontoid)
+				ORDER BY Mahodan ASC");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

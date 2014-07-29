@@ -1,0 +1,227 @@
+<?php
+/**
+ * Phadh
+ */
+include 'PublicdetailController.php';
+class DieutrasotxuathuyetController extends PublicdetailController{
+	private $_MDieutra;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Dieutra = array();
+	public function init(){
+		$this->initValue();
+		$this->_MDieutra = new Model_Dieutrasotxuathuyet();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+	}
+	public function index(){}
+	// hien thi du lieu theo phan trang
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MDieutra->getFetObj($this->_ThongtincoquanId, $this->_Namhoatdong, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// hien thi du lieu khi sua
+	public function datagridAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$sophieudt = $this->_getParam('sophieudt');
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MDieutra->datagrid($sophieudt, $this->_ThongtincoquanId, $this->_Namhoatdong, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//them moi du lieu
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		// post du lieu tu form
+		$sophieudt = $_REQUEST['Sophieudt'];$ngaythang = $this->convertDate($_REQUEST['Ngaythang']);
+		$nhansu = $_REQUEST['NhansuId'];$diemdieutra = $_REQUEST['Diemgiamsat'];
+		$thoigiandieutra = $_REQUEST['Thoigiangiamsat'];
+		// kiem tra trung lap du lieu
+		$dup = $this->_MDieutra->dupliObj(0, $sophieudt, $this->_ThongtincoquanId, $this->_Namhoatdong, $ngaythang);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+				    alert('Dữ liệu đã tồn tại!');
+				</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$data = array(
+					'Sophieudt' => $sophieudt,'Ngaythang' => $ngaythang,'NhansuId' => $nhansu,
+					'Diemgiamsat' => $diemdieutra,'Thoigiangiamsat' => $thoigiandieutra,
+					'ThongtincoquanId' => $this->_ThongtincoquanId,'Namhoatdong' => $this->_Namhoatdong);
+			$this->_MDieutra->addObj($data);
+/*************************************begin loop data***************************************************************/
+		$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['new'] ) : $_REQUEST ['new'];
+		$sotxuathuyet = json_decode($stringJSON, true);
+		foreach ($sotxuathuyet as $row){
+			$mahodan = $row['Mahodan'];$contrungid = $row['ContrungId'];$soluongcontrung = $row['Soluongcontrung'];
+			$dungcuchuanuocid = $row['DungcuchuanuocId'];$soluongdungcu = $row['Soluongdungcu'];
+			$tacnhansinhhoc = $row['Tacnhansinhhoc'];$chisobreteau = $row['ChisoBreteau'];
+			$chisomuoi = $row['Chisomuoi'];$matdomuoi = $row['Matdomuoi'];
+			// kiem tra trung lap du lieu
+			$dupli = $this->_MDieutra->dupli(0, $mahodan, $sophieudt, $contrungid, $dungcuchuanuocid, $this->_ThongtincoquanId, $this->_Namhoatdong);
+			if($dupli > 0){
+				echo "<script type=\"text/javascript\">
+				    alert('Dữ liệu đã tồn tại!');
+				</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			}else{
+				$ctsotxuathuyet = array(
+				'Sophieudt' => $sophieudt,'Mahodan' => $mahodan,'ContrungId' => $contrungid,
+				'Soluongcontrung' => $soluongcontrung,'DungcuchuanuocId' => $dungcuchuanuocid,
+				'Soluongdungcu' => $soluongdungcu,'Tacnhansinhhoc' => $tacnhansinhhoc,
+				'ChisoBreteau' => $chisobreteau,'Chisomuoi' => $chisomuoi,'Matdomuoi' => $matdomuoi,
+				'ThongtincoquanId' => $this->_ThongtincoquanId,'Namhoatdong' => $this->_Namhoatdong);
+				$this->_MDieutra->add($ctsotxuathuyet);
+			}
+		}
+/*************************************end loop data*****************************************************************/
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	//cap nhat du lieu
+	public function updateAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		// post du lieu tu form
+		$id = $this->_getParam("id");
+		$sophieudt = $_REQUEST['Sophieudt'];$ngaythang = $this->convertDate($_REQUEST['Ngaythang']);
+		$nhansu = $_REQUEST['NhansuId'];$diemdieutra = $_REQUEST['Diemgiamsat'];
+		$thoigiandieutra = $_REQUEST['Thoigiangiamsat'];
+		$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['new'] ) : $_REQUEST ['new'];
+		$string = json_decode($stringJSON, true);
+		foreach ($string as $row){
+			
+		}
+		// kiem tra trung lap du lieu
+		$dup = $this->_MDieutra->dupliObj($id, $sophieudt, $this->_ThongtincoquanId, $this->_Namhoatdong, $ngaythang);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+				    alert('Dữ liệu đã tồn tại!');
+				</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$data = array(
+					'Sophieudt' => $sophieudt,'Ngaythang' => $ngaythang,'NhansuId' => $nhansu,
+					'Diemgiamsat' => $diemdieutra,'Thoigiangiamsat' => $thoigiandieutra,
+					'ThongtincoquanId' => $this->_ThongtincoquanId,'Namhoatdong' => $this->_Namhoatdong
+			);
+			$temp = $this->_MDieutra->updateObj($id, $data);
+/*************************************begin loop data***************************************************************/
+			if($temp >= 0){
+				$this->_MDieutra->del($sophieudt);
+				$stringJSON = get_magic_quotes_gpc () ? stripslashes ( $_REQUEST ['new'] ) : $_REQUEST ['new'];
+				$sotxuathuyet = json_decode($stringJSON, true);
+				foreach ($sotxuathuyet as $row){
+					$mahodan = $row['Mahodan'];$contrungid = $row['ContrungId'];$soluongcontrung = $row['Soluongcontrung'];
+					$dungcuchuanuocid = $row['DungcuchuanuocId'];$soluongdungcu = $row['Soluongdungcu'];
+					$tacnhansinhhoc = $row['Tacnhansinhhoc'];$chisobreteau = $row['ChisoBreteau'];
+					$chisomuoi = $row['Chisomuoi'];$matdomuoi = $row['Matdomuoi'];
+					// kiem tra trung lap du lieu
+					$dupli = $this->_MDieutra->dupli(0, $mahodan, $sophieudt, $contrungid, $dungcuchuanuocid, $this->_ThongtincoquanId, $this->_Namhoatdong);
+					if($dupli > 0){
+						echo "<script type=\"text/javascript\">
+						    alert('Dữ liệu đã tồn tại!');
+						</script>";
+						$jsonObj ["success"] = false;
+						return $this->view->jsonObj = json_encode ( $jsonObj );
+					}else{
+						$ctsotxuathuyet = array(
+						'Sophieudt' => $sophieudt,'Mahodan' => $mahodan,'ContrungId' => $contrungid,
+						'Soluongcontrung' => $soluongcontrung,'DungcuchuanuocId' => $dungcuchuanuocid,
+						'Soluongdungcu' => $soluongdungcu,'Tacnhansinhhoc' => $tacnhansinhhoc,
+						'ChisoBreteau' => $chisobreteau,'Chisomuoi' => $chisomuoi,'Matdomuoi' => $matdomuoi,
+						'ThongtincoquanId' => $this->_ThongtincoquanId,'Namhoatdong' => $this->_Namhoatdong);
+						$this->_MDieutra->add($ctsotxuathuyet);
+					}
+				}
+			}
+/*************************************end loop data*****************************************************************/
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	//xoa du lieu
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MDieutra->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//xoa du lieu chi tiet phieu sieu tra sot xuat huyet
+	public function delhodanAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MDieutra->del ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// tim kiem du lieu theo dieu kien truyenv vao
+	public function searAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$sSophieudt = $this->_getParam('sSophieudt');
+		$sNgaythang = $this->_getParam('sNgaythang');
+		$sNhansuId = $this->_getParam('sNhansuId');
+		$sDiemgiamsat = $this->_getParam('sDiemgiamsat');
+		$sThoigiangiamsat = $this->_getParam('sThoigiangiamsat');
+		if($sNgaythang != ''){
+			$sNgaythang = $this->convertDateSearch($sNgaythang);
+		}
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = json_encode($this->_MDieutra->searObj($sSophieudt, $sNgaythang, $sNhansuId, $sDiemgiamsat, $sThoigiangiamsat, $this->_ThongtincoquanId, $this->_Namhoatdong, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

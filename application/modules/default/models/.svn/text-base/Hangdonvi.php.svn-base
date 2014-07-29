@@ -1,0 +1,57 @@
+<?php
+class Model_Hangdonvi {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT Id, Tenhangdonvi ";
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hangdonvi" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_hangdonvi ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	public function getNameIdObj() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_hangdonvi" );
+		return $query->fetchAll ();
+	}
+	public function getNameIdObjNoChuho() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_hangdonvi WHERE Tenhangdonvi != 'Chủ hộ'" );
+		return $query->fetchAll ();
+	}
+	public function dupObj($id, $Tenhangdonvi) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hangdonvi WHERE Tenhangdonvi = '$Tenhangdonvi'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_hangdonvi WHERE Id != $id AND Tenhangdonvi = '$Tenhangdonvi'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	// Bg Daitk
+	public function getIdByName($Tenhangdonvi) {
+		$query = $this->db->query ( "SELECT Id FROM tbldm_hangdonvi WHERE Tenhangdonvi LIKE '$Tenhangdonvi'" );
+		$Rows = $query->fetchAll ();
+		if (count ( $Rows ) > 0)
+			$Id = $Rows [0] ['Id'];
+		else
+			$Id = 0;
+		return $Id;
+	}
+	// Ed Daitk
+	public function addObj($data) {
+		$id = $this->db->insert ( 'tbldm_hangdonvi', $data );
+		return $id;
+	}
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_hangdonvi', $data, 'Id =' . $id );
+		return $Id;
+	}
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_hangdonvi', 'Id =' . $id );
+		return $Id;
+	}
+}

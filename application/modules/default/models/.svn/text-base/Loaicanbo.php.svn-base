@@ -1,0 +1,57 @@
+<?php
+class Model_Loaicanbo {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT Id, Tenloaicanbo ";
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaicanbo" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_loaicanbo ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	public function getNameIdObj() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_loaicanbo" );
+		return $query->fetchAll ();
+	}
+	public function getNameIdObjNoChuho() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_loaicanbo WHERE tenloaicanbo != 'Chủ hộ'" );
+		return $query->fetchAll ();
+	}
+	public function dupObj($id, $tenloaicanbo) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaicanbo WHERE tenloaicanbo = '$tenloaicanbo'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_loaicanbo WHERE Id != $id AND tenloaicanbo = '$tenloaicanbo'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	// Bg Daitk
+	public function getIdByName($tenloaicanbo) {
+		$query = $this->db->query ( "SELECT Id FROM tbldm_loaicanbo WHERE tenloaicanbo LIKE '$tenloaicanbo'" );
+		$Rows = $query->fetchAll ();
+		if (count ( $Rows ) > 0)
+			$Id = $Rows [0] ['Id'];
+		else
+			$Id = 0;
+		return $Id;
+	}
+	// Ed Daitk
+	public function addObj($data) {
+		$id = $this->db->insert ( 'tbldm_loaicanbo', $data );
+		return $id;
+	}
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_loaicanbo', $data, 'Id =' . $id );
+		return $Id;
+	}
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_loaicanbo', 'Id =' . $id );
+		return $Id;
+	}
+}

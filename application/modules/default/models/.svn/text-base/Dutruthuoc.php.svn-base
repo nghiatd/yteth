@@ -1,0 +1,135 @@
+<?php
+/*
+ * Created By thomnd
+ */
+class Model_Dutruthuoc {
+	protected $db;
+	// Khai báo truy vấn dùng chung
+	private $str_query = "SELECT Id,Sophieudt as Maphieunhap,Sophieudt, NhansuId,Ghichu,ThongtincoquanId,
+			(select BophanId from tblnhansu where tblnhansu.Id=tbldutruthuocbaohiem.NhansuId and tblnhansu.ThongtincoquanId=tbldutruthuocbaohiem.ThongtincoquanId) as BophanId,
+			(select Tenbophan from tblnhansu,tbldm_bophan where tbldm_bophan.ThongtincoquanId= tbldutruthuocbaohiem.ThongtincoquanId and tblnhansu.BophanId=tbldm_bophan.Id and tblnhansu.Id=tbldutruthuocbaohiem.NhansuId and tblnhansu.ThongtincoquanId=tbldutruthuocbaohiem.ThongtincoquanId) as Bophan,
+			(select Hoten from tblnhansu where tblnhansu.Id=tbldutruthuocbaohiem.NhansuId and tblnhansu.ThongtincoquanId=tbldutruthuocbaohiem.ThongtincoquanId) as Tennhansu,
+			(select Hoten from tblnhansu where tblnhansu.Id=tbldutruthuocbaohiem.NhansuId and tblnhansu.ThongtincoquanId=tbldutruthuocbaohiem.ThongtincoquanId) as Nguoinhapxuat,
+			
+			(DATE_FORMAT(Ngaydutru,'%d/%m/%Y')) AS Ngaydutru
+			
+			";
+	//(SELECT Tenmucluutru FROM  tbldm_mucluutru WHERE Id = MucluutruId) AS Mucluutru 
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getFetObj($sort, $order, $offset, $rows, $ThongtincoquanId, $Namhoatdong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldutruthuocbaohiem  WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong = $Namhoatdong " );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldutruthuocbaohiem WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong = $Namhoatdong
+				ORDER BY $sort $order LIMIT $offset, $rows" );
+			$result ["total"] = $row [0] ['Total'];
+			$result ["rows"] = $query->fetchAll ();
+	
+		return $result;
+	}
+	public function getFetObjByMaphieunhap($Namhoatdong, $Sophieudt, $ThongtincoquanId) {
+		$query = $this->db->query ( $this->str_query . "FROM tbldutruthuocbaohiem WHERE Sophieudt = '$Sophieudt' and  Namhoatdong=$Namhoatdong and ThongtincoquanId = $ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	public function getFetObjByMaphieunhapExcel($Sophieudt, $ThongtincoquanId,$Namhoatdong) {
+			$query = $this->db->query ( $this->str_query . "FROM tbldutruthuocbaohiem WHERE Sophieudt = '$Sophieudt' and  Namhoatdong=$Namhoatdong and ThongtincoquanId = $ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	public function addObj($_data) {
+		$id = $this->db->insert ( 'tbldutruthuocbaohiem', $_data );
+		return $id;
+	}
+	
+	
+	public function updateObj($_data, $_mapn, $_thongtincoquanid) {
+		$where [] = "Sophieudt = '$_mapn'";
+		$where [] = "ThongtincoquanId = $_thongtincoquanid";
+		$id = $this->db->update ( 'tbldutruthuocbaohiem', $_data, $where );
+		return $id;
+	}
+	
+	public function dupliObj($id, $mapn, $ThongtincoquanId) {
+		// thomnd
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldutruthuocbaohiem 
+				WHERE  ThongtincoquanId = $ThongtincoquanId AND Sophieudt =  '$mapn'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldutruthuocbaohiem 
+				WHERE  ThongtincoquanId = $ThongtincoquanId and Id!=$id AND Sophieudt =  '$mapn'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function delObj($_mapn, $ThongtincoquanId) {
+		$where [] = "Sophieudt= '$_mapn'";
+		
+		$where [] = " ThongtincoquanId= $ThongtincoquanId";
+		$idDel = $this->db->delete ( 'tbldutruthuocbaohiem', $where );
+		return $idDel;
+	}
+	
+
+	public function searObj($Sophieudt, $Ngaydutru, $Nguoinhap,  $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		
+		$where = " Sophieudt LIKE '%$Sophieudt%' ";
+		if ($Nguoinhap != '') {
+			$where = $where . " AND NhansuId in ( select tblnhansu.Id from tblnhansu where tblnhansu.ThongtincoquanId=$thongtincoquanId and Hoten like '%$Nguoinhap%' ) ";
+		}
+		if ($Ngaydutru != '')
+			$where = $where . " AND Ngaydutru = '$Ngaydutru' ";
+				// Thuc hien cau lenh truy xuat du lieu
+		$query = $this->db->query ( $this->str_query . " FROM tbldutruthuocbaohiem 
+				WHERE Namhoatdong <=$namhoatdong AND  ThongtincoquanId = $thongtincoquanId AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+		
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * Phadh
+	 * in danh sach phieu nhap
+	 * 
+	 * @param unknown_type $thongtincoquanId        	
+	 * @param unknown_type $namhoatdong        	
+	 */
+	public function getdanhsach($thongtincoquanId, $namhoatdong) {
+		$str_query = ($this->str_query . "
+			FROM tbldutruthuocbaohiem
+			WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong 
+			ORDER BY Ngaydutru ASC");
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	
+	/**
+	 * Phadh
+	 * IN chi tiet cua phieu nhap
+	 * 
+	 * @param unknown_type $thongtincoquanId        	
+	 * @param unknown_type $namhoatdong        	
+	 * @param unknown_type $id        	
+	 */
+	public function getchitiet($thongtincoquanId, $namhoatdong, $id) {
+		$str_query = ("
+select	Id,Sophieudt ,ThuocId as cId
+				
+				, (select Tenthuoc from tbldm_thuoc where Id=tblchitietdutruthuocbaohiem.ThuocId	) as cTenthuoc
+				
+				
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where id=tblchitietdutruthuocbaohiem.ThuocId) ) as Tendonvitinh
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where id=tblchitietdutruthuocbaohiem.ThuocId) ) as cTendonvitinh
+				
+				,Soluong as cSoluong,Soluongduyet as cSoluongduyet,
+				NuocsanxuatId as cNuocsanxuatId
+				,(select Tennuocsanxuat from tbldm_nuocsanxuat where Id=tblchitietdutruthuocbaohiem.NuocsanxuatId) as cTennuocsanxuat
+				,Ghichu as cGhichu,ThongtincoquanId FROM tblchitietdutruthuocbaohiem WHERE ThongtincoquanId = $thongtincoquanId AND Sophieudt = '$id'
+				");
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

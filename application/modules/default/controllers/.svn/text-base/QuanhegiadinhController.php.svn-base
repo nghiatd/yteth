@@ -1,0 +1,117 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class QuanhegiadinhController extends PublicdetailController {
+	private $_MQuanhegiadinh;
+	private $_Quanhegiadinh = array ();
+	private $_MHistory;
+	private $_NhanvienId;
+	private $_QuanheId;
+	private $_Hoten;
+	private $_ThongtincoquanId;
+	public function init() {
+		$this->initValue ();
+		
+		$this->_MQuanhegiadinh = new Model_Quanhegiadinh ();
+		$this->_MHistory = new Model_History ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		
+		if (isset ( $_REQUEST ['NhanvienId'] ) && $_REQUEST ['NhanvienId'] != '') {
+			$this->_NhanvienId = $_REQUEST ['NhanvienId'];
+			$this->_QuanheId = $_REQUEST ['QuanheId'];
+			$this->_Hoten = $_REQUEST ['Hoten'];
+			$this->_Quanhegiadinh = array (
+					'NhanvienId' => $this->_NhanvienId,
+					'QuanheId' => $this->_QuanheId,
+					'Hoten' => $this->_Hoten,
+					'Namsinh' => $_REQUEST ['Namsinh'],
+					'Quequan' => $_REQUEST ['Quequan'],
+					'Tinhtrang' => $_REQUEST ['Tinhtrang'],
+					'Dienthoai' => $_REQUEST ['Dienthoai'],
+					'Email' => $_REQUEST ['Email'],
+					'Mota' => $_REQUEST ['Mota'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId,
+					'Nghenghiep' => $_REQUEST['Nghenghiep'] 
+			);
+		}
+	}
+	
+	
+	public function indexAction() {
+	}
+	public function getobjbynhanvienidAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$nhanvienid = $this->_getParam ( 'nhanvienid' );
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$jsonObj = json_encode ( $this->_MQuanhegiadinh->getObjByNhanvienId ( $nhanvienid, $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function jsonAction() {
+		$this->_helper->layout ()->disableLayout ();
+		
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'NhanvienId';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$jsonObj = json_encode ( $this->_MQuanhegiadinh->getFetObj ( $sort, $order, $offset, $rows, $this->_ThongtincoquanId ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi thong tin
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		// kiem tra tinh trung lap du lieu
+		$dup = $this->_MQuanhegiadinh->dupliObj ( 0, $this->_NhanvienId, $this->_QuanheId, $this->_Hoten, $this->_ThongtincoquanId );
+		if ($dup > 0) {
+			$jsonObj ["msg"] = 'Thành viên trong gia đình của nhân viên này đã có!';
+			$jsonObj ["success"] = false;
+		} else {
+			$this->_MQuanhegiadinh->addObj ( $this->_Quanhegiadinh );
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// cap nhat thong tin
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'id' );
+		// kiem tra tinh trung lap du lieu
+		$dup = $this->_MQuanhegiadinh->dupliObj ( $id, $this->_NhanvienId, $this->_QuanheId, $this->_Hoten, $this->_ThongtincoquanId );
+		if ($dup > 0) {
+			$jsonObj ["msg"] = 'Thành viên trong gia đình của nhân viên này đã có!';
+			$jsonObj ["success"] = false;
+		} else {
+			$this->_MQuanhegiadinh->updateObj ( $id, $this->_Quanhegiadinh );
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// xoa du lieu
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		if (isset ( $id ) && $id > 0) {
+			$this->_MQuanhegiadinh->delObj ( $id );
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
+			$jsonObj ["success"] = true;
+		} else {
+			$jsonObj ["msg"] = 'Cập nhật dữ liệu không thành công!';
+			$jsonObj ["success"] = false;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+}

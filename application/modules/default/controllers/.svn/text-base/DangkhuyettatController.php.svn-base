@@ -1,0 +1,118 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ * @author master
+ *
+ */
+class DangkhuyettatController extends PublicdetailController{
+	private $_MDangkhuyettat;
+	public function init(){
+		$this->initValue();
+		$this->_MDangkhuyettat = new Model_Dangkhuyettat();
+	}
+	
+	public function jsonAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+	
+		$jsonObj = json_encode ( $this->_MDangkhuyettat->getFetObj ( $sort, $order, $offset, $rows ) );
+	
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function indexAction() {
+	}
+	// Begin daitk
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDangkhuyettat->getNamebyId () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// End daitk
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+	
+		$Tendangkhuyettat = $_REQUEST ['Tendangkhuyettat'];
+	
+		$dup = $this->_MDangkhuyettat->CheckValueObj ( 0, $Tendangkhuyettat );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+					    alert('Tên bạn nhập đã có trong dữ liệu!');
+					</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$id = $this->_MDangkhuyettat->addObj ( $Tendangkhuyettat );
+			//$this->_MHistory->insert($this->TblUserbyId[0]['Id'], $this->Time_Ac, 'tbldm_dangkhuyettat', 'Thêm mới', $this->UserIP);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'idDangkhuyettat' );
+		$Tendangkhuyettat = $_REQUEST ['Tendangkhuyettat'];
+		$jsonObj = array ();
+		if (isset ( $id ) && $id > 0) {
+				
+			$dup = $this->_MDangkhuyettat->CheckValueObj ( $id, $Tendangkhuyettat );
+			if ($dup > 0) {
+				echo "<script type=\"text/javascript\">
+					    alert('Tên đã có trong danh sách!');
+					</script>";
+				$jsonObj ["success"] = false;
+				return $this->view->jsonObj = json_encode ( $jsonObj );
+			} else {
+				$id = $this->_MDangkhuyettat->updateObj ( $id, $Tendangkhuyettat );
+				//$this->_MHistory->insert($this->TblUserbyId[0]['Id'], $this->Time_Ac, 'tbldm_dangkhuyettat', 'Cập nhật', $this->UserIP);
+				$jsonObj ["success"] = true;
+			}
+		} else
+			return;
+	
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function delAction() {
+		$id = $_REQUEST ['idDangkhuyettat'];
+		$delId = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$delId = $this->_MDangkhuyettat->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $delId) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		//$this->_MHistory->insert($this->TblUserbyId[0]['Id'], $this->Time_Ac, 'tbldm_dangkhuyettat', 'Xóa', $this->UserIP);
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	
+	// combo du  lieu
+	public function combointohokhauAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDangkhuyettat->getName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// combo du  lieu
+	public function combointonhankhauAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDangkhuyettat->getNamenhankhau () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

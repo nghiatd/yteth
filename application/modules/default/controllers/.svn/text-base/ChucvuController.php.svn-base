@@ -1,0 +1,122 @@
+<?php
+/*
+ * Create By thomnd
+ */
+include 'PublicdetailController.php';
+class ChucvuController extends PublicdetailController {
+	public function indexAction() {
+	}
+	public function init() {
+		$this->initValue ();
+	}
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$mchucvu = new Model_Chucvu ();
+		$jsonObj = json_encode ( $mchucvu->getFetObj ( $sort, $order, $offset, $rows ) );
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function comboAction() {
+		// get Id from url
+		$this->_helper->layout ()->disableLayout ();
+		@$idChucvu = $this->_getParam ( 'idchucvu' );
+		$mchucvu = new Model_Chucvu ();
+		$jsonObj = null;
+		
+		if (isset ( $idChucvu ) && $idChucvu > 0) {
+			$jsonObj = json_encode ( $mchucvu->getIdNameById ( $idChucvu ) );
+		} else {
+			$jsonObj = json_encode ( $mchucvu->getIdName () );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$Tenchucvu = $_REQUEST ['Tenchucvu'];
+		$capbac = $_REQUEST ['Capbac'];
+		$diengiai = $_REQUEST ['Diengiai'];
+		// kiem tra du lieu nhap tu ban phim có phai la dang so hay khong neu
+		// khong thi bao loi
+		if (is_numeric ( $capbac ) == false) {
+			echo "<script type=\"text/javascript\">
+					    alert('Cấp bậc phải là dạng số!');
+					</script>";
+			$jsonObj ["success"] = true;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		$mchucvu = new Model_Chucvu ();
+		$dup = $mchucvu->dupliObj (0, $Tenchucvu, $capbac );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+					    alert('Tên chức vụ với Cấp bậc này của bạn đã có trong danh sách!');
+					</script>";
+			$jsonObj ["success"] = true;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$id = $mchucvu->addObj ( $Tenchucvu, $capbac, $diengiai );
+			$jsonObj ["success"] = true;
+		}
+		
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		
+		$id = $this->_getParam ( 'idchucvu' );
+		$o_Tenchucvu = $this->_getParam ( 'Tenchucvu' );
+		$o_capbac = $this->_getParam ( 'capbac' );
+		
+		$Tenchucvu = $_REQUEST ['Tenchucvu'];
+		$capbac = $_REQUEST ['Capbac'];
+		$diengiai = $_REQUEST ['Diengiai'];
+		if (is_numeric ( $capbac ) == false) {
+			echo "<script type=\"text/javascript\">
+					    alert('Cấp bậc phải là dạng số!');
+					</script>";
+			$jsonObj ["success"] = true;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		
+		$mchucvu = new Model_Chucvu ();
+		
+		if (isset ( $id ) && $id > 0) {
+			
+				$dup = $mchucvu->dupliObj ($id, $Tenchucvu, $capbac );
+				if ($dup > 0) {
+					echo "<script type=\"text/javascript\">
+					    alert('Tên chức vụ với Cấp bậc này của bạn đã có trong danh sách!');
+					</script>";
+					$jsonObj ["success"] = true;
+					return $this->view->jsonObj = json_encode ( $jsonObj );
+				} else {
+					$mchucvu->updateObj ( $id, $Tenchucvu, $capbac, $diengiai );
+					$jsonObj ["success"] = true;
+				}
+			}
+	
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false 
+		);
+		$mchucvu = new Model_Chucvu ();
+		foreach ( $items as $item ) {
+			$mchucvu->delObj ( $item ['Id'] );
+			$jsonObj = array (
+					'success' => true 
+			);
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+}

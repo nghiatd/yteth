@@ -1,0 +1,140 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_Thongtincoquan {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 *
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, Tencoquan, Nguoidaidien, Dienthoai, Diachi, Email, website, Matram, Logo,CoquanId, Namhoatdong,PhanloaixaId, 
+						(SELECT Tenphanloai FROM tbldm_phanloaixa WHERE Id = PhanloaixaId) AS Loaixa,
+						(SELECT Tenxa FROM tbldm_xa WHERE Id = CoquanId) AS Tenxa, IF(Datchuan = 1, 'on', '') AS Datchuan,
+						IF(Phuluc = 1, (SELECT Tenxa FROM tbldm_xa WHERE Id = CoquanId) , 
+						(SELECT Tenhuyen FROM tbldm_huyen WHERE Id = CoquanId)) AS Tencaptren ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public function getFetObj($ThongtincoquanId, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblthongtincoquan where Id =$ThongtincoquanId" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tblthongtincoquan where Id =$ThongtincoquanId ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	/**
+	 * Lấy thông tin về cơ quan đơn vị phục vụ cho xuất báo cáo.
+	 */
+	public function getInfoForReport($_ThongtincoquanId) {
+		$query = $this->db->query ( 'SELECT Tencoquan, 
+				(SELECT Tenphanloai FROM tbldm_phanloaixa WHERE Id = PhanloaixaId) AS Loaixa, 
+				(SELECT Tenxa FROM tbldm_xa WHERE tbldm_xa.Id = CoquanId) AS Tenxa 
+				FROM tblthongtincoquan WHERE Id = ' . $_ThongtincoquanId );
+		$row = $query->fetchAll ();
+		return $row [0];
+	}
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tendangthuoc        	
+	 * @return String
+	 */
+	public function dupliObj($id, $tencoquan, $matram, $coquanid, $phuluc) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblthongtincoquan 
+				WHERE (Tencoquan = '$tencoquan' OR Matram = '$matram') AND CoquanId = $coquanid AND Phuluc = $phuluc" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblthongtincoquan 
+					WHERE Id != $id AND (Tencoquan = '$tencoquan' OR Matram = '$matram') AND CoquanId = $coquanid AND Phuluc = $phuluc" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 *
+	 * @return Array item
+	 */
+	public function getIdName() {
+		$query = $this->db->query ( "SELECT Id, Tencoquan FROM tblthongtincoquan" );
+		return $query->fetchAll ();
+	}
+	// thomnd
+	public function getIdNamebyphulucandcoquan($Phuluc, $ThongtincoquanId) {
+		$sqlstr = "";
+		if ($Phuluc == 1) 		// thằng trạm
+		{
+			$sqlstr = "SELECT Id, Tencoquan FROM tblthongtincoquan where Id=$ThongtincoquanId";
+		} else {
+			$sqlstr = "SELECT Id, Tencoquan FROM tblthongtincoquan where Id=$ThongtincoquanId
+		union
+		SELECT Id, Tencoquan FROM tblthongtincoquan where CoquanId=$ThongtincoquanId
+		";
+		}
+		$query = $this->db->query ( $sqlstr );
+		return $query->fetchAll ();
+	}
+	public function getIdNamebyphuluc($ThongtincoquanId) {
+		$sqlstr = "SELECT Id, Tencoquan FROM tblthongtincoquan where Id=$ThongtincoquanId
+					 union 						 
+					 SELECT Id, Tencoquan FROM tblthongtincoquan where CoquanId=$ThongtincoquanId
+		";
+		$query = $this->db->query ( $sqlstr );
+		return $query->fetchAll ();
+	}
+	public function getIdNamebyThongtincoquanId($ThongtincoquanId) {
+		$sqlstr = "SELECT Id, Tencoquan FROM tblthongtincoquan where Id=$ThongtincoquanId
+		";
+		$query = $this->db->query ( $sqlstr );
+		return $query->fetchAll ();
+	}
+	//
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblthongtincoquan', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tblthongtincoquan', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblthongtincoquan', 'Id = ' . $id );
+		return $Id;
+	}
+}
+?>

@@ -1,0 +1,18 @@
+<?php
+include 'PublicdetailController.php';
+class TrinhdongoainguController extends PublicdetailController{
+	private $_MTrinhdongoaingu;
+	public function init(){
+		$this->initValue();
+		$this->_MTrinhdongoaingu = new Model_Trinhdongoaingu();
+	}
+	
+	
+	// hien thi du lieu combo
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		$jsonObj = $this->_MTrinhdongoaingu->getIdByName();
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+}

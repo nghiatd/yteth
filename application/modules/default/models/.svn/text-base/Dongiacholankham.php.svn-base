@@ -1,0 +1,78 @@
+<?php
+/*
+ * Create By thomnd Class co the su dung ca 2 phuong phap ket noi database: 1,
+ * Zend_Db_Table 2, Zend_Db
+ */
+class Model_Dongiacholankham {
+	// a d
+	protected $_name = "tbldm_Dongia";
+	protected $_primary = "Id";
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getFetObj($ThongtincoquanId, $Namhoatdong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dongia where ThongtincoquanId=$ThongtincoquanId and Namhoatdong =$Namhoatdong" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		
+		$query = $this->db->query ( "SELECT Id, Tendongia, Giatien, Tienthuthuat FROM tbldm_dongia where ThongtincoquanId=$ThongtincoquanId and Namhoatdong =$Namhoatdong 
+				order by $sort $order limit $offset, $rows" );
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	
+	// Lay Id va Ten
+	public function getIdName() {
+		$query = $this->db->query ( 'SELECT Id, Tendongia FROM tbldm_dongia' );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function getIdNameById($_id) {
+		$query = $this->db->query ( 'SELECT Id, Giatien FROM tbldm_dongia WHERE Id = ' . $_id );
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function getDayAlert($thongtincoquanid, $namhoatdong) {
+		$query = $this->db->query ( "SELECT IF((Tienthuthuat IS NULL OR Tienthuthuat = 0), 30, Tienthuthuat) AS Tienthuthuat FROM tbldm_dongia WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhoatdong" );
+		$result = array ();
+		$result = $query->fetchAll ();
+		if(count($result)>0)
+		return $result [0] ['Tienthuthuat'];
+		else
+			return 0;
+	}
+	public function addObj($Tendongia, $Giatien, $Tienthuthuat, $ThongtincoquanId, $Namhoatdong) {
+		$data = array (
+				'Tendongia' => $Tendongia,
+				'Giatien' => $Giatien,
+				'Tienthuthuat' => $Tienthuthuat,
+				'ThongtincoquanId' => $ThongtincoquanId,
+				'Namhoatdong' => $Namhoatdong 
+		);
+		
+		$id = $this->db->insert ( 'tbldm_dongia', $data );
+		
+		return $id;
+	}
+	public function updateObj($id, $Giatien, $Tienthuthuat) {
+		$data = array (
+				'Giatien' => $Giatien,
+				'Tienthuthuat' => $Tienthuthuat 
+		);
+		$this->db->update ( 'tbldm_dongia', $data, 'Id = ' . $id );
+	}
+	public function delObj($id) {
+		$idDel = $this->db->delete ( 'tbldm_dongia', 'Id = ' . $id );
+		return $idDel;
+	}
+	public function dupliObj($Tendongia, $capbac) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_dongia WHERE Tendongia = '$Tendongia' AND Capbac = '$capbac'" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+}

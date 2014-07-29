@@ -1,0 +1,399 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ *
+ * @author Daitk
+ *         DANH SÁCH NGƯỜI BỆNH BẢO HIỂM Y TẾ KHÁM CHỮA BỆNH NGOẠI TRÚ ĐỀ NGHỊ
+ *         THANH TOÁN
+ */
+class BcbhytkcbncdnttController extends PublicdetailController {
+	private $_MBCbhytkcbdntt;
+	private $_Tencoquan;
+	private $_ThongtincoquanId;
+	private $_Matram;
+	private $_Namhoatdong;
+	public function init() {
+		$this->initValue ();
+		$this->_MBCbhytkcbdntt = new Model_BCbhytkcbncdntt ();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_Matram = $this->TblThongtincoquanbyId [0] ['Matram'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - Các bệnh truyền nhiễm gây dịch và bệnh quan trọng.
+	 */
+	public function bhytkcbncdnttAction() {
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != '') ? $_REQUEST ['Thang'] : '';
+		$nhom = (isset ( $_REQUEST ['Nhom'] ) && $_REQUEST ['Nhom'] != '') ? $_REQUEST ['Nhom'] : '';
+		if ($thang != '' && $nhom != '') {
+			$this->_helper->layout ()->disableLayout ();
+			$thangnamBatdau = $this->_Namhoatdong . '-' . $thang . '-01';
+			$thangnamKetthuc = $this->_Namhoatdong . '-' . $thang . '-31';
+			$value_nhom = $nhom;
+			
+			$helpExport = new HelpFuncExportExcel ();
+			$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+			$colIndex = '';
+			$rowIndex = 0;
+			try {
+				$objPHPExcel = new PHPExcel ();
+				$sheet = $objPHPExcel->getActiveSheet ();
+				/*
+				 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá
+				 * trị tĩnh.
+				 */
+				$sheet->setCellValue ( 'A1', $this->TblThongtincoquanbyId [0] ['Tencoquan'] );
+				$sheet->mergeCellsByColumnAndRow ( 0, 1, 4, 1 );
+				$sheet->setCellValue ( 'A2', 'Mã KCB: ' . $this->_Matram );
+				$sheet->mergeCellsByColumnAndRow ( 0, 2, 4, 2 );
+				$sheet->setCellValue ( 'T1', 'Mẫu số: 79a-HD' );
+				$sheet->mergeCellsByColumnAndRow ( 19, 1, 22, 1 );
+				$helpExport->setStyle_13_TNR_B_L ( $sheet, 'A1', 'W2' );
+				
+				$sheet->setCellValue ( 'A4', 'DANH SÁCH NGƯỜI BỆNH BẢO HIỂM Y TẾ KHÁM CHỮA BỆNH NGOẠI TRÚ ĐỀ NGHỊ THANH TOÁN' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 4, 22, 4 );
+				$sheet->setCellValue ( 'A5', 'Tháng ' . $thang . '/' . $this->_Namhoatdong );
+				$sheet->mergeCellsByColumnAndRow ( 0, 5, 22, 5 );
+				$sheet->setCellValue ( 'A6', 'Nhóm ' . $nhom );
+				$sheet->mergeCellsByColumnAndRow ( 0, 6, 22, 6 );
+				$helpExport->setStyle_15_TNR_B_C ( $sheet, 'A4', 'A6' );
+				$sheet->setCellValue ( 'T7', 'Đơn vị: Đồng' );
+				$sheet->mergeCellsByColumnAndRow ( 19, 7, 22, 7 );
+				$helpExport->setStyle_11_TNR_N_C ( $sheet, 'T7', 'T7' );
+				
+				$rowStart = 8;
+				$colStart = 'A';
+				$rowIndex = $rowStart;
+				$colIndex = $colStart;
+				$sheet = $objPHPExcel->getActiveSheet ();
+				// BEGIN set width for column
+				$sheet->getColumnDimension ( 'A' )->setWidth ( 3 );
+				$sheet->getColumnDimension ( 'B' )->setWidth ( 25 );
+				$sheet->getColumnDimension ( 'C' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'D' )->setWidth ( 4.43 );
+				$sheet->getColumnDimension ( 'E' )->setWidth ( 17 );
+				$sheet->getColumnDimension ( 'F' )->setWidth ( 7 );
+				$sheet->getColumnDimension ( 'G' )->setWidth ( 5.43 );
+				$sheet->getColumnDimension ( 'H' )->setWidth ( 10 );
+				$sheet->getColumnDimension ( 'I' )->setWidth ( 11 );
+				$sheet->getColumnDimension ( 'J' )->setWidth ( 3 );
+				$sheet->getColumnDimension ( 'K' )->setWidth ( 4 );
+				$sheet->getColumnDimension ( 'L' )->setWidth ( 11 );
+				$sheet->getColumnDimension ( 'M' )->setWidth ( 3 );
+				$sheet->getColumnDimension ( 'N' )->setWidth ( 9 );
+				$sheet->getColumnDimension ( 'O' )->setWidth ( 5 );
+				$sheet->getColumnDimension ( 'P' )->setWidth ( 3 );
+				$sheet->getColumnDimension ( 'Q' )->setWidth ( 3 );
+				$sheet->getColumnDimension ( 'R' )->setWidth ( 3 );
+				$sheet->getColumnDimension ( 'S' )->setWidth ( 11 );
+				$sheet->getColumnDimension ( 'T' )->setWidth ( 6.86 );
+				$sheet->getColumnDimension ( 'U' )->setWidth ( 4 );
+				$sheet->getColumnDimension ( 'V' )->setWidth ( 11 );
+				$sheet->getColumnDimension ( 'W' )->setWidth ( 4 );
+				
+				// $sheet->getRowDimension ( '2' )->setRowHeight ( 53 );
+				// $sheet->getRowDimension ( '1' )->setRowHeight ( 21.5 );
+				// END set width for column
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 0, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Họ và tên', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 1, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Năm sinh', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 2, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Giới tính', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 3, $rowIndex, 3, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Mã thẻ BHYT', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 4, $rowIndex, 4, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Mã ĐK KCB BĐ', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 5, $rowIndex, 5, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Mã bệnh', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 6, $rowIndex, 6, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Ngày khám', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 7, $rowIndex, 7, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tổng chi phí khám chữa bệnh BHYT', 'T' );
+				$sheet->mergeCellsByColumnAndRow ( 8, $rowIndex, 19, $rowIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'BN cùng chi trả', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 20, $rowIndex, 20, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'BHXH thanh toán', 'H' );
+				$sheet->mergeCellsByColumnAndRow ( 21, $rowIndex, 22, $rowIndex );
+				
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 1), 'Tổng cộng', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 8, ($rowIndex + 1), 8, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 1), 'Trong đó', 'U' );
+				$sheet->mergeCellsByColumnAndRow ( 9, ($rowIndex + 1), 19, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 1), 'Số tiền', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 21, ($rowIndex + 1), 21, ($rowIndex + 2) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 1), 'Trong đó chi ngoài quỹ ĐS', 'I' );
+				$sheet->mergeCellsByColumnAndRow ( 22, ($rowIndex + 1), 22, ($rowIndex + 2) );
+				
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'XN', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'CĐHATDCN', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Thuốc dịch', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Máu', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'TTPT', $colIndex );
+				/*
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'VTYT', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'DVKT Cao', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Thuốc K, CTG', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Công khám', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'CP Vận chuyển', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Tổng chi', $colIndex );
+				*/
+				
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'VTYT tiêu hao', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'VTYT thay thế', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'DVKT Cao', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Thuốc K, CTG', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'Công khám', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . ($rowIndex + 2), 'CP Vận chuyển', $colIndex );
+				
+				
+				$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, 'W' . ($rowIndex + 2) );
+				$rowIndex += 3;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'A', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'B', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'C', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'D', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'E', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'F', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'G', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'H', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '4', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '5', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '6', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '7', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '8', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '9', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '10', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '11', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '12', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '13', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '14', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '15', $colIndex );
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, 'A' . $rowIndex, 'A', 'A' );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Bệnh nhân nội tỉnh kcb ban đầu', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 7, $rowIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+				// Lấy dữ liệu
+				if ($nhom == 'I')
+					$nhom = "'DN', 'HX', 'CH', 'TK', 'HC', 'XK', 'CA', 'TN', 'HD'";
+				elseif ($nhom == 'II')
+					$nhom = "'HT', 'BT', 'MS', 'XN', 'CC', 'CK', 'CB', 'KC', 'TC', 'HG', 'TQ', 'TA', 'TY', 'NO', 'TB'";
+				elseif ($nhom == 'III')
+					$nhom = "'HN', 'CN'";
+				elseif ($nhom == 'IV')
+					$nhom = "'TE'";
+				elseif ($nhom == 'V')
+					$nhom = "'LS', 'HS'";
+				else
+					$nhom = "'GD', 'TL', 'XV'";
+				$data = $this->_MBCbhytkcbdntt->getInfor ( $this->_ThongtincoquanId, $this->_Namhoatdong, $thangnamBatdau, $thangnamKetthuc, $nhom );
+				$count = 0;
+				$rowCount = count ( $data );
+				$rowSumStart = $rowIndex + 1;
+				$sheet->getStyle ( 'F' . $rowSumStart . ':F' . ($rowIndex + $rowCount) )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_TEXT );
+		    foreach ( $data as $row ) {
+					if (isset ( $row ['Hoten'] ) && $row ['Hoten'] != '') {
+						$rowIndex += 1;
+						$count += 1;
+						$colIndex = $colStart;
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $count, $colIndex );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Hoten'], $colIndex ,'C');
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Namsinh'], $colIndex,'D' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Gioitinh'], $colIndex ,'E');
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Sobaohiem'], $colIndex ,'F');
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, ' '.$this->_Matram, $colIndex,'G' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, ' ', $colIndex,'H' );
+						
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Ngaykham'], $colIndex,'I' );
+						$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(J' . $rowIndex . ':' . 'S' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'K' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Thuocdich'],$colIndex, 'M' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '', $colIndex,'N' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Tienthuthuat'],$colIndex, 'O' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '',$colIndex, 'P' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '',$colIndex, 'Q' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '',$colIndex, 'R' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '',$colIndex, 'S' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Congkham'], 'T' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '',$colIndex, 'U' );
+						//$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(J' . $rowIndex . ':' . 'S' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'U' );
+						
+						$helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(I' . $rowIndex . '-' . 'U' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					}
+				}
+				
+				/*
+				 foreach ( $data as $row ) {
+					if (isset ( $row ['Hoten'] ) && $row ['Hoten'] != '') {
+						$rowIndex += 1;
+						$count += 1;
+						$colIndex = $colStart;
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $count, $colIndex );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Hoten'], $colIndex );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Namsinh'], $colIndex );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Gioitinh'], $colIndex );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Sobaohiem'], $colIndex );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, ' '.$this->_Matram, 'G' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Ngaykham'], $colIndex );
+						$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(J' . $rowIndex . ':' . 'S' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'K' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Thuocdich'], 'M' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Tienthuthuat'], 'Q' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $row ['Congkham'], 'S' );
+						$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex,32 , 'T' );
+						
+						//$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(J' . $rowIndex . ':' . 'S' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'U' );
+						
+						$helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(T' . $rowIndex . '-' . 'U' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					}
+				}----------
+				 $colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $data [0] ['SL_Dungtuyen'], $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(E' . $rowIndex . ':' . 'N' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'F' );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $data [0] ['Thuocdich'], 'H' );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $data [0] ['Tienthuthuat'], 'M' );
+					$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, $data [0] ['Congkham'], 'O' );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(E' . $rowIndex . ':' . 'N' . $rowIndex . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'P' );
+					$helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=O' . $rowIndex, PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+			
+				 */
+				$helpExport->setStyle_11_TNR ( $sheet, $colStart . ($rowIndex - ($rowCount - 1)), 'W' . $rowIndex );
+				$A_Index = $rowIndex += 1;
+				$helpExport->setValueForSheet ( $sheet, 'B' . $rowIndex, 'Cộng: A', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, 'H' . $rowIndex );
+				$helpExport->setStyle_11_TNR_B_R ( $sheet, 'I' . $rowIndex, 'W' . $rowIndex );
+				if ($rowCount > 0) {
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, 'I' . $rowIndex, '=SUM(I' . $rowSumStart . ':' . 'I' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'I' );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(J' . $rowSumStart . ':' . 'J' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(K' . $rowSumStart . ':' . 'K' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(L' . $rowSumStart . ':' . 'L' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(M' . $rowSumStart . ':' . 'M' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(N' . $rowSumStart . ':' . 'N' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(O' . $rowSumStart . ':' . 'O' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(P' . $rowSumStart . ':' . 'P' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(Q' . $rowSumStart . ':' . 'Q' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(R' . $rowSumStart . ':' . 'R' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(S' . $rowSumStart . ':' . 'S' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(T' . $rowSumStart . ':' . 'T' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(U' . $rowSumStart . ':' . 'U' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(V' . $rowSumStart . ':' . 'V' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+					$helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(W' . $rowSumStart . ':' . 'W' . ($rowIndex - 1) . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				}
+				
+				$rowIndex += 1;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, 'A' . $rowIndex, 'B', 'A' );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Bệnh nhân nội tỉnh đến', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 7, $rowIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+				$B_Index = $rowIndex += 1;
+				$helpExport->setValueForSheet ( $sheet, 'B' . $rowIndex, 'Cộng: B', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, 'W' . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, 'A' . $rowIndex, 'C', 'A' );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Bệnh nhân ngoại tỉnh đến', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 7, $rowIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+				$C_Index = $rowIndex += 1;
+				$helpExport->setValueForSheet ( $sheet, 'B' . $rowIndex, 'Cộng: C', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, 'W' . $rowIndex );
+				
+				$rowIndex += 1;
+				$helpExport->setValueForSheet ( $sheet, 'B' . $rowIndex, 'Tổng cộng: A + B + C', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, 'H' . $rowIndex );
+				$helpExport->setStyle_11_TNR_B_R ( $sheet, 'I' . $rowIndex, 'W' . $rowIndex );
+				
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, 'I' . $rowIndex, '=SUM(I' . $A_Index . ', I' . $B_Index . ', I' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, 'I' );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(J' . $A_Index . ', J' . $B_Index . ', J' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(K' . $A_Index . ', K' . $B_Index . ', K' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(L' . $A_Index . ', L' . $B_Index . ', L' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(M' . $A_Index . ', M' . $B_Index . ', M' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(N' . $A_Index . ', N' . $B_Index . ', N' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(O' . $A_Index . ', O' . $B_Index . ', O' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(P' . $A_Index . ', P' . $B_Index . ', P' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(Q' . $A_Index . ', Q' . $B_Index . ', Q' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(R' . $A_Index . ', R' . $B_Index . ', R' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(S' . $A_Index . ', S' . $B_Index . ', S' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(T' . $A_Index . ', T' . $B_Index . ', T' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(U' . $A_Index . ', U' . $B_Index . ', U' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$colIndex = $helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(V' . $A_Index . ', V' . $B_Index . ', V' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$helpExport->setValueAndTypeForSheet ( $sheet, $colIndex . $rowIndex, '=SUM(W' . $A_Index . ', W' . $B_Index . ', W' . $C_Index . ')', PHPExcel_Cell_DataType::TYPE_FORMULA, $colIndex );
+				$sheet->getStyle ( 'I' . $rowSumStart . ':W' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+				
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'W' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'W' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				
+				$rowIndex += 1;
+				$helpExport->setValueForSheet ( $sheet, 'B' . $rowIndex, 'Tổng số tiền đề nghị thanh toán (Viết bằng chữ):', 'B' );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 7, $rowIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, 'W' . $rowIndex );
+				
+				$rowIndex += 2;
+				$helpExport->setValueForSheet ( $sheet, 'Q' . $rowIndex, '...,ngày ' . date ( 'd' ) . ' tháng ' . date ( 'm' ) . ' năm ' . date ( 'Y' ), 'W' );
+				$sheet->mergeCellsByColumnAndRow ( 16, $rowIndex, 22, $rowIndex );
+				$helpExport->setStyle_11_TNR_N_C ( $sheet, $colStart . $rowIndex, 'W' . $rowIndex );
+				
+				$rowIndex += 1;
+				$helpExport->setValueForSheet ( $sheet, 'B' . $rowIndex, 'Người lập biểu', 'W' );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 4, $rowIndex );
+				$helpExport->setValueForSheet ( $sheet, 'Q' . $rowIndex, 'Trạm trưởng', 'W' );
+				$sheet->mergeCellsByColumnAndRow ( 16, $rowIndex, 22, $rowIndex );
+				$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, 'W' . $rowIndex );
+				
+				$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+				/*
+				 * Set active sheet index to the first sheet, so Excel opens
+				 * this as the first sheet
+				 */
+				$objPHPExcel->setActiveSheetIndex ( 0 );
+				/* Redirect output to a clientâ€™s web browser (Excel5) */
+				$objPHPExcel->getActiveSheet ()->getPageSetup ()->setOrientation ( PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT );
+				$objPHPExcel->getActiveSheet ()->getPageSetup ()->setPaperSize ( PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4 );
+				$pageMargin = $sheet->getPageMargins ();
+				$pageMargin->setTop ( .5 );
+				$pageMargin->setLeft ( .7 );
+				$pageMargin->setRight ( .7 );
+				header ( 'Content-Type: application/vnd.ms-excel' );
+				header ( 'Content-Disposition: attachment;filename="Bcbhytkcbncdntt_nhom_' . $value_nhom . '(' . date ( "d/m/Y" ) . ').xls"' );
+				header ( 'Cache-Control: max-age=0' );
+				$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+				$objWriter->save ( 'php://output' );
+			} catch ( Exception $e ) {
+				echo "<script type=\"text/javascript\">
+					alert('Exception: Export Excel!');
+					</script>";
+			}
+		} else
+			return $this->view;
+	}
+}
+
+
+
+
+
+
+
+

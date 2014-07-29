@@ -1,0 +1,32 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_BCNhanlucytexa {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - TÌNH HÌNH NHÂN LỰC Y TẾ XÃ/PHƯỜNG
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong            	
+	 */
+	public function getTHNLYTXP($thongtincoquanId, $namhoatdong) {
+		$str_query = "
+				 SELECT Id, Tentrinhdohocvan, 
+				 (SELECT COUNT(tblnhansu.Id) FROM tblnhansu WHERE TrinhdohocvanId = tbldm_trinhdohocvan.Id AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NULL OR YEAR(Ngayketthuc) >= $namhoatdong) AND Namhoatdong <= $namhoatdong) AS TSLuong, 
+				(SELECT COUNT(tblnhansu.Id) FROM tblnhansu WHERE TrinhdohocvanId = tbldm_trinhdohocvan.Id AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NULL OR YEAR(Ngayketthuc) >= $namhoatdong) AND Namhoatdong <= $namhoatdong AND Gioitinh = 'Nữ') AS TSLuong_Nu, 
+				(SELECT COUNT(Id) FROM tblnhansu WHERE TrinhdohocvanId = tbldm_trinhdohocvan.Id AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NULL OR YEAR(Ngayketthuc) >= $namhoatdong) AND Namhoatdong <= $namhoatdong AND Congtacvien=0) AS TSLuong_Tramyte, 
+				(SELECT COUNT(Id) FROM tblnhansu WHERE TrinhdohocvanId = tbldm_trinhdohocvan.Id AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NULL OR YEAR(Ngayketthuc) >= $namhoatdong) AND Namhoatdong <= $namhoatdong AND Congtacvien=0 AND Gioitinh = 'Nữ') AS TSLuong_Tramyte_Nu, 
+				(SELECT COUNT(Id) FROM tblnhansu WHERE TrinhdohocvanId = tbldm_trinhdohocvan.Id AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NULL OR YEAR(Ngayketthuc) >= $namhoatdong) AND Namhoatdong <= $namhoatdong AND Congtacvien=1 and ThontoId IN (SELECT Id FROM tbldm_thonto WHERE tbldm_thonto.ThongtincoquanId=$thongtincoquanId)) AS TSLuong_Trongthon, 
+				(SELECT COUNT(Id) FROM tblnhansu WHERE TrinhdohocvanId = tbldm_trinhdohocvan.Id AND ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NULL OR YEAR(Ngayketthuc) >= $namhoatdong) AND Namhoatdong <= $namhoatdong AND Congtacvien=1 and  ThontoId IN (SELECT Id FROM tbldm_thonto WHERE tbldm_thonto.ThongtincoquanId=$thongtincoquanId) AND Gioitinh = 'Nữ') AS TSLuong_Trongthon_Nu 
+				FROM tbldm_trinhdohocvan WHERE Tentrinhdohocvan IN ('Tiến sỹ Y', 'Thạc sỹ Y', 'Chuyên khoa II', 'Chuyên khoa I', 'Bác sỹ', 'Tiến sỹ Dược', 'Thạc sỹ Dược', 'Chuyên khoa II Dược', 'Chuyên khoa I Dược', 'Thạc sỹ y tế Công cộng', 'Đại học y tế Công cộng', 'Cao đẳng y tế Công cộng', 'Dược sỹ đại học', 'Y sỹ', 
+				'KTV y đại học', 'KTV y cao đẳng', 'KTV Y trung học', 'KTV Y sơ học', 'Dược sỹ/KTV TH dược', 'Dược tá', 'ĐD (y tá) đại học', 'ĐD (y tá) cao đẳng', 'ĐD (y tá) trung học', 'ĐD (y tá) sơ học', 'Hộ sinh Đại học', 'Hộ sinh Cao đẳng', 'Hộ sinh Trung học', 'Hộ sinh Sơ học', 'Lương y/Lương dược', 'Cán bộ khác')";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

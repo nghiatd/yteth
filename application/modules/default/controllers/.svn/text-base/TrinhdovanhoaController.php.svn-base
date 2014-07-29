@@ -1,0 +1,148 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author thomnd
+ *        
+ */
+class TrinhdovanhoaController extends PublicdetailController {
+	private $_Mtrinhdovanhoa;
+	private $_Tentrinhdovanhoa;
+	private $_Trinhdovanhoa = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_Mtrinhdovanhoa = new Model_Trinhdovanhoa();
+		
+		if (isset ( $_REQUEST ['Tentrinhdovanhoa'] ) && $_REQUEST ['Tentrinhdovanhoa'] != '') {
+			$this->_Tentrinhdovanhoa = $_REQUEST ['Tentrinhdovanhoa'];
+			$this->_Trinhdovanhoa = array (
+					'Tentrinhdovanhoa' => $_REQUEST ['Tentrinhdovanhoa'] 
+			);
+		}
+	}
+	public function cbogridtrinhdovanhoaAction(){
+	
+		$q =  $this->_getParam ( 'sTentrinhdovanhoa' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mtrinhdovanhoa->getIdNameforcbogrid($q));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function indexAction() {
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mtrinhdovanhoa->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra về Id và Tên của đối tượng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout ()->disableLayout ();
+		$stdvh = $this->_getParam('strinhdo');
+		$q = isset ( $_POST ['q'] ) ? strval ( $_POST ['q'] ) : '';
+		$jsonObj = json_encode ( $this->_Mtrinhdovanhoa->getIdName ($stdvh, $q, $sort, $order, $offset, $rows) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function combointohokhauAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mtrinhdovanhoa->getNamehokhau () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function combointonhankhauAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_Mtrinhdovanhoa->getNamenhankhau () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_Mtrinhdovanhoa->dupliObj ( 0, $this->_Tentrinhdovanhoa);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên trình độ này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_Mtrinhdovanhoa->addObj ( $this->_Trinhdovanhoa );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam('id');
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_Mtrinhdovanhoa->dupliObj ( $id, $this->_Tentrinhdovanhoa);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên văn hóa này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_Mtrinhdovanhoa->updateObj ( $id, $this->_Trinhdovanhoa );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_Mtrinhdovanhoa->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

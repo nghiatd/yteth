@@ -1,0 +1,178 @@
+<?php 
+include 'PublicdetailController.php';
+
+class KehoachtruyenthongController extends PublicdetailController
+{	
+	private $_MHistory;
+	private $_Mkehoachtruyenthong;	
+	private $_Kehoachtruyenthong;
+	private $_Chiendich;
+	private $_HinhthucId;
+	private $_Soluong;
+	private $_Soluot;
+	private $_Chude;
+	private $_Ngaynhap;
+	private $_Toroi;
+	private $_Apphich;
+	private $_Bangronkhauhieu;
+	private $_Bangcasset;
+	private $_Namhoatdong;
+	private $_ThongtincoquanId;
+	public function init()
+	{
+		$this->initValue ();
+		$this->_MHistory = new Model_History ();
+		$this->_Mkehoachtruyenthong=new Model_Kehoachtruyenthong();
+		$this->_Namhoatdong=$this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_ThongtincoquanId=$this->TblThongtincoquanbyId [0] ['Id'];			
+		if(isset($_REQUEST['Trangthai']) && $_REQUEST['Trangthai']==0)
+		{
+			if(isset($_REQUEST['Ngaynhap']) && $_REQUEST['Ngaynhap']!="")
+			{
+				$this->_Chiendich = $_REQUEST ["Chiendich"];
+				$this->_HinhthucId = $_REQUEST ["HinhthucId"];
+				$this->_Soluong = $_REQUEST ["Soluong"];
+				$this->_Soluot = $_REQUEST ["Soluot"];
+				$this->_Chude = $_REQUEST ["Chude"];				
+				$this->_Toroi = $_REQUEST ["Toroi"];
+				$this->_Apphich = $_REQUEST ["Apphich"];
+				$this->_Bangronkhauhieu = $_REQUEST ["Bangronkhauhieu"];
+				$this->_Bangcasset = $_REQUEST ["Bangcasset"];
+				$this->_Ngaynhap = (isset ( $_REQUEST ["Ngaynhap"] ) && $_REQUEST ["Ngaynhap"] != "") ? $_REQUEST ["Ngaynhap"] : "";
+				if ($this->_Ngaynhap != '') {
+					list ( $date, $month, $year ) = explode ( "/", $this->_Ngaynhap );
+					$this->_Ngaynhap = $year . '-' . $month . '-' . $date;
+				}
+				$this->_Kehoachtruyenthong=array(
+						'Ngaynhap'=>$this->_Ngaynhap,
+						'Chude'=>$this->_Chude,
+						'Chiendich'=>$this->_Chiendich,
+						'HinhthucId'=>$this->_HinhthucId,
+						'Soluong'=>$this->_Soluong,
+						'Soluot'=>$this->_Soluot,
+						'Toroi'=>$this->_Toroi,
+						'Apphich'=>$this->_Apphich,
+						'Bangronkhauhieu'=>$this->_Bangronkhauhieu,
+						'Bangcasset'=>$this->_Bangcasset,
+						'Namhoatdong'=>$this->_Namhoatdong,
+						'ThongtincoquanId'=>$this->_ThongtincoquanId
+				);
+			}
+		}
+		elseif(isset($_REQUEST['Trangthai']) && $_REQUEST['Trangthai']==1)
+		{
+			if(isset($_REQUEST['Ngaynhap']) && $_REQUEST['Ngaynhap']!="")
+			{				
+				$this->_Chiendich = $_REQUEST ["Chiendich"];
+				$this->_HinhthucId = $_REQUEST ["HinhthucId"];
+				$this->_Soluong = $_REQUEST ["Soluong"];
+				$this->_Chude = $_REQUEST ["Chude"];
+				$this->_Ngaynhap = (isset ( $_REQUEST ["Ngaynhap"] ) && $_REQUEST ["Ngaynhap"] != "") ? $_REQUEST ["Ngaynhap"] : "";
+				if ($this->_Ngaynhap != '') {
+					list ( $date, $month, $year ) = explode ( "/", $this->_Ngaynhap );
+					$this->_Ngaynhap = $year . '-' . $month . '-' . $date;
+				}	
+				$this->_Kehoachtruyenthong=array(
+						'Ngaynhap'=>$this->_Ngaynhap,
+						'Chiendich'=>$this->_Chiendich,
+						'Chude'=>$this->_Chude,
+						'HinhthucId'=>$this->_HinhthucId,
+						'Soluong'=>$this->_Soluong,
+						'Namhoatdong'=>$this->_Namhoatdong,
+						'ThongtincoquanId'=>$this->_ThongtincoquanId
+				);
+			}
+		}				
+	
+	}
+	
+	
+	public function indexAction()
+	{
+		
+	}
+	public function jsonAction() {
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_Mkehoachtruyenthong->getFetObj($sort, $order, $offset, $rows,$this->_Namhoatdong,$this->_ThongtincoquanId));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();		
+		$dup = $this->_Mkehoachtruyenthong->CheckValueObj(0,$this->_Chiendich,$this->_Chude,$this->_Ngaynhap);
+		if($dup>0)
+		{
+			echo "<script type=\"text/javascript\">
+			   alert('Côn trùng này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}
+		else
+		{			
+			$id = $this->_Mkehoachtruyenthong->AddObj($this->_Kehoachtruyenthong);
+			$jsonObj ["success"] = true;
+		}
+		
+		return $this->view->jsonObj = json_encode ( $jsonObj );		
+	}
+	
+	public function updateAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$id=$this->_getParam('id');
+		$dup = $this->_Mkehoachtruyenthong->CheckValueObj($id,$this->_Chiendich,$this->_Chude,$this->_Ngaynhap);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Kế hoạch truyền thông này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}  else {
+			$id = $this->_Mkehoachtruyenthong->updateObj ($id,$this->_Kehoachtruyenthong);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$items = $_REQUEST ['items'];
+		$jsonObj = array (
+				'success' => false 
+		);
+		foreach ( $items as $item ) {
+			if ($item ['Id'] != null) {
+				$this->_Mkehoachtruyenthong->DelObj ( $item ['Id'] );
+				$jsonObj = array (
+						'success' => true 
+				);
+			}
+		}
+		//$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblvesinh_nuocsach', 'Xóa', $this->UserIP );
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode($this->_Mcontrung->getContrung());
+		return $this->view->jsonObj = $jsonObj;
+	}		
+	
+	public function combointosxhAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode($this->_Mcontrung->getcombo());
+		return $this->view->jsonObj = $jsonObj;
+	}
+}
+?>

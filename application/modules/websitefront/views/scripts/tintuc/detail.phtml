@@ -1,0 +1,315 @@
+
+	
+
+<section id="content">
+            <div class="container">
+            	
+                <?php echo $this->render('breadcrumbs/breadcrumbs.phtml');?>
+            
+            	<!-- Main Content -->
+                <div class="main-content">
+                    
+                    <!-- Single -->
+                    <div class="column-two-third single">
+                    	
+                        
+                        <h6 class="title"><?php echo $this->Tin['TieuDe']?></h6>
+                        <span class="meta"><?php echo $this->Tin['NgayTao']?></span>
+                        <b><?php echo $this->Tin['MoTa']?> &nbsp;(<?php echo $this->Tin['NgayTao']?>)</b>
+                        <p><?php echo $this->Tin['ChiTiet']?></p>
+                        <ul class="sharebox">
+                            <li><a href="#"><span class="twitter">Tweet</span></a></li>
+                            <li><a href="#"><span class="pinterest">Pin it</span></a></li>
+                            <li><a href="#"><span class="facebook">Like</span></a></li>
+                        </ul>
+                        
+                        
+                        <div class="authorbox">
+                            <img src="img/trash/author.png" alt="MyPassion" />
+                            <h6>MyPassion.</h6>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sodales dapibus dui, sed iaculis metus facilisis sed. Etiam scelerisque molestie purus vel mollis. Mauris dapibu quam id turpis dignissim rutrum.</p>
+                        </div>
+                        
+                        <div class="relatednews">
+                        <?php if($this->TinLienQuan):?>
+                            <h5 class="line"><span>Tin Liên Quan</span></h5>
+                            <ul>
+                            <?php foreach ($this->TinLienQuan as $value):?>
+                                <li>
+                                    <a href="<?php echo $this->baseUrl().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucChiTiet['Alias'], $value['Alias'])?>">
+                                    <?php if(Websitefront_Model_Tintuc::checkImage($value['Id'])):?>
+                                    	<img src="<?php echo $this->baseUrl().Websitefront_Model_Tintuc::getImage($value['Id'])?>" alt="<?php echo $value['TieuDe']?>" width="140px" height="86px" />
+                                    <?php else :?>
+                                    	<img src="<?php echo $this->baseUrl().Websitefront_Model_Tintuc::getDefaultImage(true)?>" alt="<?php echo $value['TieuDe']?>" width="140px" height="86px" />
+                                    <?php endif;?>
+                                    </a>
+                                    <p>
+                                        <span><?php echo $value['NgayTao'];?></span>
+                                        <a href="<?php echo $this->baseUrl().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucChiTiet['Alias'], $value['Alias'])?>"><?php echo PublicdetailController::strimTitle($value['TieuDe']);?></a>
+                                    </p>
+                                    <span class="rating"><span style="width:80%;"></span></span>
+                                </li>
+                              <?php endforeach;?>  
+                            </ul>
+                           <?php endif;?> 
+                        </div>
+                        
+                        <div class="comments">
+                            <h5 class="line"><span>BÌNH LUẬN</span></h5>
+                            
+                            <ul>
+                                <li>
+                                <?php if(count ($this->Binhluan)):?>
+                                <?php foreach ($this->Binhluan as $value):?>
+                                    <div>
+                                       
+                                        <div class="commment-text-wrap">
+                                            <div class="comment-data">
+                                                <p><a href="#" class="url"><?php echo $value['Email']?></a> <br /> <span><?php echo $value['NgayTao']?>&nbsp;<a  id="a_<?php echo $value['Id']?>" class="comment-reply-link">reply</a></span></p>
+                                            </div>
+                                            <div class="comment-text"><?php echo $value['NoiDung']?></div>
+                                            <div id="error_<?php echo $value['Id']?>"></div>
+                                            <div class="form_bl" id="div_<?php echo $value['Id']?>" ></div>
+                                        </div>
+                                        
+                                    </div>
+                                    <?php echo $this->binhLuan($value['Id']);?>
+                                 <?php endforeach;?>   
+                                 <?php endif;?>   
+                                 </li>
+                            </ul>
+                        </div>
+<!--                                     <ul class="children"> -->
+<!--                                         <li> -->
+<!--                                             <div> -->
+<!--                                                 <div class="comment-avatar"><img src="img/avatar.png" alt="MyPassion" /></div> -->
+<!--                                                 <div class="commment-text-wrap"> -->
+<!--                                                     <div class="comment-data"> -->
+<!--                                                         <p><a href="#" class="url">MyPassion</a> <br /> <span>January 12, 2013 - <a href="#" class="comment-reply-link">reply</a></span></p> -->
+<!--                                                     </div> -->
+<!--                                                     <div class="comment-text">Curabitur nunc mauris, imperdiet id dictum quis, aliquet vel diam. Aliquam gravida, augue et dictum hendrerit, nisl erat congue elit, et molestie magna sapien cursus tortor.</div> -->
+<!--                                                 </div> -->
+<!--                                             </div> -->
+                                            
+<!--                                             <ul class="children"> -->
+<!--                                                 <li> -->
+<!--                                                     <div> -->
+<!--                                                         <div class="comment-avatar"><img src="img/avatar.png" alt="MyPassion" /></div> -->
+<!--                                                         <div class="commment-text-wrap"> -->
+<!--                                                             <div class="comment-data"> -->
+<!--                                                                 <p><a href="#" class="url">MyPassion</a> <br /> <span>January 12, 2013 - <a href="#" class="comment-reply-link">reply</a></span></p> -->
+<!--                                                             </div> -->
+<!--                                                             <div class="comment-text">Curabitur nunc mauris, imperdiet id dictum quis, aliquet vel diam. Aliquam gravida, augue et dictum hendrerit, nisl erat congue elit, et molestie magna sapien cursus tortor.</div> -->
+<!--                                                         </div> -->
+<!--                                                     </div> -->
+                                                    
+<!--                                                     <ul class="children"> -->
+<!--                                                         <li> -->
+<!--                                                             <div> -->
+<!--                                                                 <div class="comment-avatar"><img src="img/avatar.png" alt="MyPassion" /></div> -->
+<!--                                                                 <div class="commment-text-wrap"> -->
+<!--                                                                     <div class="comment-data"> -->
+<!--                                                                         <p><a href="#" class="url">MyPassion</a> <br /> <span>January 12, 2013 - <a href="#" class="comment-reply-link">reply</a></span></p> -->
+<!--                                                                     </div> -->
+<!--                                                                     <div class="comment-text">Curabitur nunc mauris, imperdiet id dictum quis, aliquet vel diam. Aliquam gravida, augue et dictum hendrerit, nisl erat congue elit, et molestie magna sapien cursus tortor.</div> -->
+<!--                                                                 </div> -->
+<!--                                                             </div> -->
+                                                            
+<!--                                                             <ul class="children"> -->
+<!--                                                                 <li> -->
+<!--                                                                     <div> -->
+<!--                                                                         <div class="comment-avatar"><img src="img/avatar.png" alt="MyPassion" /></div> -->
+<!--                                                                         <div class="commment-text-wrap"> -->
+<!--                                                                             <div class="comment-data"> -->
+<!--                                                                                 <p>MyPassion <br /> <span>January 12, 2013 - <a href="#" class="comment-reply-link">reply</a></span></p> -->
+<!--                                                                             </div> -->
+<!--                                                                             <div class="comment-text">Curabitur nunc mauris, imperdiet id dictum quis, aliquet vel diam. Aliquam gravida, augue et dictum hendrerit, nisl erat congue elit, et molestie magna sapien cursus tortor.</div> -->
+<!--                                                                         </div> -->
+<!--                                                                     </div> -->
+                                                                    
+<!--                                                                     <ul class="children"> -->
+<!--                                                                         <li> -->
+<!--                                                                             <div> -->
+<!--                                                                                 <div class="comment-avatar"><img src="img/avatar.png" alt="MyPassion" /></div> -->
+<!--                                                                                 <div class="commment-text-wrap"> -->
+<!--                                                                                     <div class="comment-data"> -->
+<!--                                                                                         <p><a href="#" class="url">MyPassion</a> <br /> <span>January 12, 2013 - <a href="#" class="comment-reply-link">reply</a></span></p> -->
+<!--                                                                                     </div> -->
+<!--                                                                                     <div class="comment-text">Curabitur nunc mauris, imperdiet id dictum quis, aliquet vel diam. Aliquam gravida, augue et dictum hendrerit, nisl erat congue elit, et molestie magna sapien cursus tortor.</div> -->
+<!--                                                                                 </div> -->
+<!--                                                                             </div> -->
+<!--                                                                         </li> -->
+<!--                                                                     </ul> -->
+                                                                    
+<!--                                                                 </li> -->
+<!--                                                             </ul> -->
+                                                            
+<!--                                                         </li> -->
+<!--                                                     </ul> -->
+                                                    
+<!--                                                 </li> -->
+<!--                                             </ul> -->
+                                            
+<!--                                             <ul class="children"> -->
+<!--                                                 <li> -->
+<!--                                                     <div> -->
+<!--                                                         <div class="comment-avatar"><img src="img/avatar.png" alt="MyPassion" /></div> -->
+<!--                                                         <div class="commment-text-wrap"> -->
+<!--                                                             <div class="comment-data"> -->
+<!--                                                                 <p><a href="#" class="url">MyPassion </a><br /> <span>January 12, 2013 - <a href="#" class="comment-reply-link">reply</a></span></p> -->
+<!--                                                             </div> -->
+<!--                                                             <div class="comment-text">Curabitur nunc mauris, imperdiet id dictum quis, aliquet vel diam. Aliquam gravida, augue et dictum hendrerit, nisl erat congue elit, et molestie magna sapien cursus tortor.</div> -->
+<!--                                                         </div> -->
+<!--                                                     </div> -->
+<!--                                                 </li> -->
+<!--                                             </ul> -->
+                                            
+<!--                                         </li> -->
+<!--                                     </ul> -->
+                                    
+                                
+                        
+<!--                         <div class="comment-form"> -->
+<!--                            <h5 class="line"><span>LIÊN HỆ</span></h5> -->
+<!--                            <form action="" method="post"> -->
+<!--                                 <div class="form">  -->
+<!--                                   <label>Name*</label> -->
+<!--                                   <div class="input"> -->
+<!--                                        <input type="text" class="name" /> -->
+<!--                                     </div> -->
+<!--                                </div> -->
+<!--                                 <div class="form"> -->
+<!--                                    <label>Email*</label> -->
+<!--                                     <div class="input"> -->
+<!--                                         <input type="text" class="name" /> -->
+<!--                                     </div> -->
+<!--                                </div> -->
+<!--                                  <div class="form"> -->
+<!--                                     <label>Website</label> -->
+<!--                                     <div class="input"> -->
+<!--                                        <input type="text" class="name" /> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                                <div class="form"> -->
+<!--                                      <label>Comment*</label> -->
+<!--                                     <textarea rows="10" cols="20"></textarea> --> 
+<!--                                 </div> -->
+<!--                                  <input type="submit" class="post-comment" value="Post Comment" /> --> 
+<!--                              </form> -->
+<!--                          </div> -->
+                        <div class="comment-form">
+                        	<h5 class="line"><span>BÌNH LUẬN</span></h5>
+                        <?php if($this->error):?>
+                        	<?php foreach ($this->error as $value):?>
+                        		<?php foreach ($value as $v):?>
+                        		<?php if(!is_array($v)):?>
+                        			<span style="color:red;font-size: 14px;"><?php echo $v?></span><br>
+                        		<?php endif;?>	
+                        		<?php endforeach;?>
+                        	<?php endforeach;?>
+                        <?php endif;?>
+                        
+                        <?php if($this->error['captcha']):?>
+                        	<?php foreach ($this->error['captcha'] as $value):?>
+                        		<?php foreach ($value as $v):?>
+                        		<?php if(!is_array($v)):?>
+                        			<span style="color:red;font-size: 14px;"><?php print_r( $v)?></span><br>
+                        		<?php endif;?>	
+                        		<?php endforeach;?>
+                        	<?php endforeach;?>
+                        <?php endif;?>
+                        	<?php echo $this->form;?>
+                        </div>
+                    </div>
+                    <!-- /Single -->
+                    
+                </div>
+                <!-- /Main Content -->
+                
+                <!-- Left Sidebar -->
+                <div class="column-one-third">
+                	
+                    
+                    <div class="sidebar">
+                    	<h5 class="line"><span>Video</span></h5>
+                        
+                        <div class="full-frame" id="player" style="width: 100%; height: 100%; overflow: hidden;"><embed width="100%" height="100%" name="player1" id="player1" tabindex="0" type="application/x-shockwave-flash" src="https://s.ytimg.com/yts/swfbin/player-vflmDyk47/watch_as3.swf" allowfullscreen="true" wmode="opaque" allowscriptaccess="always" bgcolor="#000000" flashvars="title=NHANONG24H.COM%20-%20SAO%20KHU%C3%8A%202014&amp;ldpj=-2&amp;ssl=1&amp;length_seconds=48&amp;iurlhq=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fhqdefault.jpg&amp;cr=US&amp;is_html5_mobile_device=false&amp;probably_logged_in=1&amp;view_count=36&amp;allow_ratings=1&amp;iurlsd=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fsddefault.jpg&amp;iurlmq=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fmqdefault.jpg&amp;video_id=sjaRbCEx708&amp;allow_embed=1&amp;index=0&amp;iurl=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fhqdefault.jpg&amp;enablejsapi=1&amp;rel=1&amp;idpj=-9&amp;hl=en_US&amp;authuser=0&amp;sentiment=2&amp;eurl=http%3A%2F%2Fnhanong24h.com%2F&amp;el=embedded&amp;avg_rating=0&amp;fexp=902408%2C924222%2C927622%2C930008%2C934024%2C934030%2C936118%2C940207%2C946011%2C949401&amp;loaderUrl=http%3A%2F%2Fnhanong24h.com%2F&amp;playerapiid=player1&amp;framer=http%3A%2F%2Fnhanong24h.com%2F"></div>
+                        
+                        <object width="420" height="315"><param name="movie" value="//www.youtube.com/v/TG-ySKps3-4?hl=en_US&amp;version=3&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="//www.youtube.com/v/TG-ySKps3-4?hl=en_US&amp;version=3&amp;rel=0" type="application/x-shockwave-flash" width="420" height="315" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+                        
+                    </div>
+                    
+                    <div class="sidebar">
+                    	<h5 class="line"><span>QUẢNG CÁO</span></h5>
+                    	<?php if($this->QuangCao):?>
+                        <ul class="ads125">
+                        <?php foreach ($this->QuangCao as $value):?>
+                        <?php if(Websitefront_Model_Lienket::checkImage($value['Id'])):?>
+                        	<li><a href="<?php echo $value['Link']?>"><img src="<?php echo $this->baseUrl(). Websitefront_Model_Lienket::getImage($value['Id']);?>"	title="<?php echo $value['TieuDe']?>" alt="<?php echo $value['TieuDe']?>" /></a></li>
+                        <?php else:?>
+                        	<li><a href="<?php echo $value['Link']?>"><img src="<?php echo $this->baseUrl(). Websitefront_Model_Lienket::getDefaultImage();?>"	title="<?php echo $value['TieuDe']?>" alt="<?php echo $value['TieuDe']?>" /></a></li>
+                        <?php endif;?>	
+                        <?php endforeach;?>    
+                        </ul>
+                        <?php endif;?>
+                    </div>
+                    
+                    <div class="sidebar">
+				<div id="tabs">
+					<ul>
+						<li><a href="#tabs1">Gần nhất</a></li>
+						<li><a href="#tabs2">Phổ biến</a></li>
+						<li><a href="#tabs3">Bình luận</a></li>
+					</ul>
+					<div id="tabs1">
+						<ul>
+                                <?php if($this->TinMoiNhat):?>
+                                <?php foreach ($this->TinMoiNhat as $value):?>
+                                	<li><a
+								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
+								class="title"><?php echo PublicdetailController::strimTitle($value['TieuDe']);?>.</a> <span
+								class="meta"><?php echo $value['NgayTao'];?></span> <span
+								class="rating"><span style="width: 70%;"></span></span></li>
+                                  <?php endforeach;?>  
+                                 <?php endif;?>   
+                                </ul>
+					</div>
+					<div id="tabs2">
+						<ul>
+                                	 <?php if($this->TinXemNhieu):?>
+                                <?php foreach ($this->TinXemNhieu as $value):?>
+                                	<li><a
+								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
+								class="title"><?php echo $value['TieuDe'];?>.</a> <span
+								class="meta"><?php echo $value['NgayTao'];?></span> <span
+								class="rating"><span style="width: 70%;"></span></span></li>
+                                  <?php endforeach;?>  
+                                 <?php endif;?> 
+                                </ul>
+					</div>
+					<div id="tabs3">
+						<ul>
+                                	 <?php if($this->LuotBL):?>
+                                <?php foreach ($this->LuotBL as $value):?>
+                                	<li><a
+								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
+								class="title"><?php echo $value['TieuDe'];?>.</a> <span
+								class="meta"><?php echo $value['NgayTao'];?></span> <span
+								class="rating"><span style="width: 70%;"></span></span></li>
+                                  <?php endforeach;?>  
+                                 <?php endif;?> 
+                                </ul>
+					</div>
+				</div>
+			</div>
+                    
+                    
+                    
+                </div>
+                <!-- /Left Sidebar -->
+            </div>    
+        </section>
+        
+        
+        
+    

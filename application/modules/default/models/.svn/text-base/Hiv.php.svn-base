@@ -1,0 +1,220 @@
+<?php
+/**
+ * 
+ * @author Lê văn Kiên
+ *
+ */
+class Model_Hiv {
+	protected $DataAp;
+	public function __construct() {
+		$this->DataAp = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT Id, NhankhauId, NhansuId, Trangthai, Hienmac, Ghichu, (DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang,
+			(select Mahodan from tblnhankhau where Id=NhankhauId) AS Mahodan,
+			(select Hoten from tblnhankhau where Id=NhankhauId) AS Nhankhau,
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) As Gioitinh
+		,
+		(select Tenthonto from tbldm_thonto where Id in ((select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=tblhiv.thongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=tblhiv.thongtincoquanId and tblnhankhau.Id=tblhiv.NhankhauId))) as Tenthonto
+		,
+		(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=tblhiv.thongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=tblhiv.thongtincoquanId and tblnhankhau.Id=tblhiv.NhankhauId)
+	
+		AS Diachi,
+			(select Hoten from tblnhansu where Id=NhansuId) AS Hoten,
+			(SELECT BophanId FROM tblnhansu WHERE Id = NhansuId) AS BophanId,
+			IF(Hienmac = 1, 'HIV', 'AIDS') AS Hienmac, Hienmac AS hm,
+			DATE_FORMAT(Ngaydieutri, '%d/%m/%Y') AS Ngaydieutri,
+			(SELECT Tenbophan FROm tbldm_bophan WHERE Id = BophanId) AS Tenbophan, ThongtincoquanId ";
+	
+	// Lấy toàn bộ dữ liệu
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $namhethong) {
+		$result = array ();
+		$query = $this->DataAp->query ( "SELECT COUNT(*) AS Total FROM tblhiv where ThongtincoquanId = $thongtincoquanId" );
+		$row = $query->fetchAll ();
+		$query = $this->DataAp->query ( $this->str_query . "FROM tblhiv where ThongtincoquanId = $thongtincoquanId and 
+				Namhoatdong = $namhethong ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	public function getIdNameByBophan($thongtincoquanId, $mabophan) {
+		$query = $this->db->query ( "SELECT Id, Tenbophan FROM tbldm_bophan WHERE ThongtincoquanId = $thongtincoquanId and Id=$mabophan" );
+		return $query->fetchAll ();
+	}
+	public function getIdName($thongtincoquanid) {
+		$query = $this->DataAp->query ( "SELECT Id, Hoten FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanid" );
+		return $query->fetchAll ();
+	}
+	public function CheckValueObj($id, $varNhansuId, $varNhankhauId) {
+		$query = $this->DataAp->query ( "SELECT COUNT(*) AS Total FROM tblhiv WHERE NhankhauId = '$varNhankhauId' and NhansuId = '$varNhansuId'" );
+		if ($id != 0) {
+			$query = $this->DataAp->query ( "SELECT COUNT(*) AS Total FROM tblhiv WHERE Id != $id and NhankhauId = '$varNhankhauId' and NhansuId = '$varNhansuId'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function dupliObj($id, $tenbophan, $ThongtincoquanId) {
+		$query = $this->DataAp->query ( "SELECT COUNT(*) AS Total FROM tbldm_bophan WHERE ThongtincoquanId=$ThongtincoquanId and Tenbophan = '$tenbophan'" );
+		if ($id != 0) {
+			$query = $this->DataAp->query ( "SELECT COUNT(*) AS Total FROM tbldm_bophan WHERE  ThongtincoquanId=$ThongtincoquanId and Id != $id AND Tenbophan = '$tenbophan'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($data) {
+		$Id = $this->DataAp->insert ( 'tblhiv', $data );
+		return $Id;
+	}
+	
+	public function dupObj($sophieukcb, $thongtincoquanId, $namhoatdong){
+		$query = $this->DataAp->query("SELECT COUNT(*) AS Total FROM tblhiv WHERE Sophieukcb = '$sophieukcb' AND ThongtincoquanId = $thongtincoquanId
+										AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	public function update($sophieukcb, $thongticoquanId, $namhoatdong, $data){
+		$where = array(
+				'Sophieukcb = ?' => $sophieukcb,
+				'ThongtincoquanId = ?' =>$thongticoquanId,
+				'Namhoatdong = ?' => $namhoatdong
+				);
+		$Id = $this->DataAp->update('tblhiv', $data, $where);
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id, $data) {
+		$this->DataAp->update ( 'tblhiv', $data, 'Id = ' . $id );
+	}
+	public function DelObj($Id) {
+		$Iddel = $this->DataAp->delete ( 'tblhiv', 'Id=' . $Id );
+		return $Iddel;
+	}
+	/**
+	 * Phadh
+	 * @param unknown_type $sophieukcb
+	 * @return unknown
+	 */
+	public function del($sophieukcb){
+		$where = array('Sophieukcb = ?' => $sophieukcb);
+		$Id = $this->DataAp->delete('tblhiv', $where);
+		return $Id;
+	}
+	/**end*/
+	public function getDs($snguoibenh, $snguoikham, $sngaythang, $sgioitinh, $sThonto, $thongtincoquanId, $namhoatdong) {
+		$result = array ();
+		$wheregioitinh = " and Gioitinh like '%$sgioitinh%' ";
+		$wherethonto = "";
+		if ($sThonto != "")
+			$wherethonto = "and Mahodan in (select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanId and tblchuhodan.Namhoatdong<=$namhoatdong and tblchuhodan.ThontoId =$sThonto) ";
+		if ($sgioitinh == "Tatca")
+			$wheregioitinh = "";
+		$where = "NhankhauId in (SELECT Id FROM tblnhankhau WHERE Hoten LIKE '%$snguoibenh%' $wheregioitinh $wherethonto)";
+		if ($snguoikham != '')
+			$where = $where . "AND NhansuId in (SELECT Id FROM tblnhansu WHERE Hoten LIKE '%$snguoikham%' )";
+		if ($sngaythang != '')
+			$where = $where . "AND Ngaythang = '$sngaythang' ";
+		$query = $this->DataAp->query ( "SELECT Id, NhankhauId, NhansuId, Hienmac, Ghichu, (DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang,
+			(select Mahodan from tblnhankhau where Id=NhankhauId) AS Mahodan,
+			(select Hoten from tblnhankhau where Id=NhankhauId) AS Nhankhau,
+			(select Hoten from tblnhansu where Id=NhansuId) AS Hoten,
+			(SELECT BophanId FROM tblnhansu WHERE Id = NhansuId) AS BophanId,
+			IF(Hienmac = 1, 'HIV', 'AIDS') AS Hienmac,
+			if(Trangthai=1,'Mới mắc','') As Trangthai,
+			(SELECT Tenbophan FROm tbldm_bophan WHERE Id = BophanId) AS Tenbophan, ThongtincoquanId,
+				
+				
+		(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) As Gioitinh
+		,
+		(select Tenthonto from tbldm_thonto where Id in ((select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanId and tblnhankhau.Id=tblhiv.NhankhauId))) as Tenthonto
+		,
+		(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanId and tblnhankhau.Id=tblhiv.NhankhauId)
+	
+		AS Diachi
+		
+		FROM tblhiv WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	public function getCt($id, $thongtincoquanid, $namhoatdong) {
+		$result = array ();
+		$query = $this->DataAp->query ( "SELECT Id, NhankhauId, NhansuId, Ghichu, (DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang,
+			if(Trangthai=1,'Mới mắc','') As Trangthai,
+			if(Hienmac=1,'HIV','AIDS') AS Hienmac,
+			(select Mahodan from tblnhankhau where Id=NhankhauId) AS Mahodan,
+			(select Hoten from tblnhankhau where Id=NhankhauId) AS Hoten,
+			(select Diachi from tblnhankhau where tblnhankhau.Id = tblhiv.NhankhauId) As Diachi,
+			(select Hoten from tblnhansu where Id=NhansuId) AS Bacsi,
+			(SELECT BophanId FROM tblnhansu WHERE Id = NhansuId) AS BophanId,
+			(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanid and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanid and tblnhankhau.Id=tblhiv.NhankhauId)
+	
+		AS Diachi,
+			(SELECT Tenbophan FROm tbldm_bophan WHERE Id = BophanId) AS Tenbophan, ThongtincoquanId from tblhiv where Id= $id and ThongtincoquanId = $thongtincoquanid and Namhoatdong = $namhoatdong" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * Phadh
+	 * tim kiem thong tin nguoi benh hiv/aids
+	 *
+	 * @param unknown_type $snguoibenh        	
+	 * @param unknown_type $snguoikham        	
+	 * @param unknown_type $thongtincoquanId        	
+	 * @param unknown_type $namhoatdong        	
+	 * @param unknown_type $sort        	
+	 * @param unknown_type $order        	
+	 * @param unknown_type $offset        	
+	 * @param unknown_type $rows        	
+	 * @return multitype:NULL
+	 */
+	public function searObj($snguoibenh, $snguoikham, $sngaythang, $sgioitinh, $sThonto, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$wheregioitinh = " and Gioitinh like '%$sgioitinh%' ";
+		$wherethonto = "";
+		if ($sThonto != "")
+			$wherethonto = "and Mahodan in (select Mahodan from tblchuhodan where tblchuhodan.ThongtincoquanId=$thongtincoquanId and tblchuhodan.Namhoatdong<=$namhoatdong and tblchuhodan.ThontoId =$sThonto) ";
+		if ($sgioitinh == "Tatca")
+			$wheregioitinh = "";
+		$where = "NhankhauId in (SELECT Id FROM tblnhankhau WHERE Hoten LIKE '%$snguoibenh%' $wheregioitinh $wherethonto)";
+		if ($snguoikham != '')
+			$where = $where . "AND NhansuId in (SELECT Id FROM tblnhansu WHERE Hoten LIKE '%$snguoikham%' )";
+		if ($sngaythang != '')
+			$where = $where . "AND Ngaythang = '$sngaythang' ";
+			// lay thong tin ban ghi
+		$query = $this->DataAp->query ( "SELECT COUNT(*) AS Total FROM tblhiv
+				WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+				AND $where
+				" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		
+		// thuc hien cau lenh truy xuat du lieu
+		$query = $this->DataAp->query ( "SELECT Id, NhankhauId, NhansuId, Trangthai, Hienmac, Ghichu, (DATE_FORMAT(Ngaythang,'%d/%m/%Y')) AS Ngaythang,
+				(select Mahodan from tblnhankhau where Id=NhankhauId) AS Mahodan, (select Hoten from tblnhankhau where Id=NhankhauId) AS Nhankhau,
+				(select Hoten from tblnhansu where Id=NhansuId) AS Hoten, (SELECT BophanId FROM tblnhansu WHERE Id = NhansuId) AS BophanId,
+				IF(Hienmac = 1, 'HIV', 'AIDS') AS Hienmac, (SELECT Tenbophan FROm tbldm_bophan WHERE Id = BophanId) AS Tenbophan, ThongtincoquanId, 
+				(SELECT Gioitinh FROM tblnhankhau WHERE Id = NhankhauId) As Gioitinh,(select Tenthonto from tbldm_thonto where Id in ((select  tblchuhodan.ThontoId from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanId and tblnhankhau.Id=tblhiv.NhankhauId))) as Tenthonto, 
+				(select  tblchuhodan.Diachi from  tblchuhodan,tblnhankhau where tblchuhodan.ThongtincoquanId=$thongtincoquanId and tblchuhodan.mahodan=tblnhankhau.mahodan and tblnhankhau.thongtincoquanId=$thongtincoquanId and tblnhankhau.Id=tblhiv.NhankhauId) AS Diachi 
+				FROM tblhiv WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * Phadh
+	 * kiem tra tinh trang nhan khau
+	 */
+	public function duplibynhankhau($nhankhauid, $thongtincoquanId, $namhoatdong){
+		$query = $this->DataAp->query("SELECT COUNT(*) AS Total FROM tblgiaykhaitu WHERE NhankhauId = $nhankhauid AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+}
+?>

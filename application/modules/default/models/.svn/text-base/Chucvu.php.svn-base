@@ -1,0 +1,89 @@
+<?php 
+/*
+ * Create By thomnd
+ * 
+ * Class co the su dung ca 2 phuong phap ket noi database:
+ * 1, Zend_Db_Table
+ * 2, Zend_Db
+ */
+class Model_Chucvu extends Zend_Db_Table_Abstract
+{
+	//a d
+	protected $_name = "tbldm_chucvu";
+	protected $_primary = "Id";
+	protected $db;
+	
+	public function __construct()
+	{
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	public function getFetObj($sort, $order, $offset, $rows)
+	{
+		$result = array();
+		$query = $this->db->query('SELECT COUNT(*) AS Total FROM tbldm_chucvu');
+		$row = $query->fetchAll();
+		$result["total"] = $row[0]['Total'];
+		
+		$query = $this->db->query("SELECT Id, Tenchucvu, Capbac, Diengiai FROM tbldm_chucvu 
+				order by $sort $order limit $offset, $rows");
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// Lay Id va Ten
+	public function getIdName()
+	{
+		$query = $this->db->query('SELECT Id, Tenchucvu FROM tbldm_chucvu');
+		$result = array();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function getIdNameById($_id)
+	{
+		$query = $this->db->query('SELECT Id, Tenchucvu FROM tbldm_chucvu WHERE Id = ' . $_id);
+		$result = array();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+
+	public function addObj($Tenchucvu, $capbac, $diengiai)
+	{
+		$data = array(
+				'Tenchucvu' => $Tenchucvu,
+				'Capbac' => $capbac,
+				'Diengiai' => $diengiai
+		);
+	
+		$id = $this->db->insert('tbldm_chucvu', $data);
+	
+		return $id;
+	}
+	
+	public function updateObj($id ,$Tenchucvu, $capbac, $diengiai)
+	{
+		$data = array(
+				'Tenchucvu' => $Tenchucvu,
+				'Capbac' => $capbac,
+				'Diengiai' => $diengiai
+		);
+		$this->db->update('tbldm_chucvu', $data, 'Id = ' . $id);
+	}
+	
+	public function delObj($id)
+	{
+		$idDel = $this->db->delete('tbldm_chucvu', 'Id = ' . $id);
+		return $idDel;
+	}
+	public function dupliObj($id, $Tenchucvu, $capbac) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total from tbldm_chucvu WHERE Tenchucvu = '$Tenchucvu' AND Capbac = '$capbac'");
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_chucvu WHERE Id != $id and Tenchucvu = '$Tenchucvu' AND Capbac = '$capbac'");
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+}

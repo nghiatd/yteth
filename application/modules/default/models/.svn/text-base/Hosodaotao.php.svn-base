@@ -1,0 +1,132 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Hosodaotao {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	// hien thi danh sanh theo phan trang
+	public function getFetobj($sort, $order, $offset, $rows, $thongtincoquanId) {
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Manhanvien ,Hoten, DATE_FORMAT(Ngaysinh, '%d/%m/%Y') AS Ngaysinh, Noiohiennay,
+				Ngayketthuc, Gioitinh, ChucvuId, (SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu,
+				IF((Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00'), '', (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y'))) AS Tinhtrang
+				FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	public function detailObj($id, $thongtincoquanId){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Hoten, Manhanvien FROM tblnhanvien WHERE Id = $id AND ThongtincoquanId = $thongtincoquanId");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	public function getObjByNhanvienId($nhanvienid, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblhosodaotao WHERE NhanvienId = $nhanvienid" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, NhanvienId, DATE_FORMAT(Tungay,'%d/%m/%Y') AS Tungay, DATE_FORMAT(Denngay,'%d/%m/%Y') AS Denngay, Congviec, Chucvu FROM tblhosodaotao WHERE NhanvienId = $nhanvienid ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ['total'] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+
+	// detail qua trinh cong tac cua nhan vien
+	public function getinfobynhanvienId($id, $thongtincoquanId, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblhosodaotao WHERE NhanvienId = $id AND ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT  Id,NhanvienId, DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay, 
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Khoatruong, Hinhthuc,Ketqua,Khanangungdung
+				FROM tblhosodaotao WHERE NhanvienId = $id AND ThongtincoquanId= $thongtincoquanId
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// kiem tra tinh trang cua nhan vien
+	public function checktinhtrang($nhanvienId, $thongtincoquanId){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblnhanvien WHERE Id = $nhanvienId AND 
+				ThongtincoquanId = $thongtincoquanId AND (Ngayketthuc IS NOT NULL OR Ngayketthuc = '0000-00-00')");
+		$result = $query->fetchAll();
+		$total = $result[0]['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblhosodaotao', $data );
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tblhosodaotao', $data, 'Id=' . $id );
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblhosodaotao', 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// sear qua trinh cong tac cua nhan vien
+	public function searObj($sManhanvien, $sNhanvien, $sNgaysinh, $sGioitinh, $sChucvu, $sort, $order, $offset, $rows, $thongtincoquanId){
+		$result = array();
+		$where = "Hoten LIKE '%$sNhanvien%'";
+		if($sGioitinh != '' && $sGioitinh != 'Tất cả')
+			$where = $where . "AND Gioitinh = '$sGioitinh' ";
+		if($sManhanvien != '')
+			$where = $where."AND Manhanvien LIKE '%$sManhanvien%'";
+		if($sNgaysinh != '')
+			$where = $where."AND Ngaysinh = '$sNgaysinh'";
+		if($sChucvu !='')
+			$where = $where."AND ChucvuId = $sChucvu";
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId AND $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Manhanvien ,Hoten, DATE_FORMAT(Ngaysinh, '%d/%m/%Y') AS Ngaysinh, Noiohiennay,
+				Ngayketthuc, Gioitinh, ChucvuId, (SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu,
+				IF((Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00'), '', (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y'))) AS Tinhtrang
+				FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId AND $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	//get du lieu danh sach qua trinh cong tac cua nhan vien
+	public function getdanhsach($nhanvienid, $thongtincoquanId, $mang){
+		$result =array();
+		if($mang != 0){
+			$where = "AND Id IN ($mang)";
+		}else{
+			$where = "";
+		}
+		$query = $this->db->query("SELECT Id, NhanvienId, DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay, 
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Congviec, Chucvu
+				FROM tblhosodaotao WHERE NhanvienId = $nhanvienid AND ThongtincoquanId = $thongtincoquanId $where");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// get du lieu cua nhan vien
+	public function getInfoNhanvien($nhanvienid, $thongtincoquanId){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Manhanvien, Hoten, PhongbanId, ChucvuId, 
+				(SELECT Tenphongban FROM tbldm_phongban WHERE Id = PhongbanId) AS Phongban,
+				(SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu
+				FROM tblnhanvien WHERE Id = $nhanvienid AND ThongtincoquanId = $thongtincoquanId");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

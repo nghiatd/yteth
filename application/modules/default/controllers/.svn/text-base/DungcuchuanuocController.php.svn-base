@@ -1,0 +1,111 @@
+<?php 
+include 'PublicdetailController.php';
+
+class DungcuchuanuocController extends PublicdetailController
+{
+	private $_Tendungcuchuanuoc;
+	private $_Dungcuchuanuoc;
+	private $_Mdungcuchuanuoc;
+	public function init()
+	{
+		$this->initValue ();
+		$this->_Mdungcuchuanuoc=new Model_Dungcuchuanuoc();
+		if(isset($_REQUEST['Tendungcuchuanuoc']) && $_REQUEST['Tendungcuchuanuoc']!="")
+		{
+			$this->_Tendungcuchuanuoc = $_REQUEST ["Tendungcuchuanuoc"];
+			$this->_Dungcuchuanuoc=array(
+				'Tendungcuchuanuoc'=>$this->_Tendungcuchuanuoc		
+			);
+		}
+	}
+	
+	public function indexAction()
+	{
+		
+	}
+	public function jsonAction() {
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_Mdungcuchuanuoc->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();		
+		$dup = $this->_Mdungcuchuanuoc->CheckValueObj(0,$this->_Tendungcuchuanuoc);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Côn trùng này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}  else {
+			$id = $this->_Mdungcuchuanuoc->AddObj ($this->_Dungcuchuanuoc);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function updateAction() 
+	{
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$id=$this->_getParam('idct');
+		$dup = $this->_Mdungcuchuanuoc->CheckValueObj($id,$this->_Tendungcuchuanuoc);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Côn trùng này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}  else {
+			$id = $this->_Mdungcuchuanuoc->updateObj ($id,$this->_Dungcuchuanuoc);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	public function delAction() 
+	{
+		$id = $_REQUEST ['idct'];
+		$delId = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$delId = $this->_Mdungcuchuanuoc->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $delId) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode($this->_Mdungcuchuanuoc->getDungcuchuanuoc());
+		return $this->view->jsonObj = $jsonObj;
+	}		
+	
+	public function combointosxhAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode($this->_Mdungcuchuanuoc->getdungcusxh());
+		return $this->view->jsonObj = $jsonObj;
+	}
+}
+?>

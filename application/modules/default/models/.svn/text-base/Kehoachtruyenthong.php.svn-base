@@ -1,0 +1,73 @@
+<?php
+class Model_Kehoachtruyenthong
+{
+protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+
+	public function getFetObj($sort,$order,$offset,$rows,$namhoatdong,$thongtincoquanId)
+	{		
+		$result = array ();
+		$query = $this->db->query ("SELECT COUNT(*)AS Total FROM tbl_kehoachtruyenthong");
+		$row = $query->fetchAll ();
+		$query=$this->db->query("
+			SELECT Id,Chiendich,Chude,Soluong,Soluot,Bangronkhauhieu,Bangcasset,Apphich,Toroi,
+				(SELECT Tenhinhthuc FROM  tbldm_hinhthuctruyenthong WHERE Id=HinhthucId)AS Hinhthuc, DATE_FORMAT(Ngaynhap,'%d/%m/%Y')AS Ngaynhap 
+			FROM tbl_thongtintruyenthong
+			WHERE Namhoatdong='$namhoatdong' AND ThongtincoquanId='$thongtincoquanId'
+		");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($tencontrung) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbl_kehoachtruyenthong WHERE Tencontrung='$tencontrung'" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function CheckValueObj($id, $chiendich,$chude,$ngaynhap) {
+		if($id==0)
+		{
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbl_kehoachtruyenthong WHERE Chiendich = '$chiendich' AND Chude='$chude' AND Ngaynhap='$ngaynhap'" );
+		}		
+		else {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbl_kehoachtruyenthong WHERE Id != $id AND Chiendich = '$chiendich' AND Chude='$chude' AND Ngaynhap='$ngaynhap'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function AddObj($data) {
+		$Id = $this->db->insert ('tbl_kehoachtruyenthong',$data );
+		return $Id;
+	}
+	
+	public function updateObj($id, $data) {
+		$id=$this->db->update ( 'tbl_kehoachtruyenthong', $data, 'Id = ' . $id );
+		return $id; 
+	}
+	
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbl_kehoachtruyenthong', 'Id=' . $Id );
+		return $Iddel;
+	}
+	public function getContrung()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id, Tencontrung FROM tbl_kehoachtruyenthong");
+		$result= $query->fetchAll ();
+		return $result;
+	}	
+	
+	public function getcombo()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id AS ContrungId, Tencontrung FROM tbl_kehoachtruyenthong");
+		$result= $query->fetchAll ();
+		return $result;
+	}
+}

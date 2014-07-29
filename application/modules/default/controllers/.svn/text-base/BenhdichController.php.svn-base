@@ -1,0 +1,137 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author GiangKuteo
+ *
+ */
+class BenhdichController extends PublicdetailController
+{
+	private $_MBenhdich;
+	private $_Tenbenhdich;
+	private $_Tentienganh;
+	private $_ICD10;
+	private $_Benhdich = array();
+	
+	 public function init(){
+		$this->initValue();
+		$this->_MBenhdich = new Model_Benhdich();
+		
+		if (isset ( $_REQUEST ['Tenbenhdich'] ) && $_REQUEST ['Tenbenhdich'] != '') {
+			$this->_Tenbenhdich = $_REQUEST['Tenbenhdich'];
+			$this->_Tentienganh= $_REQUEST['Tentienganh'];
+			$this->_ICD10 = $_REQUEST['ICD10'];
+			$this->_Benhdich = array (
+					'Tenbenhdich' => 	$this->_Tenbenhdich ,
+					'Tentienganh' => 	$this->_Tentienganh,
+					'ICD10' => 	$this->_ICD10 
+			);
+		} 
+	}
+	
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	public function jsonAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout()->disableLayout();
+		$mdichbenh =  new Model_Benhdich();
+		$jsonObj = json_encode($mdichbenh->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function comboAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout()->disableLayout();
+		$sBd = $this->_getParam('sBd');
+		$sICD = $this->_getParam('sICD');
+		$sTen = $this->_getParam('sTen');
+		$q = isset ( $_POST ['q'] ) ? strval ( $_POST ['q'] ) : '';
+		$jsonObj = json_encode($this->_MBenhdich->getNameObj($sBd, $sICD, $sTen, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	} 
+	
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jonObj = array();
+		
+		$dup = $this->_MBenhdich->dupObj(0, $this->_Tenbenhdich);
+		if($dup>0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bệnh này đã có!');
+			</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}else{
+			$this->_MBenhdich->addObj($this->_Benhdich);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	/* public function updateAction(){
+		$id = $this->_getParam('id');
+		$this->_helper->layout()->disableLayout();
+		//$dup = $this->_MBenhdich->dupObj($id, $this->_Tenbenhdich);
+		$this->_MBenhdich->updateObj($id, $this->_Benhdich);
+		$jsonObj["success"] = true;
+		return $this->view->jsonObj = json_encode($jsonObj);
+	} */
+	
+	public function updateAction(){
+
+		$id = $this->_getParam('id');
+		/* echo "<script type=\"text/javascript\">
+			    alert('$id');
+			</script>";
+		return; */
+		$this->_helper->layout()->disableLayout();
+		$dup = $this->_MBenhdich->dupObj($id, $this->_Tenbenhdich);
+		if($dup>0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên bệnh này đã có!');
+			</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}else{
+			$this->_MBenhdich->updateObj($id, $this->_Benhdich,$this->_Tentienganh,$this->_ICD10);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}  
+	
+	
+	public function delAction(){
+		$this->_helper->layout()->disableLayout();
+		$id = $_REQUEST['id'];
+		$_Id = null;
+		$jsonObj = null;
+		
+		if(isset($id) && $id>0){
+			$_Id = $this->_MBenhdich->delObj($id);
+		}else{
+			return;
+		}
+		if(!$_Id){
+			$jsonObj = json_encode(array('success'=>false));
+		}else{
+			$jsonObj = json_encode(array('success'=>true));
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	
+	
+}

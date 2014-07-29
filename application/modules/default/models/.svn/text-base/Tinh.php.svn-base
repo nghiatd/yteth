@@ -1,0 +1,79 @@
+<?php
+class Model_Tinh extends Zend_Db_Table_Abstract
+{
+	/*
+	 * Class co the su dung ca 2 phuong phap ket noi database:
+	 * 1, Zend_Db_Table
+	 * 2, Zend_Db
+	 */
+	
+	protected $DataApdb;
+	
+	public function __construct()
+	{
+		$this->DataApdb = Zend_Registry::get("db");
+	}
+	
+	//thomnd
+	// phadh sua phan trang
+	public function getFetObj($sort, $order, $offset, $rows)
+	{
+		$result = array();
+		$query = $this->DataApdb->query('SELECT COUNT(*) AS Total FROM tbldm_tinh');
+		$row = $query->fetchAll();
+		$result["total"] = $row[0] ['Total'];
+		
+		$query = $this->DataApdb->query("SELECT Id, Tentinh FROM tbldm_tinh ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	//phadh combo tinh
+	public function getTinh(){
+		$query = $this->DataApdb->query ("SELECT Id, Tentinh FROM tbldm_tinh");
+		$result = array ();
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function CheckValueObj($id,$varTentinh)
+	{
+	
+		$query = $this->DataApdb->query("SELECT COUNT(*) AS Total FROM tbldm_tinh WHERE md5(Tentinh) = md5('$varTentinh')");
+		if($id!=0)
+		{
+			$query = $this->DataApdb->query("SELECT COUNT(*) AS Total FROM tbldm_tinh WHERE Id !=$id and md5(Tentinh) = md5('$varTentinh')");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0]['Total'];
+		return $total;
+	}
+	
+	// add new
+	public function AddObj($varTentinh)
+	{
+		$data=array('Tentinh'=>$varTentinh);
+		$Id= $this->DataApdb->insert('tbldm_tinh',$data);
+		return $Id;
+	}
+	
+	// Edit
+	public function updateObj($id ,$varTentinh)
+	{
+		$data = array(
+				'Tentinh' => $varTentinh
+	
+		);
+		$this->DataApdb->update('tbldm_tinh', $data, 'Id = ' . $id);
+	}
+	
+	public function DelObj($Id)
+	{
+			
+		$Iddel=$this->DataApdb->delete('tbldm_tinh','Id='.$Id);
+		return $Iddel;
+			
+	
+	}
+	// end thomnd
+}

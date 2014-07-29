@@ -1,0 +1,173 @@
+<?php 
+
+class HuyenController extends Zend_Controller_Action
+{
+	public function indexAction()
+	{
+	
+	}
+	
+	public function jsonAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		try 
+		{
+			$mhuyen = new Model_Huyen();
+			$jsonObj = json_encode($mhuyen->getFetObj($sort, $order, $offset, $rows));
+		}
+		catch (Exception $e)
+		{
+			echo "<script type=\"text/javascript\">
+			alert('Exception: $e->__toString();!');
+			</script>";
+		}
+	
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function comboAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		try 
+		{
+			$mhuyen = new Model_Huyen();
+			$jsonObj = json_encode($mhuyen->getIdName());
+		}
+		catch (Exception $e)
+		{
+			echo "<script type=\"text/javascript\">
+			alert('Exception: $e->__toString();!');
+			</script>";
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+	public function combobyidtinhAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$tinhid = $this->_getParam('idtinh');
+		if($tinhid == "")
+		{
+			return;
+		}
+		$mhuyen = new Model_Huyen();
+		$jsonObj = json_encode($mhuyen->getIdNameByTinhId($tinhid));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction()
+	{
+			$this->_helper->layout()->disableLayout();
+			$jsonObj = array();
+			
+			$Tenhuyen = $_REQUEST['Tenhuyen'];
+			$tinhid = $_REQUEST['tinh'];
+			
+			if($tinhid == 0)
+			{
+				echo "<script type=\"text/javascript\">
+				    alert('Hãy lựa chọn tỉnh!');
+					</script>";
+				return ;
+			}
+			
+			$mhuyen = new Model_Huyen();
+			$dup = $mhuyen->dupliObj(0, $Tenhuyen, $tinhid);
+			if($dup > 0)
+			{
+				echo "<script type=\"text/javascript\">
+				    alert('Quận/huyện đã tồn tại!');
+					</script>";
+				$jsonObj["success"] = false;
+				return $this->view->jsonObj = json_encode($jsonObj);
+			}
+			else
+			{
+				$id = $mhuyen->addObj($Tenhuyen, $tinhid);
+				$jsonObj["success"] = true;
+			}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	//phadh: khi sua bao li chu hoa va chu thuong
+	public function updateAction()
+	{
+		$this->_helper->layout()->disableLayout();
+	
+		$id = $this->_getParam('idhuyen');
+		$o_Tenhuyen = $this->_getParam('Tenhuyen');
+		$o_tinhid = $this->_getParam('tinhid');
+
+		$Tenhuyen = $_REQUEST['Tenhuyen'];
+		$tinhid = $_REQUEST['tinh'];
+			
+		if($tinhid == 0)
+		{
+			echo "<script type=\"text/javascript\">
+				    alert('Hãy lựa chọn tỉnh!');
+					</script>";
+			return ;
+		}
+	
+		$mhuyen = new Model_Huyen();
+	
+		if(isset($id) && $id > 0)
+		{
+			if($Tenhuyen == $o_Tenhuyen && $tinhid == $o_tinhid)
+			{
+				$jsonObj["success"] = true;
+			}
+			else
+			{
+				$dup = $mhuyen->dupliObj($id, $Tenhuyen, $tinhid);
+				if($dup > 0)
+				{
+					echo "<script type=\"text/javascript\">
+					    alert('Quận huyện đã tồn tại!');
+						</script>";
+					$jsonObj["success"] = false;
+					return $this->view->jsonObj = json_encode($jsonObj);
+				}
+				else
+				{
+					$mhuyen->updateObj($id, $Tenhuyen, $tinhid);
+					$jsonObj["success"] = true;
+				}
+			}
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function delAction()
+	{
+		$id = $_REQUEST['idhuyen'];
+		$delId = null;
+		$jsonObjv = null;
+	
+		if(isset($id) && $id > 0)
+		{
+			$mhuyen = new Model_Huyen();
+			$delId = $mhuyen->delObj($id);
+		}
+		else
+		{
+			return;
+		}
+	
+		if(!$delId)
+		{
+			$jsonObj = json_encode(array('success'=>false));
+		}
+		else
+		{
+			$jsonObj = json_encode(array('success'=>true));
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

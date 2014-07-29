@@ -1,0 +1,76 @@
+<?php
+/**
+ * Phadh
+ * @author webmaster
+ *
+ */
+class Model_Nghenghiep{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_nghenghiep");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tennghenghiep FROM tbldm_nghenghiep ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $tennghenghiep){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_nghenghiep WHERE Tennghenghiep = '$tennghenghiep'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_nghenghiep WHERE Tennghenghiep = '$tennghenghiep' AND Id != $id");
+		}
+		$result = $query->fetchAll();
+		$total = $result[0]['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert("tbldm_nghenghiep", $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update("tbldm_nghenghiep", $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tbldm_nghenghiep', 'Id = '.$id);
+		return $Id;
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function getFetObj1(){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Tennghenghiep FROM tbldm_nghenghiep");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function getcombo(){
+		$result = array();
+		$query = $this->db->query("SELECT Id AS Nghenghiepch, Tennghenghiep FROM tbldm_nghenghiep");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// hien thi du lieu theo phan trang
+	public function getcombonhankhau(){
+		$result = array();
+		$query = $this->db->query("SELECT Id AS Nghenghiep, Tennghenghiep FROM tbldm_nghenghiep");
+		$result = $query->fetchAll();
+		return $result;
+	}
+}

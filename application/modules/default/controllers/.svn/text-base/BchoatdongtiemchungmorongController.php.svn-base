@@ -1,0 +1,280 @@
+<?php
+/**
+ * lê văn kiên
+ */
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+require_once 'library/PHPExcel/PHPExcel.php';
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BchoatdongtiemchungmorongController extends PublicdetailController {
+	private $_MBCHoatdongtcmr;
+	private $_Tencoquan;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	public function init() {
+		$this->initValue ();
+		$this->_MBCHoatdongtcmr = new Model_Bchoatdongtiemchungmorong();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+	}
+	
+	public function indexAction() {
+	}
+	/**
+	 * - HOẠT ĐỘNG TIÊM CHỦNG MỞ RỘNG
+	 */
+	public function tiemchungmorongAction() {
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != "") ? $_REQUEST ['Thang'] : "";
+		if ($thang != "") {
+			$this->_helper->layout ()->disableLayout ();
+			$thangnamBatdau = $this->_Namhoatdong . '01';
+			$thangnamKetthuc = $this->_Namhoatdong . $thang;
+			$helpExport = new HelpFuncExportExcel ();
+			$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+			$colIndex = '';
+			$rowIndex = 0;
+			try {
+				$objPHPExcel = new PHPExcel ();
+				$sheet = $objPHPExcel->getActiveSheet ();
+				/*
+				 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+				 * tĩnh.
+				 */
+				$sheet->setCellValue ( 'A1', $this->TblThongtincoquanbyId[0]['Tencoquan'] );
+				$sheet->mergeCellsByColumnAndRow ( 0, 1, 3, 1 );
+				$helpExport->setStyle_13_TNR_B_L ( $sheet, 'A1', 'A1' );
+				$sheet->setCellValue ( 'A2', 'HOẠT ĐỘNG TIÊM CHỦNG MỞ RỘNG' );
+				$sheet->mergeCellsByColumnAndRow ( 0, 2, 3, 2 );
+				$sheet->setCellValue ( 'A3', $thang . '/' . $this->_Namhoatdong );
+				$sheet->mergeCellsByColumnAndRow ( 0, 3, 3, 3 );
+				$helpExport->setStyle_15_TNR_B_C ( $sheet, 'A2', 'A3' );
+				
+				$rowStart = 4;
+				$colStart = 'A';
+				$rowIndex = $rowStart;
+				$colIndex = $colStart;
+				$sheet = $objPHPExcel->getActiveSheet ();
+				// BEGIN set width for column
+				$sheet->getColumnDimension ( 'A' )->setWidth ( 6 );
+				$sheet->getColumnDimension ( 'B' )->setWidth ( 55.63 );
+				$sheet->getColumnDimension ( 'C' )->setWidth ( 9 );
+				$sheet->getColumnDimension ( 'D' )->setWidth ( 9 );
+				$sheet->getRowDimension('2')->setRowHeight(25);
+				
+				// END set width for column
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 0, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chỉ tiêu', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 1, $rowIndex, 1, ($rowIndex + 1) );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số lượng', $colIndex );
+				$sheet->mergeCellsByColumnAndRow ( 2, $rowIndex, 3, ($rowIndex + 1) );
+				$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . ($rowIndex + 1) );
+				$rowIndex += 2;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+				$sheet->mergeCells('C' . $rowIndex . ':D' . $rowIndex);
+				$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				// Lấy dữ liệu
+				$coban = $this->_MBCHoatdongtcmr->getTiemchungcobanTreem1tuoi($this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong, $thang);
+				$benhkhac = $this->_MBCHoatdongtcmr->getTiemchungmorongTreem1den5tuoi($this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				$uv2 = $this->_MBCHoatdongtcmr->getTiemchungUV2Phunucothai($this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);				
+				$macchet = $this->_MBCHoatdongtcmr->getMacCheCoVacxinPhong($this->_ThongtincoquanId, $thangnamBatdau, $thangnamKetthuc, $this->_Namhoatdong);
+				
+				$data_coban = array ();
+				$data_benhkhac = array();
+				$data_macchet = array(11);
+				if(count($coban) > 0) {
+					$data_coban[0] = array('1','Số trẻ em trong diện tiêm',$coban[0]['SLTrongdientiem']);
+					$data_coban[1] = array('2','Số đã được tiêm:',$coban[0]['SLDatiem']);
+					$data_coban[2] = array('2.1','Số tiêm BCG',$coban[0]['SLTiemBCG']);
+					$data_coban[3] = array('2.2','Số tiêm DPT3',$coban[0]['SLTiemDPT']);
+					$data_coban[4] = array('2.3','Số tiêm OPV3',$coban[0]['SLTiemOPV']);
+					$data_coban[5] = array('2.4','Số tiêm phòng sởi',$coban[0]['SLTiemSoi']);
+					$data_coban[6] = array('2.5','Số tiêm viêm gan B',$coban[0]['SLTiemVGB']);
+					$data_coban[7] = array('2.6','Số tiêm đầy đủ 7 bệnh',$coban[0]['SLTiemDD']);
+				} else {
+					$data_coban[0] = array('1','Số trẻ em trong diện tiêm','');
+					$data_coban[1] = array('2','Số đã được tiêm:','');
+					$data_coban[2] = array('2.1','Số tiêm BCG','');
+					$data_coban[3] = array('2.2','Số tiêm DPT3','');
+					$data_coban[4] = array('2.3','Số tiêm OPV3','');
+					$data_coban[5] = array('2.4','Số tiêm phòng sởi','');
+					$data_coban[6] = array('2.5','Số tiêm viêm gan B','');
+					$data_coban[7] = array('2.6','Số tiêm đầy đủ 7 bệnh','');				
+				}
+				if(count($benhkhac) > 0) {
+					$data_benhkhac[0] = array('1','Viêm màng não',$benhkhac[0]['SLTiemVN']);
+					$data_benhkhac[1] = array('2','Tả',$benhkhac[0]['SLTiemTa']);
+					$data_benhkhac[2] = array('3','Thương hàn',$benhkhac[0]['SLTiemTH']);
+				} else {
+					$data_benhkhac[0] = array('1','Viêm màng não','');
+					$data_benhkhac[1] = array('2','Tả','');
+					$data_benhkhac[2] = array('3','Thương hàn','');
+				}
+				if($macchet > 0) {
+					$uv_mac = 0;
+					$uv_chet = 0;
+					$uvss_mac = 0;
+					$uvss_chet = 0;
+					foreach ($macchet as $mc) {
+						if($mc['Tenbenhdich'] == 'Bạch hầu')
+							$data_macchet[0] = array('1', 'Bạch hầu', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Ho gà')
+							$data_macchet[1] = array('2','Ho gà', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Uốn ván') {
+							$uv_mac = $mc['Mac'];
+							$uv_chet = $mc['Chet'];
+						}
+						elseif ($mc['Tenbenhdich'] == 'Uốn ván sơ sinh') {
+							$data_macchet[3] = array('','Trđ: uốn ván sơ sinh', $mc['Mac'], $mc['Chet']);
+							$uvss_mac = $mc['Mac'];
+							$uvss_chet = $mc['Chet'];
+						}
+						elseif ($mc['Tenbenhdich'] == 'Bại liệt')
+							$data_macchet[4] = array('4','Bại liệt', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Sởi')
+							$data_macchet[5] = array('5','Sởi', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Lao')
+							$data_macchet[6] = array('6','Lao', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Viêm gan')
+							$data_macchet[7] = array('7','Viêm gan', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Tả')
+							$data_macchet[8] = array('8','Tả', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Thương hàn')
+							$data_macchet[9] = array('9','Thương hàn', $mc['Mac'], $mc['Chet']);
+						elseif ($mc['Tenbenhdich'] == 'Viêm màng não')
+							$data_macchet[10] = array('10','Viêm màng não', $mc['Mac'], $mc['Chet']);
+					}
+							$data_macchet[2] = array('3','Uốn ván', ($uv_mac + $uvss_mac), ($uv_chet + $uvss_chet));
+				} else {
+					$data_macchet[0] = array('1','Bạch hầu','','');
+					$data_macchet[1] = array('2','Ho gà','','');
+					$data_macchet[2] = array('3','Uốn ván','','');
+					$data_macchet[3] = array('','Trđ: uốn ván sơ sinh','','');
+					$data_macchet[4] = array('4','Bại liệt','','');
+					$data_macchet[5] = array('5','Sởi','','');
+					$data_macchet[6] = array('6','Lao','','');
+					$data_macchet[7] = array('7','Viêm gan','','');
+					$data_macchet[8] = array('8','Tả','','');
+					$data_macchet[9] = array('9','Thương hàn','','');
+					$data_macchet[10] = array('10','Viêm màng não','','');
+				}
+				ksort($data_macchet);
+				$rowIndex += 1;
+				$formatIndex = $rowIndex;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'A', $colIndex );
+				$sheet->mergeCells('C' . $rowIndex . ':D' . $rowIndex);
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tiêm chủng', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'I', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tiêm chủng cơ bản cho trẻ < 1 tuổi', $colIndex );
+				$sheet->mergeCells('C' . $rowIndex . ':D' . $rowIndex);
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$tempIndex = $rowIndex + 1;
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_coban, $rowIndex, 3 );
+				$helpExport->setStyle_11_TNR ( $sheet, 'A' . $tempIndex, 'C' . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'II', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tiêm phòng các bệnh khác (Chỉ tính trẻ đã tiêm đủ liều)', $colIndex );
+				$sheet->mergeCells('C' . $rowIndex . ':D' . $rowIndex);
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$tempIndex = $rowIndex + 1;
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_benhkhac, $rowIndex, 3 );
+				$helpExport->setStyle_11_TNR ( $sheet, 'A' . $tempIndex, 'C' . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'III', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số phụ nữ có thai được tiêm UV2+', $colIndex );
+				$sheet->mergeCells('C' . $rowIndex . ':D' . $rowIndex);
+				if(count($uv2) > 0) {
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, $uv2[0]['SLTiem'], 'A');
+					$helpExport->setStyle_11_TNR($sheet, 'C' . $rowIndex, 'C' . $rowIndex);
+				}
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				
+				$rowIndex += 1;
+				$colIndex = $colStart;
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'B', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Mắc chết các bệnh có vacin phòng ngừa', $colIndex );
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Mắc', $colIndex );
+				$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chết', $colIndex );
+				$helpExport->setStyle_11_TNR_B_L ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+				$tempIndex = $rowIndex + 1;
+				$rowIndex = $this->initRow ( $sheet, $helpExport, $data_macchet, $rowIndex, 4 );
+				$helpExport->setStyle_11_TNR ( $sheet, 'A' . $tempIndex, 'C' . $rowIndex );
+				
+				//$helpExport->setStyle_Align_Center ( $sheet, $colStart . $rowStart, $colStart . $rowIndex );
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'D' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$sheet->getStyle ( 'A' . $rowStart . ':' . 'D' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+				$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+				/*
+				 * Set active sheet index to the first sheet, so Excel opens this as
+				 * the first sheet
+				 */
+				$objPHPExcel->setActiveSheetIndex ( 0 );
+				/* Redirect output to a clientâ€™s web browser (Excel5) */
+				$objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
+				$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+				$pageMargin = $sheet->getPageMargins();
+				$pageMargin->setTop(.5);
+				$pageMargin->setLeft(.7);
+				$pageMargin->setRight(.7);
+				header ( 'Content-Type: application/vnd.ms-excel' );
+				header ( 'Content-Disposition: attachment;filename="Hoatdongtiemchungmorong(' . date ( "d/m/Y" ) . ').xls"' );
+				header ( 'Cache-Control: max-age=0' );
+				$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+				$objWriter->save ( 'php://output' );
+			} catch ( Exception $e ) {
+				echo "<script type=\"text/javascript\">
+						alert('Exception: Export Excel!');
+						</script>";
+			}
+		}
+	}
+	/**
+	 * - Khởi tạo các dòng trong sheet Excel với dữ liệu được đưa vào.
+	 * 
+	 * @param PHPExcel_Worksheet $_sheet        	
+	 * @param HelpFuncExportExcel $_helpExport        	
+	 * @param Array $_data        	
+	 * @param Number $_rowIndex        	
+	 * @param Number $_numCol        	
+	 * @return Number
+	 */
+	public function initRow($_sheet, $_helpExport, $_data, $_rowIndex, $_numCol) {
+		$helpExport = $_helpExport;
+		$sheet = $_sheet;
+		$rowIndex = $_rowIndex;
+		$data = $_data;
+		$numCol = $_numCol;
+		foreach ( $data as $item ) {
+			$rowIndex += 1;
+			$colIndex = 'A';
+			for($i = 0; $i < $numCol; $i ++) {
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, (isset ( $item [$i] ) ? $item [$i] : ""), $colIndex );
+				if ($numCol == 3)
+					$sheet->mergeCells ( 'C' . $rowIndex . ':D' . $rowIndex );
+			}
+		}
+		return $rowIndex;
+	}
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class ChedoController extends PublicdetailController{
+	private $_MChedo;
+	public function init(){
+		$this->initValue();
+		$this->_MChedo = new Model_Chedo();
+	}
+	public function comboAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = $this->_MChedo->getFetObj();
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+}

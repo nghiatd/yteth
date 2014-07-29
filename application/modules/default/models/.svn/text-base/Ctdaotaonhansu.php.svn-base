@@ -1,0 +1,34 @@
+<?php
+class Model_Ctdaotaonhansu{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $nhansuId, $daotaonhansuId){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblchitietdaotaonhansu WHERE NhansuId = $nhansuId AND DaotaonhansuId = $daotaonhansuId");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblchitietdaotaonhansu WHERE NhansuId = $nhansuId AND DaotaonhansuId = $daotaonhansuId AND Id != $id");
+		}
+		$result = $query->fetchAll();
+		$total = $result[0]['Total'];
+		return $total;
+	}
+	//them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert("tblchitietdaotaonhansu", $data);
+		return $Id;
+	}
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update("tblchitietdaotaonhansu", $data, 'Id='.$id);
+		return $Id;
+	}
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete("tblchitietdaotaonhansu", 'Id='.$id);
+		return $Id;
+	}
+}

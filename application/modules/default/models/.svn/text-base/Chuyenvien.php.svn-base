@@ -1,0 +1,105 @@
+<?php
+class Model_Chuyenvien
+{
+	protected $db;
+
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	private $str_query = "SELECT tblchuyenvien.Id,  Machuyenvien,
+			Phuongtien,Chiphivanchuyen,Tinhtranglucchuyen, Nguoidua ,Chuyenhoi 	,
+				Sophieukcb AS Phieukham,
+				
+			(SELECT tblnhankhau.Hoten FROM tblnhankhau,tblphieukhambenh WHERE tblnhankhau.Id=tblphieukhambenh.NhankhauId and 
+tblnhankhau.ThongtincoquanId=tblphieukhambenh.ThongtincoquanId and
+tblphieukhambenh.Sophieukcb = tblchuyenvien.Sophieukcb and tblphieukhambenh.ThongtincoquanId = tblchuyenvien.ThongtincoquanId) AS Nguoibenh,
+				
+				(DATE_FORMAT(Ngaychuyenvien,'%d/%m/%Y')) AS Ngaychuyenvien,
+				 Noiden, Lydochuyen,
+			(SELECT Hoten FROM tblnhansu WHERE tblnhansu.Id = tblchuyenvien.NhansuId and tblnhansu.ThongtincoquanId = tblchuyenvien.ThongtincoquanId ) AS Nhansu
+			,
+				 NhansuId,
+				(SELECT Tencoquan FROM tblthongtincoquan WHERE Id = ThongtincoquanId) AS Thongtincoquan, ThongtincoquanId ";
+	
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanid, $namhethong){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblchuyenvien WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhethong ");
+		$row = $query->fetchAll();
+		$query = $this->db->query($this->str_query."FROM tblchuyenvien WHERE ThongtincoquanId = $thongtincoquanid 
+					AND Namhoatdong = $namhethong ORDER BY $sort $order LIMIT $offset, $rows ");
+		$result["total"] = $row[0]['Total'];
+		$result["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	public function dupObj($id, $Sophieukcb) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchuyenvien WHERE Sophieukcb = '$Sophieukcb'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchuyenvien WHERE Id != $id AND Sophieukcb = '$Sophieukcb'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function addObj($data){
+		$id = $this->db->insert('tblchuyenvien', $data);
+		return $id;
+	}
+	
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tblchuyenvien', $data, 'Id ='.$id);
+		return $Id;
+	}
+	
+	public function delObj($id){
+		$Id = $this->db->delete('tblchuyenvien', 'Id ='.$id);
+		return $Id;
+	}
+	
+	public function getdscvObj($Phieukham, $Nhansu, $Noiden, $Ngaychuyen,$thongtincoquanid, $namhethong){
+		$where = " Sophieukcb  LIKE '%$Phieukham%' ";
+		if ($Nhansu != '')
+			$where = $where . " AND NhansuId IN(SELECT Id from tblnhanvien where tblnhanvien.Hoten LIKE '%$Nhansu%' )";
+		if ($Noiden != '')
+			$where = $where . " AND Noiden LIKE '%$Noiden%' ";
+		if($Ngaychuyen != '')
+			$where = $where . " AND Ngaychuyenvien = '$Ngaychuyen' ";
+		$query = $this->db->query("SELECT Id, ThongtincoquanId,Chuyenhoi 	,
+				Phuongtien,Chiphivanchuyen,Tinhtranglucchuyen, Nguoidua ,
+				Sophieukcb  AS Phieukham,
+				(DATE_FORMAT(Ngaychuyenvien,'%d/%m/%Y')) AS Ngaychuyenvien,
+				 Noiden, Lydochuyen,
+				(SELECT Hoten FROM tblnhanvien WHERE Id = NhansuId) AS Nhansu,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = (SELECT NhankhauId FROM tblphieukhambenh WHERE Sophieukcb = tblchuyenvien.Sophieukcb)) AS Benhnhan
+				FROM tblchuyenvien WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhethong AND $where");
+		return $query->fetchAll();
+	}
+	
+
+	//lê văn kiên
+	public function searObj($Phieukham, $Nhansu, $Noiden, $Ngaychuyen, $thongtincoquanid, $namhethong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = " Sophieukcb IN(SELECT Sophieukcb from tblphieukhambenh where ThongtincoquanId=$thongtincoquanid  and tblphieukhambenh.Sophieukcb LIKE '%$Phieukham%' )";
+		if ($Nhansu != '')
+			$where = $where . " AND NhansuId IN(SELECT Id from tblnhansu where tblnhansu.Hoten LIKE '%$Nhansu%' )";
+		if ($Noiden != '')
+			$where = $where . " AND Noiden LIKE '%$Noiden%' ";
+		if($Ngaychuyen != '')
+			$where = $where . " AND Ngaychuyenvien = '$Ngaychuyen' ";
+		// Lay tong so ban ghi
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchuyenvien
+				WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhethong AND $where" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		// Thuc hien cau lenh truy xuat du lieu
+		$query = $this->db->query ( $this->str_query . " FROM tblchuyenvien
+				WHERE ThongtincoquanId = $thongtincoquanid AND Namhoatdong = $namhethong AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+	
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	
+}
+

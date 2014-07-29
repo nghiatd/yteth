@@ -1,0 +1,598 @@
+<script >
+
+</script>
+
+
+
+<div id="nhansutt" class="easyui-tree">
+	<li>
+		<div class="tree-node" node-id="10" style="cursor: pointer;">
+			<span class="tree-hit tree-expanded"></span><span
+				class="tree-icon tree-folder tree-folder-open"></span><span
+				class="tree-title"><?php echo $this->Tencoquan;?></span>
+		</div>
+		<ul>
+			<!-- tre2 -->
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Quản lý thông tin</span>
+				</div>
+			<ul>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span
+						class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/phongban">Phòng ban</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								
+								<span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/daotao">Công tác đào tạo</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								
+								<span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/nhanvien">Hồ sơ nhân sự</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+						<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							
+							<span class="tree-icon tree-file"></span><span
+							class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/quanhegiadinh">Thông tin gia đình</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								
+								<span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/doandang">Hoạt động xã hội</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								
+								<span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/bangcap">Thông tin bằng cấp</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+					
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>	
+							<span class="tree-icon tree-file"></span><span
+							class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/danhhieu">Danh hiệu công tác</a></span>
+					</div></li>
+			</ul></li>			
+				
+			<!-- end tre2 -->
+			<!-- tre3 -->
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Quá trình công tác</span>
+				</div>
+			<ul>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span
+						class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/quatrinhcongtac">Hồ sơ công tác</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								
+								<span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/hosodaotao">Hồ sơ đào tạo</a></span>
+						</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+							<span class="tree-icon tree-file"></span><span
+								class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/khenthuongkyluat">Khen thưởng kỷ luật</a></span>
+						</div></li>
+						
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span
+						class="tree-title"><a href="<?php echo $this->baseUrl();?>/nhansu/daotaotaphuan">Đào tạo tập huấn</a></span>
+						</div></li>
+			</ul></li>			
+				
+			<!-- end tre3 -->
+			
+			<!-- tre4 -->
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Chế độ hưởng</span>
+				</div>
+			<ul>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+					<span
+						class="tree-icon tree-file"></span><span class="tree-title"><a
+						href="<?php echo $this->baseUrl();?>/nhansu/luong">Thông tin lương</a></span>
+						</div></li>
+						
+					
+					
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+						
+						<span
+							class="tree-icon tree-file"></span><span class="tree-title"><a
+							href="<?php echo $this->baseUrl();?>/nhansu/baohiem">Thông tin bảo hiểm</a></span>
+					</div></li>
+					
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+						
+						<span
+							class="tree-icon tree-file"></span><span class="tree-title"><a
+							href="<?php echo $this->baseUrl();?>/nhansu/biendongbaohiem">Biến động bảo hiểm</a></span>
+					</div></li>
+					
+						
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+							
+							<span
+								class="tree-icon tree-file"></span><span class="tree-title"><a
+								href="<?php echo $this->baseUrl();?>/nhansu/nghichedo">Nghỉ chế độ</a></span>
+						</div></li>
+						
+						
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span
+								class="tree-icon tree-file"></span><span class="tree-title"><a
+								href="<?php echo $this->baseUrl();?>/nhansu/lamthem">Làm thêm</a></span>
+						</div></li>
+					
+					
+						
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span
+								class="tree-icon tree-file"></span><span class="tree-title"><a
+								href="<?php echo $this->baseUrl();?>/nhansu/trucca">Trực ca</a></span>
+						</div></li>
+						
+						<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span class="tree-indent"></span>
+							<span
+								class="tree-icon tree-file"></span><span class="tree-title"><a
+								href="<?php echo $this->baseUrl();?>/nhansu/chamcong">Chấm công</a></span>
+						</div></li>
+
+				
+					<li><div class="tree-node" node-id="2" style="cursor: pointer;">
+							<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span class="tree-indent"></span>
+								<span
+								class="tree-icon tree-file"></span><span class="tree-title"><a
+								href="<?php echo $this->baseUrl();?>/nhansu/tinhluong">Tính lương</a></span>
+						</div></li>
+			</ul></li>			
+				
+			<!-- end tre4 -->
+			
+			<!-- tre5 -->
+			<li><div class="tree-node" style="cursor: pointer;">
+					<span class="tree-indent"></span><span
+						class="tree-hit tree-expanded"></span><span
+						class="tree-icon tree-folder tree-folder-open"></span><span
+						class="tree-title">Tổng hợp báo cáo</span>
+				</div>
+			<ul>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bclaodongsoyte">Danh sách lao động sở y tế</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcnhanlucytethonban">Nhân lực y tế thôn, bản</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcnlytkdnvncl">Nhân viên lực y tế khối doanh nghiệp và ngoài công lập</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcnlyttthdnnlch">Nhân lực y tế toàn tỉnh hợp đồng ngoài nhân lực cơ hữu</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bctochucytehuyenxa">Tổ chức y tế huyện xã</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdscaplaisobaohiem">Danh sách cấp lại sổ BHXH</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdclaodongvamucbhxh">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Lao động tăng)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdclaodongvamucbhxhgiam">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Lao động giảm)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdclaodongvamucbhxhluong">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Thay đổi lương)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdclaodongvamucbhxhbosung">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Bổ sung BHXH)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdclaodongvamucbhxhbsbhyt">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Bổ sung BHYT)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdclaodongvamucbhxhtonghop">Danh sách điều chỉnh lao động và mức đóng BHXH,BHYT (Tổng hợp chung)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdsphskomdau">Danh sách người lao động đề nghị hưởng DSPHSK sau ốm đau</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdsphskomdautiep">Danh sách người lao động đề nghị hưởng DSPHSK sau ốm đau (tiếp)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdsphskthaisan">Danh sách người lao động đề nghị hưởng DSPHSK sau thai sản</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdscapthebaohiem">Danh sách cấp thẻ BHYT</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdenghithaisan">Danh sách người lao động đề nghị hưởng chế độ thai sản</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdenghithaisantt">Danh sách người lao động đề nghị hưởng chế độ thai sản(tránh thai)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdenghiomdau">Danh sách người lao động đề nghị hưởng chế độ ốm đau (con ốm)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongdenghiomdaukt">Danh sách người lao động đề nghị hưởng chế độ ốm đau (kham thai)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongthamgiabh">Danh sách lao động tham gia BHYT, BHXH (Tăng)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdslaodongthamgiabhgiam">Danh sách lao động tham gia BHYT, BHXH (Giảm)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsnhanvienchuacosld">Danh sách nhân viên chưa có sổ lao động</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdenghittnd">Danh sách trích ngang đề nghị xét tặng danh hiệu TTND</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdenghittut">Danh sách trích ngang đề nghị xét tặng danh hiệu TTƯT</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcquatrinhdaotao">Quá trình đào tạo, bồi dưỡng học về chuyên môn</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bctomtathsttnd">Tóm tắt hồ sơ cá nhân đề nghị xét danh hiệu TTND</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bctomtathsttut">Tóm tắt hồ sơ cá nhân đề nghị xét danh hiệu TTUT</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/quatrinhlamviec">Quá trình làm việc</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/quatrinhdaotao">Quá trình đào tạo</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dschuongtrinhdaotao">Danh sách chương trình đào tạo</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcbangkedanhsachnhanvien">Bảng kê danh sách nhân viên </a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienhuongcs">Danh sách nhân viên hưởng chính sách</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienduocnangluong">Danh sách cán bộ, viên chức được nâng lương</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienchuacobhyt">Danh sách nhân viên chưa có bảo hiểm y tế</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienchuacosobhxh">bcdsdenghithaydoi</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienthamgiabhxh">Danh sách nhân viên tham gia bảo hiểm xã hội</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienthamgiabhxhchitiet">Danh sách nhân viên tham gia bảo hiểm xã hội (chi tiet)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsnhanvienthamgiabhxhtonghop">Danh sách nhân viên tham gia bảo hiểm xã hội (tong hop)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsdotkhenthuong">Danh sách các đợt khen thưởng</a></span>
+					</div></li>
+					
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/dsdotkyluat">Danh sách các đợt kỷ luật</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdenghinangluong">Danh sách cán bộ, nhân viên đề nghị nâng bậc lương thường xuyên</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdenghinangluonghd">Danh sách cán bộ, nhân viên đề nghị nâng bậc lương thường xuyên (hop dong)</a></span>
+					</div></li>
+					
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdschithamgiabhytgiam">Danh sách nhân viên chỉ tham gia BHYT (giảm)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdschithamgiabhyttang">Danh sách nhân viên chỉ tham gia BHYT (tăng)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdschithamgiabhxhtn">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsthamgiabhxhtntang">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện (tăng)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsthamgiabhxhtngiam">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện (đóng lại)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsthamgiabhxhtndongtiep">Danh sách nhân viên tham gia bảo hiểm xã hội tự nguyện (đóng tiếp)</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdenghithaydoi">Danh sách đề nghị thay đổi thông tincủa người tham gia không thay đổi mức đóng</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcdsdieuchinhbhyt">Danh sách điều chỉnh mức đóng cho người chỉ tham gia BHYT</a></span>
+					</div></li>
+					<li><div class="tree-node" node-id="2" style="cursor: pointer">
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-indent"></span>
+						<span class="tree-icon tree-file"></span><span class="tree-title">
+						<a href="<?php echo $this->baseUrl();?>/nhansu/bcbangketncn">Bảng kê thu nhập chịu thuế và thuế thu nhập cá nhân</a></span>
+					</div></li>
+			</ul></li>			
+				
+			<!-- end tre4 -->
+			
+		
+			
+		</ul>
+	</li>
+</div>

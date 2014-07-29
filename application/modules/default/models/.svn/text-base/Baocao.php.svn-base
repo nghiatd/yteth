@@ -1,0 +1,623 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_Baocao {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - NGÂN SÁCH TRẠM Y TẾ
+	 *
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	public function getNSTYT($thongtincoquanId, $namhoatdong) {
+		$str_query = "SELECT Ngansachnhanuoc, Ngansachxa, ThuBHYT, Thudichvukhamchuabenh, Thukhac, Chiluong, Chimuasam, Chidautu, Chikhac 
+					FROM tblngansachmotnam WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+	/**
+	 * Thêm dữ liệu báo cáo vào bảng.
+	 * @param STRING $_table
+	 * @param ARRAY $_data
+	 * @return INT
+	 */
+	public function addObj($_table, $_data) {
+		$id = $this->db->insert ( $_table, $_data );
+		return $id;
+	}
+	public function getParentId_BCH_4($str) {
+		$query = $this->db->query ( 'SELECT Id FROM tbl_bch_4 WHERE Tencot = \'' . $str . '\' AND ParentId = 0' );
+		$row = $query->fetchAll ();
+		if (count ( $row ) > 0)
+			return $row [0] ['Id'];
+		else
+			return 0;
+	}
+	public function getBCH_4($_kynopid, $_namhoatdong, $_pheduyet) {
+		$query = $this->db->query ( 'CALL 4_BCH_Q1(' . $_kynopid . ', ' . $_namhoatdong . ', ' . $_pheduyet . ')' );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	// thomnd
+	public function getsoqlyte($ThongincoquanId, $_namhoatdong) {
+		$strsql="
+				SELECT Hoten, IF(Gioitinh='Nam',Year(Ngaysinh),'') AS Nam,IF(Gioitinh='Nữ',Year(Ngaysinh),'') AS Nu, (select Tendantoc from tbldm_dantoc where id=DantocId) as Dantoc,(select tenchucvu from tbldm_chucvu where id=ChucvuId) as Chucvu, Diachi,(select Tentrinhdohocvan from tbldm_trinhdohocvan where Id=TrinhdohocvanId) as Trinhdo,DATE_FORMAT(Ngayvaodoan, '%d/%m/%Y') AS Ngayvaodoan, DATE_FORMAT(Ngayvaodang, '%d/%m/%Y') AS Ngayvaodang, (select tenbophan from tbldm_bophan where Id=bophanId) as Bophan FROM tblnhansu
+ WHERE ThongtincoquanId=$ThongincoquanId and BophanId >0 and (Year(Ngayketthuc) <=$_namhoatdong or Ngayketthuc is null)
+				";
+		$query = $this->db->query ( $strsql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	// soqlvthcvlth
+	public function getsoqlvthcvlth($thongtincoquanid, $namhoatdong) {
+		
+		$sdateend=''.$namhoatdong.'-12-'.'31';
+		$sdatebg=''.$namhoatdong.'-01-'.'01';
+		$strSql="
+				
+		select Idthuoc,Tenthuoc, Tendonvi,
+		Slnhaptrongthang, 
+		Slsdtrongthang,
+		Sltoncuoithang,  (DATE_FORMAT(Ngaynhapxuat,'%d/%m/%Y')) as Ngaynhapxuat, 
+		Noisanxuat
+		from 
+			(select Idthuoc,Tenthuocvattu as Tenthuoc,Tendonvitinh as Tendonvi,Ngaynhapxuat,
+		
+		(select  sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc  and vwNhapxuat.Ngaynhapxuat=Tonghop.Ngaynhapxuat and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc,Ngaynhapxuat
+		having sum(Soluong)>0
+		
+		) as Slnhaptrongthang,
+		(select  -1*sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Ngaynhapxuat=Tonghop.Ngaynhapxuat and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc,Ngaynhapxuat
+		) as Slsdtrongthang,
+		
+		
+		
+		 sum(Soluong) as Sltoncuoithang
+		, '' as Noisanxuat from vwNhapxuat as Tonghop where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and Dang<>1
+		 
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc,Ngaynhapxuat) as abc
+		where ( COALESCE(Slnhaptrongthang,0)+  COALESCE(Slsdtrongthang,0)+COALESCE(Sltoncuoithang,0))<>0
+		ORDER BY Ngaynhapxuat ASC  
+		
+		";	
+		
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//
+	
+	//bccungungvasdtvt
+	
+	public function getbccungungvasdtvt($thongtincoquanid, $namhoatdong) {
+	
+		$strSql="
+		select Idthuoc,Tenthuoc, Tendonvi,Sltonnamtruoc,
+		Slnhaptrongnam,
+		
+		IF(COALESCE(Sltonnamtruoc,0)+COALESCE(Slnhaptrongnam,0)<>0,COALESCE(Sltonnamtruoc,0)+COALESCE(Slnhaptrongnam,0),'') as Slcongdon,
+		Slsdtrongnam,
+		Sltoncuoinam
+		from
+		(select Idthuoc,Tenthuocvattu as Tenthuoc,Tendonvitinh as Tendonvi,
+
+		(select  sum(Soluong)
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Year(Ngaynhapxuat) <$namhoatdong
+		and vwNhapxuat.IdThuoc=Tonghop.Idthuoc   and
+		vwNhapxuat.dang=Tonghop.dang
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		) as Sltonnamtruoc,
+		
+		(select  sum(Soluong)
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Year(Ngaynhapxuat)=$namhoatdong
+		 and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc  and 
+		vwNhapxuat.dang=Tonghop.dang
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+	
+		) as Slnhaptrongnam,
+		(select  -1*sum(Soluong)
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Year(Ngaynhapxuat) =$namhoatdong
+		  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and 
+		vwNhapxuat.dang=Tonghop.dang
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc
+		) as Slsdtrongnam,
+
+		sum(Soluong) as Sltoncuoinam
+		, '' as Noisanxuat from vwNhapxuat as Tonghop where ThongtincoquanId =$thongtincoquanid and Year(Ngaynhapxuat) <=$namhoatdong
+		
+		GROUP BY  ThongtincoquanId,Dang ,IdThuoc) as abc
+		where ( COALESCE(Sltonnamtruoc,0)+  COALESCE(Slnhaptrongnam,0)+COALESCE(Slsdtrongnam,0)+COALESCE(Sltoncuoinam,0))<>0
+		";
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	public function getBienbankiemnhaptvt($ThongtincoquanId,$Tungay, $Denngay) {
+		$wherengay="";
+		if($Denngay!="")
+		{
+			if($wherengay!="")
+				$wherengay =" and Hansudung<='$Denngay' ";
+		}
+		if($Tungay!="")
+		{
+			if($wherengay!="")
+				$wherengay =" and Hansudung>='$Tungay' ";
+		}
+		$strSql =" select Dang, Tendonvitinh ,Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, sum(Soluong) as Soluong,MucluutruId
+		, (select Tenmucluutru from tbldm_mucluutru where Id=MucluutruId) as Tenmucluutru
+		from vwNhapxuat
+		where  Trangthai=1 and Year(Ngaynhapxuat) in (select Namhoatdong from tblthongtincoquan where tblthongtincoquan.Id=$ThongtincoquanId) and  ThongtincoquanId=$ThongtincoquanId  $wherengay
+		group by Dang,Hansudung,Idthuoc
+		having Soluong>0
+		ORDER BY Hansudung ASC";
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	
+	//
+	public function getBienbankiemketvt($ThongtincoquanId,$Tungay, $Denngay) {
+		$wherengay="";
+		if($Denngay!="")
+		{
+			if($wherengay!="")
+				$wherengay =" and Hansudung<='$Denngay' ";
+		}
+		if($Tungay!="")
+		{
+			if($wherengay!="")
+				$wherengay =" and Hansudung>='$Tungay' ";
+		}
+		$strSql =" select Dang, Tendonvitinh ,Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, sum(Soluong) as Soluong,MucluutruId
+				, (select Tenmucluutru from tbldm_mucluutru where Id=MucluutruId) as Tenmucluutru
+				from vwNhapxuat
+				where  Year(Ngaynhapxuat) in (select Namhoatdong from tblthongtincoquan where tblthongtincoquan.Id=$ThongtincoquanId) and  ThongtincoquanId=$ThongtincoquanId  $wherengay  
+				group by Dang,Hansudung,Idthuoc
+				having Soluong>0
+				ORDER BY Hansudung ASC";
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//sokiemnhapthcvtytth
+	public function getsokiemnhapthcvtytth($ThongtincoquanId, $Tungay,$Denngay,$MucluuIdarray) {
+		$wherengay="";		
+		$wherengay =" and tblchitietnhapxuat.Ngaynhapxuat>='$Tungay' and tblchitietnhapxuat.Ngaynhapxuat<='$Denngay' and tblchitietnhapxuat.MucluutruId in $MucluuIdarray ";
+		$strSql =" 
+				SELECT IF(tblchitietnhapxuat.Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+		IF(tblchitietnhapxuat.Dang=1,(select Tendonvitinh from tbldm_donvitinh,tbldm_thuoc where tbldm_donvitinh.Id =tbldm_thuoc.DonvitinhId and tbldm_thuoc.Id= tblchitietnhapxuat.DoituongId),
+		(select Tendonvitinh from tbldm_donvitinh,tbldm_thietbivattu where tbldm_donvitinh.Id =tbldm_thietbivattu .DonvitinhId and tbldm_thietbivattu .Id= tblchitietnhapxuat.DoituongId)
+		) as Tendonvitinh,sum(Soluong) as Soluong , Dongia,(Soluong*Dongia) as Thanhtien, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung ,tblnhapxuat.Ghichu as Ghichu FROM tblchitietnhapxuat,tblnhapxuat WHERE 
+		tblnhapxuat.ThongtincoquanId=$ThongtincoquanId and tblnhapxuat.Trangthai=1 and
+		tblnhapxuat.Mahoadon=tblchitietnhapxuat.Mahoadon 	$wherengay
+		GROUP BY tblchitietnhapxuat.DANG,tblchitietnhapxuat.DoituongId,tblchitietnhapxuat.Dongia,tblchitietnhapxuat.Hansudung
+				";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	public function getsokiemnhapthuoccttt($ThongtincoquanId, $Tungay,$Denngay,$Mucluutru) {
+		$wherengay="";
+		$whereluutru="";
+		$whereluutru =" and tblchitietnhapxuat.MucluutruId = $Mucluutru ";
+		$wherengay =" and tblchitietnhapxuat.Ngaynhapxuat<='$Denngay' and tblchitietnhapxuat.Ngaynhapxuat>='$Tungay' ";
+		
+		$strSql ="
+		SELECT IF(tblchitietnhapxuat.Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+		IF(tblchitietnhapxuat.Dang=1,(select Tendonvitinh from tbldm_donvitinh,tbldm_thuoc where tbldm_donvitinh.Id =tbldm_thuoc.DonvitinhId and tbldm_thuoc.Id= tblchitietnhapxuat.DoituongId),
+		(select Tendonvitinh from tbldm_donvitinh,tbldm_thietbivattu where tbldm_donvitinh.Id =tbldm_thietbivattu .DonvitinhId and tbldm_thietbivattu .Id= tblchitietnhapxuat.DoituongId)
+		) as Tendonvitinh,Soluong, Dongia,(Soluong*Dongia) as Thanhtien, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung ,tblnhapxuat.Ghichu as Ghichu FROM tblchitietnhapxuat,tblnhapxuat WHERE
+		
+tblnhapxuat.ThongtincoquanId=$ThongtincoquanId and tblnhapxuat.Trangthai=1 $wherengay and
+		  tblnhapxuat.Mahoadon=tblchitietnhapxuat.Mahoadon 	 $whereluutru
+		GROUP BY tblchitietnhapxuat.DANG,tblchitietnhapxuat.Ngaynhapxuat,tblchitietnhapxuat.DoituongId
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	public function gettenmucluutru($Mucluutru) {
+		
+		$strSql ="
+		select Tenmucluutru from tbldm_mucluutru where Id =$Mucluutru 
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//bang quyet toan thuoc
+	public function getbangquyettoanthuoc($thongtincoquanid, $thang,$namhoatdong) {
+	$sdateend="";
+	$sdatebg="";
+	if ($thang == 'I' || $thang == 'II' || $thang == 'III' || $thang == 'IV') {
+		if ($thang == 'I') {
+			
+			$sdatebg=''.$namhoatdong.'-01-01';
+			$sdateend=''.$namhoatdong.'-03-31';
+			
+		} elseif ($thang == 'II') {
+			$sdatebg=''.$namhoatdong.'-04-01';
+			$sdateend=''.$namhoatdong.'-06-31';
+			
+		} elseif ($thang == 'III') {
+			$sdatebg=''.$namhoatdong.'-07-01';
+			$sdateend=''.$namhoatdong.'-09-31';			
+		} elseif ($thang == 'IV') {
+			$sdatebg=''.$namhoatdong.'-10-01';
+			$sdateend=''.$namhoatdong.'-12-31';
+		}
+	}else {
+		$sdateend=''.$namhoatdong.'-'.($thang).'-'.'31';
+		$sdatebg=''.$namhoatdong.'-'.($thang).'-'.'01';
+	}
+	$strSql="
+				
+		select Idthuoc,Tenthuoc, Tendonvi,Sldauthang,Dongiadauthang,
+		Thanhtiendauthang,Slnhaptrongthang,Dongianhaptrongthang, Thanhtiennhaptrongthang,
+		(COALESCE(Sldauthang,0)+ COALESCE(Slnhaptrongthang,0)) as Slcongdon,
+		
+		IF(COALESCE(Sldauthang,0)>0,Dongiadauthang,Dongianhaptrongthang) as Dongiacongdon,
+		((COALESCE(Sldauthang,0)+ COALESCE(Slnhaptrongthang,0))* IF(COALESCE(Sldauthang,0)>0,Dongiadauthang,Dongianhaptrongthang)) as Thanhtiencongdon
+		,
+		
+		Slsdtrongthang,Dongiasdtrongthang,Thanhtiensdtrongthang,
+		Sltoncuoithang, Dongiatoncuoithang,  Thanhtientoncuoithang,
+		Noisanxuat
+		from 
+		
+	
+		(select Idthuoc,Tenthuocvattu as Tenthuoc,Tendonvitinh as Tendonvi,
+		(select  sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid
+		and  Ngaynhapxuat <'$sdatebg'   and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Sldauthang,
+		
+		(select  Dongia  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid
+		and  Ngaynhapxuat <'$sdatebg'   and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Dongiadauthang,
+		
+		(select  sum(Soluong*Dongia)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid
+		and  Ngaynhapxuat <'$sdatebg'   and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Thanhtiendauthang,
+		(select  sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Slnhaptrongthang,
+		
+		(select  Dongia  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Dongianhaptrongthang,
+		
+		(select  sum(Soluong*Dongia)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai=1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+			having sum(Soluong)>0
+		ORDER BY Ngaynhapxuat ASC LIMIT 1
+		) as Thanhtiennhaptrongthang,
+		
+		(select  -1*sum(Soluong)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		) as Slsdtrongthang,
+		
+		(select Dongia  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and 
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		) as Dongiasdtrongthang,
+		
+		 (select  -1*sum(Soluong*Dongia)  		
+		from vwNhapxuat  where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		and  Ngaynhapxuat >='$sdatebg'  and Trangthai<>1 and vwNhapxuat.IdThuoc=Tonghop.Idthuoc and vwNhapxuat.Dongia=Tonghop.Dongia and
+		vwNhapxuat.dang=Tonghop.dang 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc
+		) as Thanhtiensdtrongthang,
+		
+		 sum(Soluong) as Sltoncuoithang,Dongia as  Dongiatoncuoithang,(sum(Soluong)*Dongia ) as  Thanhtientoncuoithang
+		, '' as Noisanxuat from vwNhapxuat as Tonghop where ThongtincoquanId =$thongtincoquanid and Ngaynhapxuat <='$sdateend'
+		 
+		GROUP BY  MucluutruId,Dongia,ThongtincoquanId,Dang ,IdThuoc) as abc
+		where ( COALESCE(Sldauthang,0)+ COALESCE(Slnhaptrongthang,0)+  COALESCE(Slsdtrongthang,0)+COALESCE(Sltoncuoithang,0))<>0  
+		
+		";	
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//SotheodoicanbodaotaotaphuanController
+	public function getSotheodoicanbodaotaotaphuan($thongtincoquanid, $namhoatdong) {
+		
+		$strSql="
+			SELECT Id, ThongtincoquanId,(select hoten from tblnhansu where Id=tbldaotaonhansu.NhansuId) as Tennhansu,
+
+(select Tentrinhdohocvan from tblnhansu,tbldm_trinhdohocvan where tbldm_trinhdohocvan.Id=tblnhansu.TrinhdohocvanId and tblnhansu.Id=tbldaotaonhansu.NhansuId) as Tentrinhdo,
+
+concat(DATE_FORMAT(Tungay,'%d/%m/%Y'), ' - ',DATE_FORMAT(Denngay,'%d/%m/%Y')) as Thoigian
+, NhansuId, Tungay, Denngay, Noidung, Noidaotao, Ketqua,ghichu, Namhoatdong FROM tbldaotaonhansu WHERE Namhoatdong=$namhoatdong and ThongtincoquanId=$thongtincoquanid
+		
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//SoqlsachtailieuchuyenmonController
+	public function getSoqlsachtailieuchuyenmon($thongtincoquanid, $namhoatdong) {
+	
+		$strSql="
+
+		SELECT Id, ThongtincoquanId, Tentailieu,(select Tendonvitinh from tbldm_donvitinh where Id=tbltailieuchuyenmon.DonvitinhId) as Tendonvitinh, DonvitinhId, DATE_FORMAT(Ngaycap,'%d/%m/%Y') as Ngaycap, Soluong, Donvicap, Nhaxuatban, Ghichu, Namhoatdong FROM tbltailieuchuyenmon WHERE 
+		 Namhoatdong<=$namhoatdong and ThongtincoquanId=$thongtincoquanid
+	
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//////////
+	//
+	public function getdutruthuocbhyt($thongtincoquanid, $sdatebg,$sdateend,$namhoatdong) {
+		
+		$strSql="
+		SELECT Id, ThongtincoquanId, ThuocId
+
+, (select Tenthuoc from tbldm_thuoc where Id= tblchitietdutruthuocbaohiem.ThuocId) as
+Tenthuoc,
+
+(select Tendonvitinh from tbldm_thuoc,tbldm_donvitinh where tbldm_thuoc.DonvitinhId=tbldm_donvitinh.Id and tbldm_thuoc.Id= tblchitietdutruthuocbaohiem.ThuocId) as Tendonvitinh
+, Soluong, Soluongduyet,(select Ngaydutru from tbldutruthuocbaohiem where Sophieudt=tblchitietdutruthuocbaohiem.Sophieudt and ThongtincoquanId=$thongtincoquanid LIMIT 1) as  Ngaydutru , NuocsanxuatId,(select Tennuocsanxuat from tbldm_nuocsanxuat where Id= tblchitietdutruthuocbaohiem.ThuocId) as Tennuoc, Ghichu, Namhoatdong FROM  tblchitietdutruthuocbaohiem WHERE ThongtincoquanId=$thongtincoquanid and Sophieudt in ( select Sophieudt from tbldutruthuocbaohiem where ThongtincoquanId=$thongtincoquanid and Ngaydutru<='$sdateend' and Ngaydutru>='$sdatebg')
+		
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	
+	//SotheodoitruyenthongtructiepController
+	public function getSotheodoitruyenthongtructiep($thongtincoquanid, $namhoatdong) {
+	
+		$strSql="
+		SELECT Id, ThongtincoquanId, Noidung, (select Tendoituongtruyenthong from tbldm_doituongtruyenthong where Id= DoituongtruyenthongId)as Doituong, DoituongtruyenthongId, Uoctinh_soluongthamdu, Thoiluong, Solanthuchien, Diadiem,DATE_FORMAT(Ngaybatdau,'%d/%m/%Y') as Ngaybatdau, DATE_FORMAT(Ngayketthuc,'%d/%m/%Y') as Ngayketthuc, Nguoithuchien, Namhoatdong, Dang FROM tbltruyenthonggdsk WHERE Namhoatdong=$namhoatdong and Dang=1 and ThongtincoquanId=$thongtincoquanid
+		ORDER BY Ngaybatdau
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	public function getSotheodoitruyenthonggiantiep($thongtincoquanid, $namhoatdong) {
+	
+		$strSql="
+		SELECT Id, ThongtincoquanId, Noidung, DoituongtruyenthongId, Uoctinh_soluongthamdu, Thoiluong, Solanthuchien, concat(Diadiem,DATE_FORMAT(Ngaybatdau,'%d/%m/%Y'),  DATE_FORMAT(Ngayketthuc,'%d/%m/%Y')) as Ngaythang, Nguoithuchien, Namhoatdong, Dang FROM tbltruyenthonggdsk WHERE Namhoatdong=$namhoatdong and Dang=0 and ThongtincoquanId=$thongtincoquanid
+		ORDER BY Ngaybatdau
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	
+	
+	public function getsotheodoinnhiv($thongtincoquanid, $namhoatdong){
+	
+		$strSql="SELECT Id, NhankhauId, Trangthai, Hienmac,
+
+(select Hoten from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblhiv.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblhiv.ThongtincoquanId
+
+) as Hoten,
+
+(select If(Trangthai=1,'x','') from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblhiv.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblhiv.ThongtincoquanId
+
+) as Tuvong
+,
+(select Nghenghiep from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblhiv.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblhiv.ThongtincoquanId
+
+) as Nghenghiep,'' As Doituong
+,
+
+(select if(Vanglai=1,tblnhankhau.Diachi,(select Tenthonto from tbldm_thonto where tbldm_thonto.Id=tblchuhodan.thontoId )) from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblhiv.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblhiv.ThongtincoquanId
+
+) as Diachi
+,
+
+(select if(Gioitinh='Nam',year(Ngaysinh),'') from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblhiv.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblhiv.ThongtincoquanId
+
+) as Nam,
+
+(select if(Gioitinh='Nữ',year(Ngaysinh),'') from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblhiv.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblhiv.ThongtincoquanId
+
+) as Nu
+
+, NhansuId, Ghichu,DATE_FORMAT(Ngaythang,'%d/%m/%Y') as Ngaykham , DATE_FORMAT(Ngaydieutri,'%d/%m/%Y') as Ngaydieutri, ThongtincoquanId, Namhoatdong  FROM tblhiv  WHERE 
+				tblhiv.Namhoatdong=$namhoatdong and  tblhiv.ThongtincoquanId=$thongtincoquanid	";
+	
+	
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	
+	
+	
+	public function getsotheodoigsattp($thongtincoquanid, $thang,$namhoatdong) {
+	
+		$strSql="
+				SELECT Id, ThongtincoquanId, Tencoso, Diachi, Chusohuu, Loaihinhkinhdoanh, IF(Ketqua='Đạt','x','') as Dat, IF(Ketqua!='Đạt','x','') as Khongdat, DATE_FORMAT(Ngaykiemtra,'%d/%m/%Y') as Ngaykiemtra, Phat,Sotienphat, Nguoiphat, Ghichu FROM tblgiamsatvsattp WHERE 
+					 ThongtincoquanId=$thongtincoquanid and month(Ngaykiemtra) =$thang and Namhoatdong=$namhoatdong
+				ORDER BY Ngaykiemtra
+				
+		";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	//
+	public function getSotheodoisuckhoess($thongtincoquanid, $namhoatdong) {
+	
+		$strSql="
+		SELECT Id, NhankhauId,
+(select Hoten from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblkehoachhoagiadinh.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblkehoachhoagiadinh.ThongtincoquanId
+
+) as Hoten,
+(select if(Tendangthuoc!='','x','') from tbldm_dangthuoc where  tbldm_dangthuoc.Id=tblkehoachhoagiadinh.DangthuocId and Tendangthuoc like '%Nước cất%') as Nuoccat
+,
+(select if(Gioitinh='Nam',year(Ngaysinh),'') from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblkehoachhoagiadinh.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblkehoachhoagiadinh.ThongtincoquanId
+
+) as Nam,
+
+(select if(Gioitinh='Nữ',year(Ngaysinh),'') from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblkehoachhoagiadinh.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblkehoachhoagiadinh.ThongtincoquanId
+
+) as Nu
+
+,
+
+(select if(Vanglai=1,tblnhankhau.Diachi,(select Tenthonto from tbldm_thonto where tbldm_thonto.Id=tblchuhodan.thontoId )) from tblNhankhau,tblchuhodan where tblNhankhau.Mahodan=tblchuhodan.Mahodan and 
+tblNhankhau.ThongtincoquanId=tblchuhodan.ThongtincoquanId
+
+and tblNhankhau.Id=tblkehoachhoagiadinh.NhankhauId
+
+and tblNhankhau.ThongtincoquanId=tblkehoachhoagiadinh.ThongtincoquanId
+
+) as Diachi
+
+, Ngaythang, Soconhienco, DatDCTC, DangthuocId, IF(Baocaosu=1,'x','') as Baocaosu, Trietsan, NhansuId, Ghichu, Taibien, Chet, ThongtincoquanId, Moithuchien, DiadiemId, Chuyentuyen, Doituongnguyco, IF(Bomkimtiem=1,'x','') as Bomkimtiem, Namhoatdong FROM tblkehoachhoagiadinh WHERE 
+				tblkehoachhoagiadinh.Namhoatdong=$namhoatdong and  tblkehoachhoagiadinh.ThongtincoquanId=$thongtincoquanid	";
+	
+		$query = $this->db->query ( $strSql );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	/**
+	 * Cập nhật trạng thái phê duyệt báo cáo huyện trong bảng.
+	 *
+	 * @param STRING $_tblname        	
+	 * @param INT $_pheduyet        	
+	 * @param INT $_kynopid        	
+	 * @param INT $_namhoatdong        	
+	 * @param INT $_thongtincoquan        	
+	 * @return INT
+	 */
+	public function updateObj($_tblname, $_pheduyet, $_kynopid, $_namhoatdong, $_thongtincoquan) {
+		$where [] = 'Namhoatdong = ' . $_namhoatdong;
+		$where [] = 'ThongtincoquanId = ' . $_thongtincoquan;
+		$where [] = 'KynopId = ' . $_kynopid;
+		$data ['Pheduyet'] = $_pheduyet;
+		$Id = $this->db->update ( $_tblname, $data, $where );
+		return $Id;
+	}
+	/**
+	 * Xóa dữ liệu báo cáo huyện trong bảng.
+	 *
+	 * @param STRING $_tblname        	
+	 * @param INT $_kynopid        	
+	 * @param INT $_namhoatdong        	
+	 * @param INT $_thongtincoquan        	
+	 * @return INT
+	 */
+	public function delObj($_tblname, $_kynopid, $_namhoatdong, $_thongtincoquan) {
+		$where [] = 'Namhoatdong = ' . $_namhoatdong;
+		$where [] = 'ThongtincoquanId = ' . $_thongtincoquan;
+		$where [] = 'KynopId = ' . $_kynopid;
+		$Id = $this->db->delete ( $_tblname, $where );
+		return $Id;
+	}
+}

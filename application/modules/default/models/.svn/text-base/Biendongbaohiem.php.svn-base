@@ -1,0 +1,87 @@
+<?php
+class Model_Biendongbaohiem{
+	protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function getFetObj($thongtincoquanId, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Manhanvien, Hoten, DATE_FORMAT(Ngaysinh ,'%d/%m/%Y') AS Ngaysinh, Noiohiennay,
+				Gioitinh, ChucvuId, (SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu,
+				IF((Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00'), '', (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y'))) AS Tinhtrang
+				FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ['total'] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	
+	// hien thi detail cua nhan vien
+	public function detail($id, $thongtincoquanId){
+		$result = array();
+		$query = $this->db->query("SELECT Id, Hoten, Manhanvien FROM tblnhanvien WHERE Id = $id AND ThongtincoquanId = $thongtincoquanId");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	//hien thi chi tiet bien dong bao hiem cua mot nhan vien
+	public function getInfobyId($nhanvienId, $thongtincoquanId, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblbiendongbaohiem WHERE NhanvienId = $nhanvienId AND ThongtincoquanId = $thongtincoquanId");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, NhanvienId, ThongtincoquanId, BiendongId, 
+				IF(DATE_FORMAT(Tungay, '%d/%m/%Y') = '00/00/0000', '', DATE_FORMAT(Tungay, '%d/%m/%Y')) AS Tungay, 
+				IF(DATE_FORMAT(Denngay, '%d/%m/%Y') = '00/00/0000', '', DATE_FORMAT(Denngay, '%d/%m/%Y')) AS Denngay, Noidungdenghi,
+				(SELECT Mabiendong FROM tbldm_biendong WHERE Id = BiendongId) AS Mabiendong,
+				(SELECT Tenbiendong FROM tbldm_biendong WHERE Id = BiendongId) AS Tenbiendong,
+				IF(BHXH = 1, 'on', '') AS BHXH, IF(BHYT = 1, 'on', '') AS BHYT, Sotien
+				FROM tblbiendongbaohiem WHERE NhanvienId = $nhanvienId AND ThongtincoquanId = $thongtincoquanId 
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert('tblbiendongbaohiem', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tblbiendongbaohiem', $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tblbiendongbaohiem', 'Id = '.$id);
+		return $Id;
+	}
+	
+	public function searObj($sManhanvien, $sNhanvien, $sNgaysinh, $sGioitinh, $sChucvu, $sort, $order, $offset, $rows, $thongtincoquanId){
+		$result = array();
+		$where = "Hoten LIKE '%$sNhanvien%'";
+		if($sGioitinh != '' && $sGioitinh != 'Tất cả')
+			$where = $where . "AND Gioitinh = '$sGioitinh' ";
+		if($sManhanvien != '')
+			$where = $where."AND Manhanvien LIKE '%$sManhanvien%'";
+		if($sNgaysinh != '')
+			$where = $where."AND Ngaysinh = '$sNgaysinh'";
+		if($sChucvu !='')
+			$where = $where."AND ChucvuId = $sChucvu";
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId AND $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Manhanvien, Hoten, DATE_FORMAT(Ngaysinh, '%d/%m/%Y') AS Ngaysinh, Noiohiennay,
+				Ngayketthuc, Gioitinh, ChucvuId, (SELECT Tenchucvu FROM tbldm_chucvu WHERE Id = ChucvuId) AS Chucvu,
+				IF((Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00'), '', (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y'))) AS Tinhtrang
+				FROM tblnhanvien WHERE ThongtincoquanId = $thongtincoquanId AND $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}

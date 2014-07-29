@@ -1,0 +1,63 @@
+<?php
+/**
+ * @author Phadh
+ */
+class Model_Mucbaocao{
+	
+	//ket noi co so du lieu
+	protected $db;
+	// khoi tao ham dung cua class
+	public function __construct(){
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	// cau lenh tryu van dung chung
+	private $str_query = "SELECT Id, Tenmucbaocao";
+	
+	// hien thi du lieu theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_mucbaocao");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenmucbaocao FROM tbldm_mucbaocao ORDER BY $sort $order LIMIT $offset, $rows");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	// kiem tra trun glap du lieu
+	public function dubliObj($id, $Tenmucbaocao){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_mucbaocao WHERE Tenmucbaocao = '$Tenmucbaocao'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_mucbaocao WHERE Id != $id AND Tenmucbaocao = '$Tenmucbaocao'");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0] ['Total'];
+		return $total;
+		
+	}
+	
+	// lay thong tin id va ten cua doi tuong
+	public function getIdName(){
+		$query = $this->db->query("SELECT Id, Tenmucbaocao FROM tbldm_mucbaocao");
+		return $query->fetchAll();
+	}
+	
+	// them oi du lieu muc bao cao
+	public function addObj($data){
+		$Id = $this->db->insert('tbldm_mucbaocao', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu muc bao cao
+	public function updateObj($id, $data){
+		$Id = $this->db->update ( 'tbldm_mucbaocao', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// xao du lieu muc bao cao
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_mucbaocao', 'Id = ' . $id );
+		return $Id;
+	}
+}

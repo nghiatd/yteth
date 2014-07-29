@@ -1,0 +1,56 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_CTSieuam {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Lấy dữ liệu trong bảng theo Id.
+	 */
+	public function getFetObjBySieuamId($thongtincoquanId,$id) {
+		$query = $this->db->query ( "SELECT MucsieuamId AS cId, (SELECT Tenmuc FROM tbldm_muckiemtra WHERE Id = MucsieuamId) AS cMucsieuam, Ketqua AS cKetqua, SieuamId,
+				(SELECT Id FROM tblsieuam WHERE tblsieuam.Sophieukcb = tblchitietsieuam.Sophieukcb and tblsieuam.ThongtincoquanId=tblchitietsieuam.ThongtincoquanId) AS Phieukhambenh,
+				(SELECT NhankhauId FROm tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchitietsieuam.Sophieukcb and tblphieukhambenh.ThongtincoquanId=tblchitietsieuam.ThongtincoquanId ) AS NhankhauId,
+				(SELECT Hoten FROM tblnhankhau WHERE Id = NhankhauId and tblnhankhau.ThongtincoquanId=tblchitietsieuam.ThongtincoquanId) AS Benhnhan,
+				(SELECT Sophieukcb FROM tblphieukhambenh WHERE tblphieukhambenh.Sophieukcb = tblchitietsieuam.Sophieukcb and tblphieukhambenh.ThongtincoquanId=tblchitietsieuam.ThongtincoquanId) AS Sophieu,
+				(SELECT (DATE_FORMAT(Ngaysieuam,'%d/%m/%Y')) AS Ngaysieuam FROM tblsieuam WHERE tblsieuam.Sophieukcb = tblchitietsieuam.Sophieukcb AND Id =$id) AS Ngaysieuam,
+				(SELECT NhansuId FROM tblsieuam WHERE tblsieuam.Sophieukcb = tblchitietsieuam.Sophieukcb AND Id = $id) AS NhansuId,
+				(SELECT Hoten FROM tblnhansu WHERE Id = NhansuId and tblnhansu.ThongtincoquanId=tblchitietsieuam.ThongtincoquanId) AS Nhansu
+				FROM tblchitietsieuam WHERE SieuamId = $id and tblchitietsieuam.ThongtincoquanId=$thongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblchitietsieuam', $data );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($sieuamId, $thongtincoquanId) {
+		$where [] = "sieuamId = $sieuamId";
+		$where [] = "ThongtincoquanId = $thongtincoquanId";
+		$Id = $this->db->delete ( 'tblchitietsieuam', $where );
+		return $Id;
+	}
+}
+?>

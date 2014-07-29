@@ -1,0 +1,66 @@
+<?php
+/***********
+ * Create by Phadh
+ */
+class Model_Taibiensinhsan {
+
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tentaibien ";
+	
+	// hine thi du lieu
+	 
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_taibiensinhsan" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_taibiensinhsan ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+
+	// kiem tra du lieu trung lap
+	
+	public function dupliObj($id,$Tentaibien) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_taibiensinhsan WHERE Tentaibien = '$Tentaibien'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_taibiensinhsan WHERE Id != $id AND Tentaibien= '$Tentaibien'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// lay thong tin id va ten cua doi tuong
+	
+	public function getIdName() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_taibiensinhsan" );
+		return $query->fetchAll ();
+	}
+	
+	// them moi thong tin tai bien sinh san 
+	
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_taibiensinhsan', $data );
+		return $Id;
+	}
+	
+	// sua tai bien sinh san
+	
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_taibiensinhsan', $data, 'Id = ' . $id );
+		return $Id;     
+	}
+	
+	// xoa tai bien sinh san
+	
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_taibiensinhsan', 'Id = ' . $id );
+		return $Id;
+	}
+}

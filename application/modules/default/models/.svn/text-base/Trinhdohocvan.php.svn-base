@@ -1,0 +1,136 @@
+<?php
+/**
+ * 
+ * @author Lê Văn Kiên
+ *
+ */
+class Model_Trinhdohocvan {
+	/**
+	 * - Kết nối DB
+	 * 
+	 * @var connection
+	 */
+	protected static  $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		self::$db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 * 
+	 * @var String
+	 */
+	private static  $str_query = "SELECT Id, Tentrinhdohocvan ";
+	/**
+	 * - Lấy tất cả dữ liệu trong bảng theo phân trang.
+	 */
+	public static  function getFetObj($sort, $order, $offset, $rows) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$result = array ();
+		$query = self::$db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdohocvan" );
+		$row = $query->fetchAll ();
+		$query = self::$db->query ( self::$str_query . "FROM tbldm_trinhdohocvan ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * - Kiểm tra dữ liệu trùng lặp.
+	 *
+	 * @param Number $_id        	
+	 * @param String $_tentrinhdohocvan    	
+	 * @return String
+	 */
+	public static  function dupliObj($id, $tentrinhdohocvan) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$query = self::$db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdohocvan WHERE Tentrinhdohocvan = '$tentrinhdohocvan'" );
+		if ($id != 0) {
+			$query = self::$db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdohocvan WHERE Id != $id AND Tentrinhdohocvan = '$tentrinhdohocvan'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	/**
+	 * - Lấy thông tin về Id và Tên đối tượng.
+	 * 
+	 * @return Array item
+	 */
+	public static  function getIdName($strinhdo, $q, $sort, $order, $offset, $rows) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$result = array ();
+		$where = "Tentrinhdohocvan LIKE '%$strinhdo%'";
+		$query = self::$db->query ( "SELECT COUNT(*) AS Total FROM tbldm_trinhdohocvan WHERE Tentrinhdohocvan LIKE '%$q%' AND $where" );
+		$row = $query->fetchAll ();
+		$query = self::$db->query ( self::$str_query . "FROM tbldm_trinhdohocvan WHERE Tentrinhdohocvan LIKE '%$q%' AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	// thomnd
+	
+	public static  function getIdNameforcbogrid( $q) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$query = self::$db->query ( "SELECT Id,Tentrinhdohocvan  FROM tbldm_trinhdohocvan WHERE Tentrinhdohocvan LIKE '%$q%' " );
+		$row = $query->fetchAll ();
+		
+		return $row;
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public static  function addObj($data) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$Id = self::$db->insert ( 'tbldm_trinhdohocvan', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Number $id        	
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public static  function updateObj($id, $data) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$Id = self::$db->update ( 'tbldm_trinhdohocvan', $data, 'Id = ' . $id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public static  function delObj($id) {
+		if(self::$db==null)
+		{
+			self::$db = Zend_Registry::get("db");
+		}
+		$Id = self::$db->delete ( 'tbldm_trinhdohocvan', 'Id = ' . $id );
+		return $Id;
+	}
+}
+?>

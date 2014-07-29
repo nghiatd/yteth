@@ -1,0 +1,65 @@
+<?php
+class Model_Contrung
+{
+protected $db;
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+
+	public function getFetObj($sort,$order,$offset,$rows)
+	{		
+		$result = array ();
+		$query = $this->db->query ("SELECT COUNT(*)AS Total FROM tbldm_contrung");
+		$row = $query->fetchAll ();
+		$query=$this->db->query("SELECT Id,Tencontrung FROM tbldm_contrung");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($tencontrung) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM  tbldm_contrung WHERE Tencontrung='$tencontrung'" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	public function CheckValueObj($id, $tencontrung) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_contrung WHERE Tencontrung = '$tencontrung'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_contrung WHERE Id != $id and Tencontrung = '$tencontrung'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function AddObj($data) {
+		$Id = $this->db->insert ('tbldm_contrung',$data );
+		return $Id;
+	}
+	
+	public function updateObj($id, $data) {
+		$id=$this->db->update ( 'tbldm_contrung', $data, 'Id = ' . $id );
+		return $id; 
+	}
+	
+	public function DelObj($Id) {
+		$Iddel = $this->db->delete ( 'tbldm_contrung', 'Id=' . $Id );
+		return $Iddel;
+	}
+	public function getContrung()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id, Tencontrung FROM tbldm_contrung");
+		$result= $query->fetchAll ();
+		return $result;
+	}	
+	
+	public function getcombo()
+	{
+		$result = array ();
+		$query=$this->db->query("SELECT Id AS ContrungId, Tencontrung FROM tbldm_contrung");
+		$result= $query->fetchAll ();
+		return $result;
+	}
+}

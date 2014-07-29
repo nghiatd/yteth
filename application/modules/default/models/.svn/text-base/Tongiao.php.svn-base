@@ -1,0 +1,57 @@
+<?php
+class Model_Tongiao {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	private $str_query = "SELECT Id, Tentongiao ";
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_tongiao" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_tongiao ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	public function getNameIdObj() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_tongiao" );
+		return $query->fetchAll ();
+	}
+	public function getNameIdObjNoChuho() {
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_tongiao WHERE Tentongiao != 'Chủ hộ'" );
+		return $query->fetchAll ();
+	}
+	public function dupObj($id, $tentongiao) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_tongiao WHERE Tentongiao = '$tentongiao'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_tongiao WHERE Id != $id AND Tentongiao = '$tentongiao'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	// Bg Daitk
+	public function getIdByName($tentongiao) {
+		$query = $this->db->query ( "SELECT Id FROM tbldm_tongiao WHERE Tentongiao LIKE '$tentongiao'" );
+		$Rows = $query->fetchAll ();
+		if (count ( $Rows ) > 0)
+			$Id = $Rows [0] ['Id'];
+		else
+			$Id = 0;
+		return $Id;
+	}
+	// Ed Daitk
+	public function addObj($data) {
+		$id = $this->db->insert ( 'tbldm_tongiao', $data );
+		return $id;
+	}
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_tongiao', $data, 'Id =' . $id );
+		return $Id;
+	}
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_tongiao', 'Id =' . $id );
+		return $Id;
+	}
+}

@@ -1,0 +1,116 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Phadh
+ */
+class ChuyennganhController extends PublicdetailController{
+	
+	private $_MChuyennganh;
+	private $_Chuyennganh = array();
+	private $_Tenchuyennganh;
+	private $_MHistory;
+	
+	public function init(){
+		$this->initValue();
+		$this->_MChuyennganh = new Model_Chuyennganh();
+		$this->_MHistory = new Model_History();
+		
+		if(isset($_REQUEST['Tenchuyennganh']) && $_REQUEST['Tenchuyennganh'] != ''){
+			$this->_Tenchuyennganh = $_REQUEST['Tenchuyennganh'];
+			$this->_Chuyennganh = array(
+					'Tenchuyennganh' => $this->_Tenchuyennganh
+					);
+		}
+	}
+	
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function jsonAction(){
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		$jsonObj = json_encode($this->_MChuyennganh->getFetObj($sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// du lieu combobox
+	public function comboAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MChuyennganh->getIdbyName());
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// them moi du lieu
+	public function addAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		// kiem tra trung lap du lieu
+		$dup = $this->_MChuyennganh->dupliObj(0, $this->_Tenchuyennganh);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên chuyên ngành này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MChuyennganh->addobj($this->_Chuyennganh);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// cap nhat d lieu
+	public function updateAction(){
+		$id = $this->_getParam('id');
+		
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+		
+		// kiem tra trung lap du lieu
+		$dup = $this->_MChuyennganh->dupliObj($id, $this->_Tenchuyennganh);
+		if($dup > 0){
+			echo "<script type=\"text/javascript\">
+			    alert('Tên chuyên ngành này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		}else{
+			$this->_MChuyennganh->updateObj($id, $this->_Chuyennganh);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	// xoa du lieu
+	public function delAction(){
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObj = null;
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MChuyennganh->delObj ( $id );
+		} else {
+			return;
+		}
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

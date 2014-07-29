@@ -1,0 +1,515 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ *
+ * @
+ *
+ */
+class ChiphithuoctrongthangController extends PublicdetailController{
+	private $_MTinhhinhsdthuocbhyt;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private  $sMucluu=0;
+	private $varjsonMucluutru=""; 
+
+	
+	public function init(){
+		$this->initValue();
+		$this->_MTinhhinhsdthuocbhyt = new Model_Tinhhinhsdthuocbhyt();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+	}
+	
+	
+	
+	/* BÁO CÁO TÌNH HÌNH SỬ DỤNG THUỐC CHO BỆNH NHÂN BHYT */
+	public function sdthuocbnbhytAction(){
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != "") ? $_REQUEST ['Thang'] : "";
+		$sMucluu = (isset ( $_REQUEST ['sMucluutrufrm'] ) && $_REQUEST ['sMucluutrufrm'] != '') ? $_REQUEST ['sMucluutrufrm'] : '';
+		if ($thang != "") {
+		$this->_helper->layout()->disableLayout();
+		$helpExport = new HelpFuncExportExcel();
+		$objReader = PHPExcel_IOFactory::createReader("Excel5");
+		$colIndex = '';
+		$rowIndex = 0;
+		$objPHPExcel = new PHPExcel();
+		$sheet = $objPHPExcel->getActiveSheet();
+		
+		/*Bắt đầu set các giá trị, căn chỉnh style
+		 * Set giá trị tĩnh
+		 */
+		if($sMucluu>0)
+		{
+			try{
+			$jsonmucluu= $this->_MTinhhinhsdthuocbhyt->gettenmucluutruObj($sMucluu);
+			$varjsonMucluutru= $jsonmucluu[0]['Tenmucluutru'];
+			$varjsonMucluutru= strtoupper($varjsonMucluutru);
+			}
+			 catch ( Exception $e ) {
+		
+			}
+		}else
+		{
+			$varjsonMucluutru="";
+		}
+		$jsonObj = $this->_MTinhhinhsdthuocbhyt->getFetObj($sMucluu,$this->_ThongtincoquanId, $thang,$this->_Namhoatdong );
+		
+		 $sheet->setCellValue('A1', 'TTYT HUYỆN: '.mb_strtoupper($this->TblTinhbytramId['0']['Tenhuyen'], "utf8")); // $sheet->setCellValue('A1', 'TTYT HUYỆN: ' . $this->TblTinhbytramId[0]['Tenhuyen']);
+		 $sheet->mergeCellsByColumnAndRow(0, 1, 1, 1);
+		 $sheet->setCellValue('A2', $this->TblThongtincoquanbyId[0]['Tencoquan']);
+		 $sheet->mergeCellsByColumnAndRow(0, 2, 1, 2);
+		 $helpExport->setStyle_13_TNR($sheet, 'A1', 'B2');
+		 
+		 $sheet->setCellValue('C2','BÁO CÁO TÌNH HÌNH SỬ DỤNG THUỐC CHO BỆNH NHÂN '.$varjsonMucluutru);
+		 $sheet->mergeCellsByColumnAndRow(2, 2, 15, 2);
+		 $helpExport->setStyle_15_TNR_B_C($sheet, 'C2', 'P2');
+		 
+		 $sheet->setCellValue('A3', 'THÁNG ' . $thang . ' NĂM '.$this->_Namhoatdong);
+		 $sheet->mergeCellsByColumnAndRow(0, 3, 17, 3);
+		 $helpExport->setStyle_13_TNR_N_C($sheet, 'A3', 'A3');
+		 
+		 $rowStart = 5;
+		 $colStart = 'A';
+		 $rowIndex = $rowStart;
+		 $colIndex = $colStart;
+		 $sheet = $objPHPExcel->getActiveSheet();
+		 //Begin set width for columns
+		 $sheet->getColumnDimension('A')->setWidth(5);
+		 $sheet->getColumnDimension('B')->setWidth(30);
+		 $sheet->getColumnDimension('C')->setWidth(10);
+		 $sheet->getColumnDimension('D')->setWidth(10);
+		 $sheet->getColumnDimension('E')->setWidth(10);
+		 $sheet->getColumnDimension('F')->setWidth(10);
+		 $sheet->getColumnDimension('G')->setWidth(10);
+		 $sheet->getColumnDimension('H')->setWidth(10);
+		 $sheet->getColumnDimension('I')->setWidth(10);
+		 $sheet->getColumnDimension('J')->setWidth(10);
+		 $sheet->getColumnDimension('K')->setWidth(10);
+		 $sheet->getColumnDimension('L')->setWidth(10);
+		 $sheet->getColumnDimension('M')->setWidth(10);
+		 $sheet->getColumnDimension('N')->setWidth(10);
+		 $sheet->getColumnDimension('O')->setWidth(10);
+		 $sheet->getColumnDimension('P')->setWidth(10);
+		 //End set width for columns
+		 $colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'TT', $colIndex);
+		 $sheet->mergeCellsByColumnAndRow(0, $rowIndex, 0, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'TÊN THUỐC VÀ HÀM LƯỢNG', $colIndex);
+		 $sheet->mergeCellsByColumnAndRow(1, $rowIndex, 1, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'NƠI SẢN XUẤT', $colIndex);
+		 $sheet->mergeCellsByColumnAndRow(2, $rowIndex, 2, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'ĐVT', $colIndex);
+		 $sheet->mergeCellsByColumnAndRow(3, $rowIndex, 3, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'E' . $rowIndex, 'TỒN ĐẦU THÁNG', 'G');
+		 $sheet->mergeCellsByColumnAndRow(4, $rowIndex, 6, $rowIndex);
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'H' . $rowIndex, 'NHẬP TRONG THÁNG', 'J');
+		 $sheet->mergeCellsByColumnAndRow(7, $rowIndex, 9, $rowIndex);
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'K'. $rowIndex, 'XUẤT SD TRONG THÁNG', 'M');
+		 $sheet->mergeCellsByColumnAndRow(10, $rowIndex, 12, $rowIndex);
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'N'. $rowIndex, 'TỒN THÁNG CUỐI', 'P');
+		 $sheet->mergeCellsByColumnAndRow(13, $rowIndex, 15, $rowIndex);
+		 $helpExport->setStyle_11_TNR_B_C($sheet, $colStart . $rowIndex, $colIndex . ($rowIndex + 2));
+		 
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'E' . ($rowIndex + 1), 'SỐ LƯỢNG', 'E');
+		 $sheet->mergeCellsByColumnAndRow(4, ($rowIndex + 1), 4, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'F' . ($rowIndex + 1), 'ĐƠN GIÁ', 'F');
+		 $sheet->mergeCellsByColumnAndRow(5, ($rowIndex + 1), 5, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'G' . ($rowIndex + 1), 'THÀNH TIỀN', 'G');
+		 $sheet->mergeCellsByColumnAndRow(6, ($rowIndex + 1), 6, ($rowIndex + 2));
+		 
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'H' . ($rowIndex + 1), 'SỐ LƯỢNG', 'H');
+		 $sheet->mergeCellsByColumnAndRow(7, ($rowIndex + 1), 7, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'I' . ($rowIndex + 1), 'ĐƠN GIÁ', 'I');
+		 $sheet->mergeCellsByColumnAndRow(8, ($rowIndex + 1), 8, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'J' . ($rowIndex + 1), 'THÀNH TIỀN', 'J');
+		 $sheet->mergeCellsByColumnAndRow(9, ($rowIndex + 1), 9, ($rowIndex + 2));
+		 
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'K' . ($rowIndex + 1), 'SỐ LƯỢNG', 'K');
+		 $sheet->mergeCellsByColumnAndRow(10, ($rowIndex + 1), 10, ($rowIndex + 2));		 
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'L' . ($rowIndex + 1), 'ĐƠN GIÁ', 'L');
+		 $sheet->mergeCellsByColumnAndRow(11, ($rowIndex + 1), 11, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'M' . ($rowIndex + 1), 'THÀNH TIỀN', 'M');
+		 $sheet->mergeCellsByColumnAndRow(12, ($rowIndex + 1), 12, ($rowIndex + 2));
+		 
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'N' . ($rowIndex + 1), 'SỐ LƯỢNG', 'N');
+		 $sheet->mergeCellsByColumnAndRow(13, ($rowIndex + 1), 13, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'O' . ($rowIndex + 1), 'ĐƠN GIÁ', 'O');
+		 $sheet->mergeCellsByColumnAndRow(14, ($rowIndex + 1), 14, ($rowIndex + 2));
+		 $colIndex = $helpExport->setValueForSheet($sheet, 'P' . ($rowIndex + 1), 'THÀNH TIỀN', 'P');
+		 $sheet->mergeCellsByColumnAndRow(15, ($rowIndex + 1), 15, ($rowIndex + 2));
+
+		$rowIndex += 2;
+		
+		$count = 0;
+		$Tongdauthang=0;
+		$Tongsdtrongthang=0;
+		$Tongnhaptrongthang=0;
+		$Tongtonkho=0;
+		$formatIndex = 0;
+		if(count($jsonObj) >0){
+			foreach ($jsonObj as $row){
+				$count += 1;
+				$rowIndex +=1 ;
+				$colIndex = $colStart;
+				$formatIndex = $rowIndex;
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $count, $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Tenthuoc'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Noisanxuat'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Tendonvi'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Sldauthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Dongiadauthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Thanhtiendauthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Slnhaptrongthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Dongianhaptrongthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Thanhtiennhaptrongthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Slsdtrongthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Dongiasdtrongthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Thanhtiensdtrongthang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Sltoncuoithang'], $colIndex);
+				$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Dongiatoncuoithang'], $colIndex);
+				$helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Thanhtientoncuoithang'], $colIndex);
+				$Tongdauthang+=$row['Thanhtiendauthang'];
+				$Tongnhaptrongthang+=$row['Thanhtiennhaptrongthang'];
+				$Tongsdtrongthang+=$row['Thanhtiensdtrongthang'];
+				$Tongtonkho+=$row['Thanhtientoncuoithang'];
+				$helpExport->setStyle_11_TNR ( $sheet, 'A' . $rowIndex, 'P' . $rowIndex );
+			}
+		}
+			$rowIndex += 1;
+			$count += 1;
+			$sheet->setCellValue('A'.$rowIndex, $count);
+			$sheet->setCellValue('B'.$rowIndex, 'Cộng');
+			$sheet->setCellValue('G'.$rowIndex,$Tongdauthang);
+			$sheet->setCellValue('J'.$rowIndex,$Tongnhaptrongthang);
+			$sheet->setCellValue('M'.$rowIndex, $Tongsdtrongthang);
+			$sheet->setCellValue('P'.$rowIndex, $Tongtonkho);//$jsonObj[0]['Tongtonkho']);
+			$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+		//$helpExport->setStyle_Align_Center ( $sheet, 'D' . $rowStart, 'R' . $rowIndex );
+		
+		//$helpExport->setStyle_10_TNR_NO_C($sheet, 'A'.$rowIndex, 'R'.$rowIndex);
+		//$helpExport->setStyleRowDataTable ( $sheet, 'A' . $rowIndex, 'R' . $rowIndex );
+		 
+		 $sheet->getStyle ( 'A' . $rowStart . ':' . 'P' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		 $sheet->getStyle ( 'A' . $rowStart . ':' . 'P' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		 $objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+		 
+
+		 $rowIndex += 2;
+ $sheet->setCellValue ( 'L' . $rowIndex,  ', ngày ...tháng ...năm ' . $this->_Namhoatdong );		// $sheet->setCellValue ( 'L' . $rowIndex, $this->TblTinhbytramId[0]['Tenxa'] . ', ngày ...tháng ...năm ' . $this->_Namhoatdong );
+		 $sheet->mergeCellsByColumnAndRow ( 11, $rowIndex, 15, $rowIndex );
+		 $helpExport->setStyle_11_TNR_N_C($sheet, 'A' . $rowIndex, 'P' . $rowIndex);
+		 $rowIndex += 1;
+		 $sheet->setCellValue ( 'A' . $rowIndex, 'Người lập biểu ');
+		 $sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 1, $rowIndex );
+		 $sheet->setCellValue ( 'F' . $rowIndex, 'Cb giám định BHXH ');
+		 $sheet->mergeCellsByColumnAndRow ( 5, $rowIndex, 8, $rowIndex );
+		 $sheet->setCellValue ( 'L' . $rowIndex, 'Trạm trưởng trạm y tế' );
+		 $sheet->mergeCellsByColumnAndRow ( 11, $rowIndex, 15, $rowIndex );
+		 $helpExport->setStyle_11_TNR_B_C($sheet, 'A' . $rowIndex, 'P' . $rowIndex);
+		 $sheet->getStyle ( 'F' . $formatIndex . ':F' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'G' . $formatIndex . ':G' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'I' . $formatIndex . ':I' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'J' . $formatIndex . ':J' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'L' . $formatIndex . ':L' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'M' . $formatIndex . ':M' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'O' . $formatIndex . ':O' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 $sheet->getStyle ( 'P' . $formatIndex . ':P' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+		 /*
+		  * Set active sheet index to the first sheet, so Excel opens this as
+		 * the first sheet
+		 */
+		 $objPHPExcel->setActiveSheetIndex ( 0 );
+		 /* Redirect output to a clientâ€™s web browser (Excel5) */
+		 	
+		 header ( 'Content-Type: application/vnd.ms-excel' );
+		 header ( 'Content-Disposition: attachment;filename="Tinhhinhsdthuoc(' . date ( "d/m/Y" ) . ').xls"' );
+		 header ( 'Cache-Control: max-age=0' );
+		 $objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		 $objWriter->save ( 'php://output' );
+	 }
+	 
+	}
+	
+	public function sdthuocbnbhyttontheothangAction(){
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != "") ? $_REQUEST ['Thang'] : "";
+		$sMucluu = (isset ( $_REQUEST ['sMucluutrufrm'] ) && $_REQUEST ['sMucluutrufrm'] != '') ? $_REQUEST ['sMucluutrufrm'] : '';
+		if ($thang != "") {
+			$this->_helper->layout()->disableLayout();
+			$helpExport = new HelpFuncExportExcel();
+			$objReader = PHPExcel_IOFactory::createReader("Excel5");
+			$colIndex = '';
+			$rowIndex = 0;
+			$objPHPExcel = new PHPExcel();
+			$sheet = $objPHPExcel->getActiveSheet();
+			/*Bắt đầu set các giá trị, căn chỉnh style
+			 * Set giá trị tĩnh
+			*/
+			if($sMucluu>0)
+			{
+				try{
+					$jsonmucluu= $this->_MTinhhinhsdthuocbhyt->gettenmucluutruObj($sMucluu);
+					$varjsonMucluutru= ' CHO MỤC '.$jsonmucluu[0]['Tenmucluutru'];
+					$varjsonMucluutru= strtoupper($varjsonMucluutru);
+				}
+				catch ( Exception $e ) {
+			
+				}
+			}else
+			{
+				$varjsonMucluutru="";
+			}
+			$jsonObj = $this->_MTinhhinhsdthuocbhyt->getFetObj($sMucluu,$this->_ThongtincoquanId, $thang,$this->_Namhoatdong );
+	
+	
+			$sheet->setCellValue('A1', 'TTYT HUYỆN: '.mb_strtoupper($this->TblTinhbytramId['0']['Tenhuyen'], "utf8")); // $sheet->setCellValue('A1', 'TTYT HUYỆN: ' . $this->TblTinhbytramId[0]['Tenhuyen']);
+			$sheet->mergeCellsByColumnAndRow(0, 1, 1, 1);
+			$sheet->setCellValue('A2', $this->TblThongtincoquanbyId[0]['Tencoquan']);
+			$sheet->mergeCellsByColumnAndRow(0, 2, 1, 2);
+			$helpExport->setStyle_13_TNR($sheet, 'A1', 'B2');
+				
+			$varthang=$thang-1;
+			$sheet->setCellValue('C2','TỒN THÁNG '.$varthang.' CHUYỂN SANG THÁNG '.$thang.'/'.$this->_Namhoatdong.''.$varjsonMucluutru);
+			$sheet->mergeCellsByColumnAndRow(2, 2, 9, 2);
+			$helpExport->setStyle_13_TNR_B_C($sheet, 'C2', 'J2');
+				
+			
+		
+			
+				
+			$rowStart = 5;
+			$colStart = 'A';
+			$rowIndex = $rowStart;
+			$colIndex = $colStart;
+			$sheet = $objPHPExcel->getActiveSheet();
+			//Begin set width for columns
+			$sheet->getColumnDimension('A')->setWidth(5);
+			$sheet->getColumnDimension('B')->setWidth(35);
+			$sheet->getColumnDimension('C')->setWidth(12);
+			$sheet->getColumnDimension('D')->setWidth(15);
+			$sheet->getColumnDimension('E')->setWidth(15);
+			$sheet->getColumnDimension('F')->setWidth(15);
+		
+			
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'TT', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'TÊN THUỐC VÀ HÀM LƯỢNG', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'ĐVT', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'SỐ LƯỢNG', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'ĐƠN GIÁ', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'THÀNH TIỀN', $colIndex);
+			
+			$count = 0;
+			$Tongdauthang=0;
+		
+			$formatIndex = 0;
+			if(count($jsonObj) >0){
+				foreach ($jsonObj as $row){
+					if($row['Sldauthang']=='' || $row['Sldauthang'] == null)
+						continue;
+					$count += 1;
+					$rowIndex +=1 ;
+					$colIndex = $colStart;
+					$formatIndex = $rowIndex;
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $count, $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Tenthuoc'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Tendonvi'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Sldauthang'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Dongiadauthang'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Thanhtiendauthang'], $colIndex);
+					
+					$Tongdauthang+=$row['Thanhtiendauthang'];
+					
+				}
+			}
+			$rowIndex += 1;
+			$count += 1;
+			$sheet->setCellValue('A'.$rowIndex, $count);
+			$sheet->setCellValue('B'.$rowIndex, 'Cộng');
+			$sheet->setCellValue('F'.$rowIndex,$Tongdauthang);
+			$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+			//$helpExport->setStyle_Align_Center ( $sheet, 'D' . $rowStart, 'R' . $rowIndex );
+	
+			//$helpExport->setStyle_10_TNR_NO_C($sheet, 'A'.$rowIndex, 'R'.$rowIndex);
+			//$helpExport->setStyleRowDataTable ( $sheet, 'A' . $rowIndex, 'R' . $rowIndex );
+				
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'F' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'F' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+				
+	
+			$rowIndex += 2;
+			$sheet->setCellValue ( 'D' . $rowIndex,  ', ngày ...tháng ...năm ' . $this->_Namhoatdong );		// $sheet->setCellValue ( 'L' . $rowIndex, $this->TblTinhbytramId[0]['Tenxa'] . ', ngày ...tháng ...năm ' . $this->_Namhoatdong );
+			$sheet->mergeCellsByColumnAndRow ( 3, $rowIndex, 5, $rowIndex );
+			$helpExport->setStyle_11_TNR_N_C($sheet, 'A' . $rowIndex, 'd' . $rowIndex);
+			$rowIndex += 1;
+			$sheet->setCellValue ( 'A' . $rowIndex, 'Phụ trách dược ');
+			$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 1, $rowIndex );
+			
+			$sheet->setCellValue ( 'D' . $rowIndex, 'Trạm trưởng trạm y tế' );
+			$sheet->mergeCellsByColumnAndRow ( 3, $rowIndex, 5, $rowIndex );
+			$helpExport->setStyle_11_TNR_B_C($sheet, 'A' . $rowIndex, 'd' . $rowIndex);
+			$sheet->getStyle ( 'D' . $formatIndex . ':F' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+			$sheet->getStyle ( 'E' . $formatIndex . ':E' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+			$sheet->getStyle ( 'F' . $formatIndex . ':F' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+				/*
+			 * Set active sheet index to the first sheet, so Excel opens this as
+			* the first sheet
+			*/
+			$objPHPExcel->setActiveSheetIndex ( 0 );
+			/* Redirect output to a clientâ€™s web browser (Excel5) */
+	
+			header ( 'Content-Type: application/vnd.ms-excel' );
+			header ( 'Content-Disposition: attachment;filename="Tinhhinhsdthuoc(' . date ( "d/m/Y" ) . ').xls"' );
+			header ( 'Cache-Control: max-age=0' );
+			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+			$objWriter->save ( 'php://output' );
+		}
+	
+	}
+	public function sdthuocbnbhytchiphiAction(){
+		$thang = (isset ( $_REQUEST ['Thang'] ) && $_REQUEST ['Thang'] != "") ? $_REQUEST ['Thang'] : "";
+		$sMucluu = (isset ( $_REQUEST ['sMucluutrufrm'] ) && $_REQUEST ['sMucluutrufrm'] != '') ? $_REQUEST ['sMucluutrufrm'] : '';
+		if ($thang != "") {
+			$this->_helper->layout()->disableLayout();
+			$helpExport = new HelpFuncExportExcel();
+			$objReader = PHPExcel_IOFactory::createReader("Excel5");
+			$colIndex = '';
+			$rowIndex = 0;
+			$objPHPExcel = new PHPExcel();
+			$sheet = $objPHPExcel->getActiveSheet();
+			/*Bắt đầu set các giá trị, căn chỉnh style
+			 * Set giá trị tĩnh
+			*/
+			if($sMucluu>0)
+			{
+				try{
+					$jsonmucluu= $this->_MTinhhinhsdthuocbhyt->gettenmucluutruObj($sMucluu);
+					$varjsonMucluutru= ' CHO MỤC '.$jsonmucluu[0]['Tenmucluutru'];
+					$varjsonMucluutru= strtoupper($varjsonMucluutru);
+				}
+				catch ( Exception $e ) {
+						
+				}
+			}else
+			{
+				$varjsonMucluutru="";
+			}
+			$jsonObj = $this->_MTinhhinhsdthuocbhyt->getFetObj($sMucluu,$this->_ThongtincoquanId, $thang,$this->_Namhoatdong );
+	
+	
+			$sheet->setCellValue('A1', 'TTYT HUYỆN: '.mb_strtoupper($this->TblTinhbytramId['0']['Tenhuyen'], "utf8")); // $sheet->setCellValue('A1', 'TTYT HUYỆN: ' . $this->TblTinhbytramId[0]['Tenhuyen']);
+			$sheet->mergeCellsByColumnAndRow(0, 1, 1, 1);
+			$sheet->setCellValue('A2', $this->TblThongtincoquanbyId[0]['Tencoquan']);
+			$sheet->mergeCellsByColumnAndRow(0, 2, 1, 2);
+			$helpExport->setStyle_13_TNR($sheet, 'A1', 'B2');
+	
+			$varthang=$thang-1;
+			$sheet->setCellValue('C2','CHI PHÍ THUỐC TRONG THÁNG '.$thang.''.$varjsonMucluutru);
+			$sheet->mergeCellsByColumnAndRow(2, 2, 9, 2);
+			$helpExport->setStyle_13_TNR_B_C($sheet, 'C2', 'J2');
+	
+				
+	
+				
+	
+			$rowStart = 5;
+			$colStart = 'A';
+			$rowIndex = $rowStart;
+			$colIndex = $colStart;
+			$sheet = $objPHPExcel->getActiveSheet();
+			//Begin set width for columns
+			$sheet->getColumnDimension('A')->setWidth(5);
+			$sheet->getColumnDimension('B')->setWidth(35);
+			$sheet->getColumnDimension('C')->setWidth(12);
+			$sheet->getColumnDimension('D')->setWidth(15);
+			$sheet->getColumnDimension('E')->setWidth(15);
+			$sheet->getColumnDimension('F')->setWidth(15);
+	
+				
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'TT', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex. $rowIndex, 'TÊN THUỐC VÀ HÀM LƯỢNG', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'ĐVT', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'SỐ LƯỢNG', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'ĐƠN GIÁ', $colIndex);
+			$colIndex = $helpExport->setValueForSheet($sheet, $colIndex . $rowIndex, 'THÀNH TIỀN', $colIndex);
+				
+			$count = 0;
+			$Tongdauthang=0;
+	
+			$formatIndex = 0;
+			if(count($jsonObj) >0){
+				foreach ($jsonObj as $row){
+					if($row['Slsdtrongthang']=='' || $row['Slsdtrongthang'] == null)
+						continue;
+					
+					$count += 1;
+					$rowIndex +=1 ;
+					$colIndex = $colStart;
+					$formatIndex = $rowIndex;
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $count, $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Tenthuoc'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Tendonvi'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Slsdtrongthang'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Dongiasdtrongthang'], $colIndex);
+					$colIndex = $helpExport->setValueForSheet($sheet, $colIndex.$rowIndex, $row['Thanhtiensdtrongthang'], $colIndex);
+						
+					$Tongdauthang+=$row['Thanhtiensdtrongthang'];
+						
+				}
+			}
+			$rowIndex += 1;
+			$count += 1;
+			$sheet->setCellValue('A'.$rowIndex, $count);
+			$sheet->setCellValue('B'.$rowIndex, 'Cộng');
+			$sheet->setCellValue('F'.$rowIndex,$Tongdauthang);
+			$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+			//$helpExport->setStyle_Align_Center ( $sheet, 'D' . $rowStart, 'R' . $rowIndex );
+	
+			//$helpExport->setStyle_10_TNR_NO_C($sheet, 'A'.$rowIndex, 'R'.$rowIndex);
+			//$helpExport->setStyleRowDataTable ( $sheet, 'A' . $rowIndex, 'R' . $rowIndex );
+	
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'F' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$sheet->getStyle ( 'A' . $rowStart . ':' . 'F' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+			$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+	
+	
+			$rowIndex += 2;
+			$sheet->setCellValue ( 'D' . $rowIndex,  ', ngày ...tháng ...năm ' . $this->_Namhoatdong );		// $sheet->setCellValue ( 'L' . $rowIndex, $this->TblTinhbytramId[0]['Tenxa'] . ', ngày ...tháng ...năm ' . $this->_Namhoatdong );
+			$sheet->mergeCellsByColumnAndRow ( 3, $rowIndex, 5, $rowIndex );
+			$helpExport->setStyle_11_TNR_N_C($sheet, 'A' . $rowIndex, 'd' . $rowIndex);
+			$rowIndex += 1;
+			$sheet->setCellValue ( 'A' . $rowIndex, 'Phụ trách dược ');
+			$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 1, $rowIndex );
+				
+			$sheet->setCellValue ( 'D' . $rowIndex, 'Trạm trưởng trạm y tế' );
+			$sheet->mergeCellsByColumnAndRow ( 3, $rowIndex, 5, $rowIndex );
+			$helpExport->setStyle_11_TNR_B_C($sheet, 'A' . $rowIndex, 'd' . $rowIndex);
+			$sheet->getStyle ( 'D' . $formatIndex . ':F' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+			$sheet->getStyle ( 'E' . $formatIndex . ':E' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+			$sheet->getStyle ( 'F' . $formatIndex . ':F' . $rowIndex )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_VND_SIMPLE );
+			/*
+			 * Set active sheet index to the first sheet, so Excel opens this as
+			* the first sheet
+			*/
+			$objPHPExcel->setActiveSheetIndex ( 0 );
+			/* Redirect output to a clientâ€™s web browser (Excel5) */
+	
+			header ( 'Content-Type: application/vnd.ms-excel' );
+			header ( 'Content-Disposition: attachment;filename="Tinhhinhsdthuoc(' . date ( "d/m/Y" ) . ').xls"' );
+			header ( 'Cache-Control: max-age=0' );
+			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+			$objWriter->save ( 'php://output' );
+		}
+	
+	}
+	
+	
+}

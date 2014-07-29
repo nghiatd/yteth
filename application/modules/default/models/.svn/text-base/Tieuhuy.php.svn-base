@@ -1,0 +1,737 @@
+<?php
+class Model_Tieuhuy
+{
+	protected $db;
+
+	private $str_query = "SELECT Id, PhieukhambenhId, Trangthai , Mahoadon as Maphieunhap, Nguoinhapxuat, 
+			BophanId, Tongso, Ghichu, ThongtincoquanId, Dang,
+			(DATE_FORMAT(Ngaynhapxuat,'%d/%m/%Y')) AS Ngaynhapxuat,
+			(SELECT Tenphongban FROM  tbldm_phongban WHERE Id = BophanId) AS Bophan ";
+	
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+
+	public function getFetObj($sort, $order, $offset, $rows, $ThongtincoquanId, $Namhoatdong) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhapxuat WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong = $Namhoatdong and Trangthai = 3" );
+		$row = $query->fetchAll ();
+			$query = $this->db->query ( $this->str_query . "FROM tblnhapxuat WHERE ThongtincoquanId = $ThongtincoquanId AND Trangthai = 3 and Namhoatdong = $Namhoatdong
+					ORDER BY $sort $order LIMIT $offset, $rows" );
+			$result ["total"] = $row [0] ['Total'];
+			$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+// ton o day kho
+	
+	// end ton kho
+	/* code chuan
+	 	select DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as TendonvitinhQD,
+			
+			(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong * IF(Dang=1,(select T from tbldm_thuoc where Id= DoituongId  ),(select T from tbldm_thietbivattu where Id= DoituongId  )),
+			(-1)*Soluong * IF(Dang=1,(select Ty from tbldm_thuoc where Id= DoituongId  ),(select Ty from tbldm_thietbivattu where Id= DoituongId  ))
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,TendonvitinhQD,ThongtincoquanId
+	 */
+	public function searthuocvattuObj($Tungay,$Denngay,$Luachon ,$Tendoituong,  $ThongtincoquanId, $Namhoatdong, $sort, $order, $offset, $rows ){
+		$result = array();
+		$wherengay="";
+		if($Tungay!="")
+			$wherengay=" and Hansudung>='$Tungay' ";
+		if($Denngay!="")
+		{
+			if($wherengay!="")
+				$wherengay =$wherengay." and Hansudung<='$Denngay' ";
+			else 
+				$wherengay =" and Hansudung<='$Denngay' ";
+		}
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchitietnhapxuat 
+				WHERE  tblchitietnhapxuat.ThongtincoquanId = $ThongtincoquanId " );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		$strSql="";
+		if($Luachon==0)
+		{
+			$strSql="
+						
+				select Dongia,Dang, Tendonvitinh ,Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, Soluong  from  (
+				
+				select Dongia,DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+			
+			
+			(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong 
+			
+			,
+			(-1)*Soluong 
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,ThongtincoquanId
+				
+) as tbltonkho where 
+			
+			 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong and Dang=1 $wherengay
+			 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0
+			
+			
+									ORDER BY $sort $order LIMIT $offset, $rows
+									
+									
+					";
+			
+		
+		}
+		if($Luachon==1)
+			$strSql="
+				select Dongia, Dang,Tendonvitinh ,Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, Soluong  from  (
+				
+				select Dongia,DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+			(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong ,
+			(-1)*Soluong 
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,ThongtincoquanId
+				
+) as tbltonkho where 
+			
+			 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong and Dang=0 $wherengay
+			 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0
+			
+			
+					ORDER BY $sort $order LIMIT $offset, $rows
+					";
+		if($Luachon==2)
+		{
+			$strSql ="select Dongia,Dang,Tendonvitinh , Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, Soluong  from  (
+				
+				select Dongia,DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+		
+				(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong ,
+			(-1)*Soluong 
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,ThongtincoquanId
+				
+) as tbltonkho where 
+			
+			 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong  
+			 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0 $wherengay
+			
+			
+						
+				
+					ORDER BY $sort $order LIMIT $offset, $rows ";
+		}
+		$query = $this->db->query ($strSql );
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+
+	public function searthuoc($Tungay,$Denngay,$Luachon ,$Tendoituong,  $ThongtincoquanId, $Namhoatdong, $sort, $order, $offset, $rows ){
+		$result = array();
+		$wherengay="";
+		if($Tungay!="" || $Tungay !=null)
+			$wherengay=" and Hansudung>='$Tungay' ";
+		if($Denngay!="" || $Denngay!=null)
+		{
+			if($wherengay!="")
+				$wherengay =$wherengay." and Hansudung<='$Denngay' ";
+			else
+				$wherengay =" and Hansudung<='$Denngay' ";
+		}
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblchitietnhapxuat
+				WHERE  tblchitietnhapxuat.ThongtincoquanId = $ThongtincoquanId " );
+				$row = $query->fetchAll ();
+				$result ["total"] = $row [0] ['Total'];
+				$strSql="";
+				if($Luachon==0)
+				{
+					$strSql="
+	
+					select Dongia,Dang, Tendonvitinh ,Idthuoc as Id,Tenthuocvattu as Tenthuoc,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung,  Soluong  from  (
+	
+					select Dongia,DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+					IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+					IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+					
+					(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+	
+					(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong
+	
+					,
+					Sum(
+					IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+					Soluong ,
+					(-1)*Soluong 
+					) )
+	
+	
+	
+					AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,Tendonvitinh,ThongtincoquanId
+	
+					) as tbltonkho where
+						
+				 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong and Dang=1 $wherengay
+				 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0
+				 	
+				 	
+				 ORDER BY $sort $order LIMIT $offset, $rows
+						
+						
+				 ";
+				 	
+	
+				}
+				if($Luachon==1)
+					$strSql="
+					select  Dongia,Dang,Tendonvitinh ,Idthuoc as Id,Tenthuocvattu as Tenthuoc,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, Soluong  from  (
+	
+					select Dongia,DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+					IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+					IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+					
+					
+					(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+	
+					(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong
+	
+					,
+					Sum(
+					IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+					Soluong ,
+					(-1)*Soluong 
+					) )
+	
+	
+	
+					AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,ThongtincoquanId
+	
+					) as tbltonkho where
+						
+				 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong and Dang=0 $wherengay
+				 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0
+				 	
+				 	
+				 ORDER BY $sort $order LIMIT $offset, $rows
+				 ";
+				 if($Luachon==2)
+				 {
+					$strSql ="select Dongia,Dang,Tendonvitinh , Idthuoc as Id,Tenthuocvattu as Tenthuoc,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung,  Soluong  from  (
+	
+					select Dongia,DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+					IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+					IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+					
+					
+					(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+	
+					(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong
+	
+					,
+					Sum(
+					IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+					Soluong ,
+					(-1)*Soluong 
+					) )
+	
+	
+	
+					AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,ThongtincoquanId
+	
+					) as tbltonkho where
+						
+				 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong
+				 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0 $wherengay
+				 	
+				 	
+	
+	
+				 ORDER BY $sort $order LIMIT $offset, $rows ";
+	}
+				$query = $this->db->query ($strSql );
+			$result ['rows'] = $query->fetchAll ();
+			return $result;
+		}
+	
+	public function dupliObj($mapn, $ThongtincoquanId) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhapxuat
+				WHERE Trangthai = 2 and ThongtincoquanId = $ThongtincoquanId AND Mahoadon =  '$mapn'" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	public function dupObj($id, $mapn, $thongtincoquanId) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhapxuat
+				WHERE  ThongtincoquanId = $thongtincoquanId AND Mahoadon =  '$mapn'" );
+		if ($id != 0) {
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhapxuat WHERE  Id != $id AND ThongtincoquanId = $thongtincoquanId AND Mahoadon = '$mapn'" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	} 
+	
+	public function getFetObjByMaphieunhap($Namhoatdong,$Mahoadon, $ThongtincoquanId) {
+		$query = $this->db->query ( $this->str_query . " FROM tblnhapxuat WHERE Mahoadon = '$Mahoadon' and Trangthai = 3 AND Namhoatdong=$Namhoatdong and ThongtincoquanId = $ThongtincoquanId" );
+	return $query->fetchAll ();
+	}
+
+	public function getdetailObjByMaphieunhap($Mahoadon, $ThongtincoquanId) {
+		$query = $this->db->query ( "	select	Id, Mahoadon , DoituongId as cId,
+				
+			
+				(select Tenthuoc from tbldm_thuoc where Id=tblchitietnhapxuat.DoituongId ) as cTenthuoc,
+					 ( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id=tblchitietnhapxuat.DoituongId) ) as cTendonvitinh
+				
+				,
+				Soluong AS cSoluong, Dongia AS cDongia,'Thuốc' as cTenmuc,Dang as cDang, Ghichu as cGhichu,ThongtincoquanId
+				from tblchitietnhapxuat		where tblchitietnhapxuat.Dang=1 and Mahoadon='$Mahoadon' and ThongtincoquanId =$ThongtincoquanId
+					UNION ALL
+				select	Id, Mahoadon ,DoituongId as cId,
+				(select Tenthietbivattu from tbldm_thietbivattu where Id=tblchitietnhapxuat.DoituongId ) as cTenthuoc,
+				
+				 ( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id=tblchitietnhapxuat.DoituongId) ) as cTendonvitinh
+				
+				,
+				Soluong AS cSoluong, Dongia AS cDongia,  'Thiết bị' as cTenmuc,Dang as cDang, Ghichu as cGhichu,ThongtincoquanId
+				from tblchitietnhapxuat		where  tblchitietnhapxuat.Dang=0 and Mahoadon='$Mahoadon' and ThongtincoquanId =$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	
+	
+	
+	public function getObjthuoc($sort, $order, $offset, $rows, $ThongtincoquanId,$Namhoatdong){
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total, tblnhapxuat.Trangthai AS Trangthai FROM tblchitietnhapxuat,
+					tblnhapxuat	WHERE tblchitietnhapxuat.ThongtincoquanId = $ThongtincoquanId AND
+					tblchitietnhapxuat.Mahoadon = tblnhapxuat.Mahoadon " );
+		$row = $query->fetchAll ();
+		$query = $this->db->query(" 
+		select Idthuoc,Dang,Soluong,Tendonvitinh,Tenthuocvattu,
+				
+				
+				 (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung
+				
+				 from 		
+				(select tbltonkho.Idthuoc,tbltonkho.Dang, sum(tbltonkho.Soluong) as Soluong,tbltonkho.Tendonvitinh,Tenthuocvattu,Hansudung from
+				  (SELECT DoituongId as Idthuoc,Dang, (-1)* sum(Soluong) as Soluong,Hansudung
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id=DoituongId )) as Tendonvitinh
+				,
+				(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=1 
+				and ThongtincoquanId=$ThongtincoquanId and
+				Mahoadon in (
+				select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+				
+				and Namhoatdong<=$Namhoatdong and Trangthai!=1
+				)
+				
+				GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh 
+				
+				union all
+				
+				SELECT DoituongId as Idthuoc,Dang,  sum(Soluong) as Soluong,Hansudung
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id=DoituongId )) as Tendonvitinh
+				,
+				(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=1 
+				and ThongtincoquanId=$ThongtincoquanId and
+				Mahoadon in (
+				select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+				
+				and Namhoatdong<=$Namhoatdong and Trangthai=1
+				)
+				
+				GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh ) as tbltonkho
+								
+								where tbltonkho.Soluong !=0
+				group by tbltonkho.Idthuoc ,tbltonkho.Dang,tbltonkho.Tenthuocvattu,tbltonkho.Tendonvitinh
+								
+								
+					) 	as tbltrunggian where tbltrunggian.Soluong>0 		
+					ORDER BY $sort $order LIMIT $offset, $rows");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function getObjvattu($sort, $order, $offset, $rows, $ThongtincoquanId,$Namhoatdong){
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total, tblnhapxuat.Trangthai AS Trangthai FROM tblchitietnhapxuat,
+					tblnhapxuat	WHERE tblchitietnhapxuat.ThongtincoquanId = $ThongtincoquanId AND
+					tblchitietnhapxuat.Mahoadon = tblnhapxuat.Mahoadon " );
+		$row = $query->fetchAll ();
+		$query = $this->db->query(" 
+			select Idthuoc,Dang,Soluong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung,Tendonvitinh,Tenthuocvattu from (select tbltonkho.Idthuoc,tbltonkho.Dang, sum(tbltonkho.Soluong) as Soluong,Hansudung,tbltonkho.Tendonvitinh,Tenthuocvattu from
+			  (SELECT DoituongId as Idthuoc,Dang, (-1)* sum(Soluong) as Soluong,Hansudung
+			,
+			(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id=DoituongId )) as Tendonvitinh
+			,
+			(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=0 
+			and ThongtincoquanId=$ThongtincoquanId and
+			Mahoadon in (
+			select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+			
+			and Namhoatdong<=$Namhoatdong and Trangthai!=1 
+			)
+			
+			GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh 
+			
+			union all
+			
+			SELECT DoituongId as Idthuoc,Dang,  sum(Soluong) as Soluong, Hansudung
+			,
+			(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id=DoituongId )) as Tendonvitinh
+			,
+			(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=0 
+			and ThongtincoquanId=$ThongtincoquanId and
+			Mahoadon in (
+			select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+			
+			and Namhoatdong<=$Namhoatdong and Trangthai=1
+			)
+
+GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh ) as tbltonkho 
+group by tbltonkho.Idthuoc ,tbltonkho.Dang,tbltonkho.Tenthuocvattu,tbltonkho.Tendonvitinh) as tbltrunggian 
+				where tbltrunggian.Soluong >0
+					ORDER BY $sort $order LIMIT $offset, $rows");
+			$result ["total"] = $row [0] ['Total'];
+			$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function getallObj($sort, $order, $offset, $rows, $ThongtincoquanId,$Namhoatdong){
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total, tblnhapxuat.Trangthai AS Trangthai FROM tblchitietnhapxuat,
+					tblnhapxuat	WHERE tblchitietnhapxuat.ThongtincoquanId = $ThongtincoquanId AND 
+					tblchitietnhapxuat.Mahoadon = tblnhapxuat.Mahoadon " );
+		$row = $query->fetchAll ();
+		$query = $this->db->query("
+				select tblthomnd.Idthuoc, tblthomnd.Dang,tblthomnd.Soluong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung,tblthomnd.Tendonvitinh,tblthomnd.Tenthuocvattu from
+				
+				((select tbltonkho.Idthuoc,tbltonkho.Dang, sum(tbltonkho.Soluong) as Soluong,Hansudung,tbltonkho.Tendonvitinh,Tenthuocvattu from
+  (SELECT DoituongId as Idthuoc,Dang, (-1)* sum(Soluong) as Soluong,Hansudung
+,
+(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id=DoituongId )) as Tendonvitinh
+,
+(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=1 
+and ThongtincoquanId=$ThongtincoquanId and
+Mahoadon in (
+select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+
+and Namhoatdong<=$Namhoatdong and Trangthai!=1
+)
+
+GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh 
+
+union all
+
+SELECT DoituongId as Idthuoc,Dang,  sum(Soluong) as Soluong,Hansudung
+,
+(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id=DoituongId )) as Tendonvitinh
+,
+(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=1 
+and ThongtincoquanId=$ThongtincoquanId and
+Mahoadon in (
+select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+
+and Namhoatdong<=$Namhoatdong and Trangthai=1
+)
+
+GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh ) as tbltonkho
+group by tbltonkho.Idthuoc ,tbltonkho.Dang,tbltonkho.Tenthuocvattu,tbltonkho.Tendonvitinh) 
+				union all
+				
+				(select tbltonkho.Idthuoc,tbltonkho.Dang, sum(tbltonkho.Soluong) as Soluong,Hansudung,tbltonkho.Tendonvitinh,Tenthuocvattu from
+  (SELECT DoituongId as Idthuoc,Dang, (-1)* sum(Soluong) as Soluong,Hansudung
+,
+(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id=DoituongId )) as Tendonvitinh
+,
+(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=0 
+and ThongtincoquanId=$ThongtincoquanId and
+Mahoadon in (
+select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+
+and Namhoatdong<=$Namhoatdong and Trangthai!=1
+)
+
+GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh 
+
+union all
+
+SELECT DoituongId as Idthuoc,Dang,  sum(Soluong) as Soluong,Hansudung
+,
+(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id=DoituongId )) as Tendonvitinh
+,
+(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  ) as Tenthuocvattu FROM tblchitietnhapxuat where Dang=0 
+and ThongtincoquanId=$ThongtincoquanId and
+Mahoadon in (
+select Mahoadon from tblnhapxuat where ThongtincoquanId=$ThongtincoquanId
+
+and Namhoatdong<=$Namhoatdong and Trangthai=1
+)
+
+GROUP BY DoituongId ,Dang,Tenthuocvattu,Tendonvitinh ) as tbltonkho
+group by tbltonkho.Idthuoc ,tbltonkho.Dang,tbltonkho.Tenthuocvattu,tbltonkho.Tendonvitinh
+				)) as tblthomnd
+				
+				
+				where tblthomnd.Soluong >0
+						
+				
+					ORDER BY $sort $order LIMIT $offset, $rows");
+			$result ["total"] = $row [0] ['Total'];
+			$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+
+	public function addObj($_data) {
+	
+		$id = $this->db->insert ( 'tblnhapxuat', $_data );
+		return $id;
+	}
+	
+	public function addctObj($_data) {
+	
+		$id = $this->db->insert ('tblchitietnhapxuat', $_data );
+		return $id;
+	}
+
+	public function updateObj($_data, $_mapn, $_thongtincoquanid) {
+		$where [] = "Mahoadon = '$_mapn'";
+		$where [] = "ThongtincoquanId = $_thongtincoquanid";
+		$where [] = "Trangthai = 2";
+		$id = $this->db->update ( 'tblnhapxuat', $_data, $where );
+		return $id;
+	}
+	
+	public function delctObj($Mahoadon, $ThongtincoquanId) {
+		$where [] = "Mahoadon = '$Mahoadon'";
+		$where [] = "ThongtincoquanId = $ThongtincoquanId";
+		//$where [] ="Dang=1";
+		$idDel = $this->db->delete ( 'tblchitietnhapxuat', $where );
+		return $idDel;
+	}
+
+	public function delObj($_mapn, $ThongtincoquanId) {
+		$where [] = "Mahoadon= '$_mapn'";
+		$where [] = "Trangthai = 3";
+		$where [] = " ThongtincoquanId = $ThongtincoquanId";
+		$idDel = $this->db->delete ( 'tblnhapxuat', $where );
+		return $idDel;
+	}
+
+	public function searObj($Hoadon, $Tungaynhap,$Denngaynhap, $Nguoinhap, $Bophan, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows ){
+		$result = array();
+	
+		$where = " Mahoadon LIKE '%$Hoadon%' ";
+		if($Nguoinhap!=''){
+			$where = $where." AND Nguoinhapxuat LIKE '%$Nguoinhap%' ";
+		}
+		if($Bophan != ''){
+			$where = $where." AND BophanId = $Bophan ";
+		}
+		if ($Tungaynhap != '')
+			$where = $where." AND Ngaynhapxuat >='$Tungaynhap' ";
+		if ($Denngaynhap != '')
+			$where = $where." AND Ngaynhapxuat <='$Denngaynhap' ";
+			
+	
+		// Lay tong so ban ghi
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhapxuat
+				WHERE Namhoatdong <=$namhoatdong AND Trangthai = 3  AND ThongtincoquanId = $thongtincoquanId AND  $where" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+		// Thuc hien cau lenh truy xuat du lieu
+		$query = $this->db->query ( $this->str_query . " FROM tblnhapxuat
+				WHERE Namhoatdong <=$namhoatdong AND Trangthai = 3 AND ThongtincoquanId = $thongtincoquanId AND $where ORDER BY $sort $order LIMIT $offset, $rows" );
+	
+				$result ['rows'] = $query->fetchAll ();
+				return $result;
+	}
+
+	public function getchitiet($thongtincoquanId, $namhoatdong, $id){
+		$query = $this->db->query ( "	select	Id, Mahoadon , DoituongId,
+				(select Tenthuoc from tbldm_thuoc where Id=tblchitietnhapxuat.DoituongId ) as Tenthuoc,
+				(SELECT (DATE_FORMAT(Ngaynhapxuat,'%d/%m/%Y')) FROM tblnhapxuat WHERE Mahoadon = '$id' AND Namhoatdong = $namhoatdong  and ThongtincoquanId =$thongtincoquanId) AS Ngaynhapxuat,
+				IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvi,
+				(SELECT BophanId FROM tblnhapxuat WHERE Mahoadon = '$id' AND Namhoatdong = $namhoatdong) AS bophanid,
+				(SELECT Tenphongban FROM tbldm_phongban WHERE Id = bophanid) AS Bophan,
+				(SELECT Nguoinhapxuat FROM tblnhapxuat WHERE Mahoadon = '$id' AND ThongtincoquanId =$thongtincoquanId) AS Nguoinhapxuat,
+				Soluong, Ghichu,ThongtincoquanId
+				from tblchitietnhapxuat		where tblchitietnhapxuat.Dang=1 and Mahoadon='$id' and ThongtincoquanId =$thongtincoquanId
+					UNION ALL
+				select	Id, Mahoadon ,DoituongId,
+				(select Tenthietbivattu from tbldm_thietbivattu where Id=tblchitietnhapxuat.DoituongId ) as Tenthuoc,
+				(SELECT (DATE_FORMAT(Ngaynhapxuat,'%d/%m/%Y')) FROM tblnhapxuat WHERE Mahoadon = '$id' AND Namhoatdong = $namhoatdong  and ThongtincoquanId =$thongtincoquanId) AS Ngaynhapxuat,
+				IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvi,
+				(SELECT BophanId FROM tblnhapxuat WHERE Mahoadon = '$id' AND Namhoatdong = $namhoatdong) AS bophanid,
+				(SELECT Tenphongban FROM tbldm_phongban WHERE Id = bophanid) AS Bophan,
+				(SELECT Nguoinhapxuat FROM tblnhapxuat WHERE Mahoadon = '$id'  and ThongtincoquanId =$thongtincoquanId) AS Nguoinhapxuat,
+				Soluong, Ghichu,ThongtincoquanId
+				from tblchitietnhapxuat		where  tblchitietnhapxuat.Dang=0 and Mahoadon='$id' and ThongtincoquanId =$thongtincoquanId" );
+		return $query->fetchAll ();
+	} 
+	
+public function get_ds_tonkho($Tungay,$Denngay,$Luachon ,$Tendoituong,  $ThongtincoquanId, $Namhoatdong){
+		$wherengay="";
+		if($Tungay!="")
+			$wherengay=" and Hansudung>='$Tungay' ";
+		if($Denngay!="")
+		{
+			if($wherengay!="")
+				$wherengay =$wherengay." and Hansudung<='$Denngay' ";
+			else 
+				$wherengay =" and Hansudung<='$Denngay' ";
+		}
+		$strSql="";
+if($Luachon==0)
+		{
+			$strSql="
+						
+				select Dang, Tendonvitinh ,Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung, Soluong  from  (
+				
+				select DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+			
+			
+			(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong 	
+			,
+			(-1)*Soluong 
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,ThongtincoquanId
+				
+) as tbltonkho where 
+			
+			 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong and Dang=1 $wherengay
+			 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0
+									
+									
+					";
+			
+		
+		}
+		if($Luachon==1)
+			$strSql="
+				select  Dang,Tendonvitinh as TendonvitinhQD,Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung,TendonvitinhQD as Tendonvitinh, Soluong  from  (
+				
+				select DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as TendonvitinhQD,
+			
+			(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong ,
+			(-1)*Soluong 
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,TendonvitinhQD,ThongtincoquanId
+				
+) as tbltonkho where 
+			
+			 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong and Dang=0 $wherengay
+			 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0
+					";
+		if($Luachon==2)
+		{
+			$strSql ="select Dang,Tendonvitinh as TendonvitinhQD, Idthuoc,Tenthuocvattu,Doituong, (DATE_FORMAT(Hansudung,'%d/%m/%Y')) as Hansudung,TendonvitinhQD as Tendonvitinh, Soluong  from  (
+				
+				select DoituongId as Idthuoc,  Dang,Hansudung,IF(Dang=1,(select Tenthuoc from tbldm_thuoc where Id= DoituongId  ),(select Tenthietbivattu from tbldm_thietbivattu where Id= DoituongId  )) as Tenthuocvattu,
+			IF(Dang=1,'Thuốc','Vật tư thiết bị') as Doituong,ThongtincoquanId,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as Tendonvitinh,
+			IF(Dang=1,(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thuoc where Id= DoituongId  )),( select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where Id= DoituongId  ))) as TendonvitinhQD,
+			
+			(select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Trangthai,
+
+(select Namhoatdong from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) as Namhoatdong 
+
+			,
+Sum(
+IF((select Trangthai from tblnhapxuat where Mahoadon=tblchitietnhapxuat.Mahoadon and ThongtincoquanId=tblchitietnhapxuat.ThongtincoquanId  ) =1,
+			Soluong,
+			(-1)*Soluong 
+			) )
+
+
+
+AS Soluong from tblchitietnhapxuat group by DoituongId ,Dang,Tenthuocvattu,Doituong,Tendonvitinh,TendonvitinhQD,ThongtincoquanId
+				
+) as tbltonkho where 
+			
+			 ThongtincoquanId=$ThongtincoquanId and Namhoatdong<=$Namhoatdong  
+			 and Tenthuocvattu like  '%$Tendoituong%' and tbltonkho.Soluong>0 $wherengay";
+		}
+		$query = $this->db->query ($strSql );
+		 return $query->fetchAll ();
+	}
+	
+	
+	
+	
+}

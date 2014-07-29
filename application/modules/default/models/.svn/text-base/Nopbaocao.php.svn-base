@@ -1,0 +1,86 @@
+<?php
+/**
+ * @author Phadh
+ * */
+ class Model_Nopbaocao{
+    
+    // ket noi co so du lieu
+    protected $db;
+    
+    // khoi tao ham dung cho class
+    public function __construct(){
+        $this->db = Zend_Registry::get("db");
+    }
+    
+    // hien thi du lieu theo phan trang
+    public function getFetObj($sort, $order, $offset, $rows, $ThongtincoquanId, $Namhoatdong){
+        $result = array();
+        $query = $this->db->query("SELECT COUNT(*) AS Total FROM tblbaocao WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong = $Namhoatdong");
+        $row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Dangnop,MucbaocaoId, KynopId, (DATE_FORMAT(Ngaynop,'%d/%m/%Y')) AS Ngaynop, Trangthai, ThongtincoquanId, Namhoatdong,
+        (SELECT Tenmucbaocao FROM tbldm_mucbaocao WHERE Id = MucbaocaoId) AS Mucbaocao,
+        (SELECT Tenkynop FROM tbldm_kynop WHERE Id = KynopId) AS Kynop, Dangnop,
+        IF( OCTET_LENGTH( File ) > 0,  '1',  '0' ) AS File
+         FROM tblbaocao WHERE ThongtincoquanId = $ThongtincoquanId AND Namhoatdong = $Namhoatdong ORDER BY $sort $order LIMIT $offset, $rows");
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll();
+		return $result;
+	}
+	
+	// kiem tra trun glap du lieu
+	public function dupliObj($kynop, $mucbaocao, $ThongtincoquanId, $Namhoatdong){
+		$query = $this->db->query ( "SELECT COUNT( * ) AS Total FROM tblbaocao
+				WHERE ThongtincoquanId = $ThongtincoquanId AND KynopId = $kynop AND MucbaocaoId = $mucbaocao AND Namhoatdong = $Namhoatdong" );
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+    
+    //them moi du leu bao cao
+    public function addObj($data){
+        $Id = $this->db-> insert('tblbaocao', $data);
+        return $Id;
+    }
+    
+    // cap nhat du lieu bao cao
+    public function updateObj($id, $data){
+        $Id = $this->db->update('tblbaocao' ,$data, 'Id = ' . $id);
+        return $Id;
+    }
+    
+    // xao du lieu muc bao cao
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblbaocao', 'Id = ' . $id );
+		return $Id;
+	}
+	
+	// hien thi du lieu chi tiet
+	public function getObjById_Detail($id){
+		$row = array();
+		$query = $this->db->query("SELECT Id, MucbaocaoId, KynopId, (DATE_FORMAT(Ngaynop,'%d/%m/%Y')) AS Ngaynop, Trangthai, ThongtincoquanId, Namhoatdong,
+				(SELECT Tenmucbaocao FROM tbldm_mucbaocao WHERE Id = MucbaocaoId) AS Mucbaocao,
+				(SELECT Tenkynop FROM tbldm_kynop WHERE Id = KynopId) AS Kynop,
+                IF( OCTET_LENGTH( File ) > 0,  '1',  '0' ) AS File,
+                (SELECT Giatri FROM tbldm_kynop WHERE Id = KynopId) AS Giatri
+				FROM tblbaocao WHERE Id = $id");
+		$row = $query->fetchAll ();
+		return $row;
+	}
+    
+    public function getDocObjById_Detail($id) {
+		$row = array ();
+		$query = $this->db->query ( "SELECT Id, KynopId, MucbaocaoId, File,
+				(SELECT Tenmucbaocao FROM tbldm_mucbaocao WHERE Id = MucbaocaoId) AS Tenmucbaocao,
+				(SELECT Tenkynop FROM tbldm_kynop WHERE Id = KynopId) AS Tenkynop
+				FROM tblbaocao WHERE Id = $id" );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+	
+	public function getmaubaocao($id){
+		$row = array();
+		$query = $this->db->query("SELECT Id, Tenmucbaocao, Filekem FROM tbldm_mucbaocao WHERE Id = $id");
+		$row = $query->fetchAll();
+		return $row;
+	}
+}

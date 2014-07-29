@@ -1,0 +1,104 @@
+<?php
+/********* ban 9/05/2013 thomnd da chuyen thanh quy doi
+ * Create by Phadh
+ */
+class Model_Thuoc {
+
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	
+	private $str_query = "SELECT Id, Tenthuoc, LoaithuocId, DonvitinhId,
+				(SELECT Tenloaithuoc FROM tbldm_loaithuoc WHERE Id = LoaithuocId) AS Loaithuoc,
+				(SELECT Tendonvitinh FROM tbldm_donvitinh WHERE Id = DonvitinhId) AS Donvitinh,
+			(SELECT Tendonvitinh FROM tbldm_donvitinh WHERE Id = DonvitinhId) AS Tendonvitinh,
+				Hinhanh ";
+	
+	public function getFetObj($sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thuoc" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_thuoc ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	
+	public function dupliObj($id, $tenthuoc, $loaithuocid, $donvitinhid) {
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thuoc
+				WHERE Tenthuoc = '$tenthuoc' AND LoaithuocId = '$loaithuocid' AND DonvitinhId = '$donvitinhid'" );
+		if($id != 0){
+			$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thuoc
+					WHERE Tenthuoc = '$tenthuoc' AND LoaithuocId = '$loaithuocid' AND DonvitinhId = '$donvitinhid'
+					AND Id != $id" );
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+
+	public function getIdName() {
+		$query = $this->db->query ( "SELECT Id, Tenthuoc, LoaithuocId, DonvitinhId FROM tdldm_thuoc" );
+		return $query->fetchAll ();
+	}
+	
+	// lay thong tin ci tiet 
+	
+	public function getObjById_Detail($id) {
+		$row = array ();
+		$query = $this->db->query ( $this->str_query . "FROM tbldm_thuoc WHERE Id = $id" );
+		$row = $query->fetchAll ();
+		return $row;
+	}
+
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tbldm_thuoc', $data );
+		return $Id;
+	}
+
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tbldm_thuoc', $data, 'Id = ' . $id );
+		return $Id;
+	}
+
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tbldm_thuoc', 'Id = ' . $id );
+		return $Id;
+	}
+	
+	
+	/////////search thong tin thuoc
+	public function searObj($Tenthuocs, $Loaithuocids,$sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = " Tenthuoc LIKE '%$Tenthuocs%' ";
+		if ($Loaithuocids != '')
+			$where = $where . "AND LoaithuocId LIKE '%$Loaithuocids%' ";
+		// Thuc hien cau lenh truy xuat du lieu
+		// Lay tong so ban ghi
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tbldm_thuoc WHERE $where" );
+		$row = $query->fetchAll ();
+		$result ["total"] = $row [0] ['Total'];
+	
+		$query = $this->db->query ( $this->str_query . " FROM tbldm_thuoc WHERE $where ORDER BY $sort $order LIMIT $offset, $rows" );
+	
+				$result ['rows'] = $query->fetchAll ();
+				return $result;
+	}
+	
+	//combogrid thuoc
+	public function getIdbyNamegrid($sort, $order, $offset, $rows, $stenthuoc, $sloaithuoc){
+		$result = array();
+		$where = "Tenthuoc LIKE '%$stenthuoc%'";
+		if($sloaithuoc != '')
+			$where = $where."AND LoaithuocId IN (SELECT Id FROM tbldm_loaithuoc WHERE Tenloaithuoc LIKE '%$sloaithuoc%')";
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldm_thuoc WHERE $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query($this->str_query."FROM tbldm_thuoc WHERE $where ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}
+?>

@@ -1,0 +1,37 @@
+<?php echo $this->doctype(); ?>
+<html lang="vi">
+<div id="nav-menu-top">
+	<ul>
+		<li><a href="#">Danh mục</a>
+			<ul>
+				<li><a href="#">Quốc tịch</a></li>
+				<li><a href="#">Dân tộc</a></li>
+				<li><a href="#">Trình độ học vấn</a></li>
+				<li><a href="#">Trình độ văn hóa</a></li>
+				<li><a href="#">Chức vụ</a></li>
+				<li><a href="#">Loại cán bộ</a></li>
+				<li><a href="#">Ưu tiên</a></li>
+				<li><a href="#">Tôn giáo</a></li>
+				<li><a href="#">Trình độ ngoại ngữ</a></li>
+				<li><a href="#">Phòng ban</a></li>
+				<li><a href="#">Chuyên ngành</a></li>
+				<li><a href="#">Chức danh</a></li>
+			</ul>
+		</li>
+		<li><a href="nhansu/nhanvien">Hồ sơ nhân sự</a>	</li>
+		<li><a href="#">Thông tin lương</a></li>
+		<li><a href="#">Tính lương</a></li>
+		<li><a href="#">Tổng hợp báo cáo</a>
+			<ul>
+				<li><a href="#">Báo cáo 1</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<?php echo $this->inlineScript()?>
+	<script type="text/javascript">
+ 	</script>
+</html>
+
+ 
+	

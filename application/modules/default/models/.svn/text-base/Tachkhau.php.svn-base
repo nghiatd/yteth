@@ -1,0 +1,148 @@
+<?php
+/**
+ * 
+ * @author thomnd
+ * Edit by Daitk
+ *
+ */
+class Model_Tachkhau {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Biến Query dùng chung trong Class.
+	 *
+	 * @var String
+	 */
+	private $str_query = "SELECT Id, Mahodan, Hoten, Gioitinh, Cmnd, (DATE_FORMAT(Ngaycap,'%d/%m/%Y')) AS Ngaycap, 
+			Noicap, Dienthoai, (DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh,
+			(SELECT ThontoId FROM tblchuhodan WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan) AS ThontoId, 
+			(SELECT tbldm_thonto.Tenthonto FROM tbldm_thonto,tblchuhodan WHERE tbldm_thonto.Id = tblchuhodan.ThontoId 
+			AND tblchuhodan.Mahodan = tblnhankhau.Mahodan 
+			AND tblchuhodan.ThongtincoquanId = tblnhankhau.ThongtincoquanId) AS Thonto ";
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong) {
+		$result = array ();
+		$diaban = 'Trạm y tế';
+		$query = $this->db->query ( "SELECT COUNT(*) AS Total FROM tblnhankhau WHERE Vanglai <> 1 AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong AND (Lachuho IS NULL OR Lachuho != 1) AND (Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00' OR YEAR(Ngayketthuc) = $namhoatdong) AND Tinhtrang != 0" );
+		$row = $query->fetchAll ();
+		$query = $this->db->query ( "SELECT Id, Mahodan, Hoten, Gioitinh, Cmnd, (DATE_FORMAT(Ngaycap,'%d/%m/%Y')) AS Ngaycap, Noicap, Dienthoai, 
+				(DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh, (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y')) AS Ngayketthuc, 
+				(SELECT ThontoId FROM tblchuhodan WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanId) AS ThontoId, 
+				(SELECT tbldm_thonto.Tenthonto FROM tbldm_thonto,tblchuhodan WHERE tbldm_thonto.Id = tblchuhodan.ThontoId AND tblchuhodan.Mahodan = tblnhankhau.Mahodan AND tblchuhodan.ThongtincoquanId = tblnhankhau.ThongtincoquanId) AS Thonto, 
+				(SELECT Diachi FROM tblchuhodan WHERE tblnhankhau.Mahodan = tblchuhodan.Mahodan and ThongtincoquanId = $thongtincoquanId) AS Diachi, 
+				(SELECT DATE_FORMAT(Ngaydangkyhokhau, '%d/%m/%Y') AS Ngaydangkyhokhau FROM tblchuhodan WHERE tblchuhodan.mahodan = tblnhankhau.mahodan AND tblchuhodan.ThongtincoquanId = $thongtincoquanId AND tblchuhodan.Namhoatdong <= $namhoatdong) AS Ngaydangkyhokhau 
+				FROM tblnhankhau WHERE Vanglai <> 1 AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong AND (Lachuho IS NULL OR Lachuho != 1) 
+				AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong) AND (Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00' OR YEAR(Ngayketthuc) = $namhoatdong) AND Tinhtrang != 0 ORDER BY $sort $order LIMIT $offset, $rows" );
+		$result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll ();
+		return $result;
+	}
+	// phadh
+	public function searObj($shoten, $gioitinh, $sdiachi, $sThonto, $thongtincoquanId, $namhoatdong, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$where = "Hoten LIKE '%$shoten%'";
+		if($sdiachi != '')
+			$where = $where."AND Mahodan IN (SELECT Mahodan  FROM tblchuhodan WHERE Diachi LIKE '%$sdiachi%')";
+		if($gioitinh == 'Tatca'){
+			$wheregioitinh = "";
+		}else{
+			$wheregioitinh = "AND Gioitinh LIKE '%$gioitinh%'";
+		}
+		if($sThonto != '' || $sThonto != 0){
+			$wherethonto = "AND Mahodan IN (SELECT Mahodan FROM tblchuhodan WHERE ThontoId = $sThonto)";
+		}else{
+			$wherethonto = "";
+		}
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tblnhankhau WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong
+								AND Vanglai <> 1 AND (Lachuho IS NULL OR Lachuho <> 1) 
+								AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong) 
+								AND (Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00' OR YEAR(Ngayketthuc) = $namhoatdong) AND Tinhtrang != 0
+								AND $where $wheregioitinh $wherethonto");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Mahodan, Hoten, Gioitinh, Cmnd, (DATE_FORMAT(Ngaycap,'%d/%m/%Y')) AS Ngaycap, Noicap, Dienthoai, 
+				(DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh, (DATE_FORMAT(Ngayketthuc,'%d/%m/%Y')) AS Ngayketthuc, 
+				(SELECT ThontoId FROM tblchuhodan WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanId) AS ThontoId, 
+				(SELECT tbldm_thonto.Tenthonto FROM tbldm_thonto,tblchuhodan WHERE tbldm_thonto.Id = tblchuhodan.ThontoId 
+				AND tblchuhodan.Mahodan = tblnhankhau.Mahodan AND tblchuhodan.ThongtincoquanId = tblnhankhau.ThongtincoquanId) AS Thonto, 
+				(SELECT Diachi FROM tblchuhodan WHERE tblnhankhau.Mahodan = tblchuhodan.Mahodan and ThongtincoquanId = $thongtincoquanId) AS Diachi, 
+				(SELECT DATE_FORMAT(Ngaydangkyhokhau, '%d/%m/%Y') AS Ngaydangkyhokhau FROM tblchuhodan WHERE tblchuhodan.mahodan = tblnhankhau.mahodan AND tblchuhodan.ThongtincoquanId = $thongtincoquanId AND tblchuhodan.Namhoatdong <= $namhoatdong) AS Ngaydangkyhokhau 
+				FROM tblnhankhau WHERE Vanglai <> 1 AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong AND (Lachuho IS NULL OR Lachuho != 1) 
+				AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId 
+				AND Namhoatdong <= $namhoatdong) AND (Ngayketthuc IS NULL OR Ngayketthuc = '0000-00-00' OR YEAR(Ngayketthuc) = $namhoatdong) 
+				AND Tinhtrang != 0 AND $where $wheregioitinh $wherethonto ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result ['rows'] = $query->fetchAll ();
+		return $result;
+	}
+	
+	// lê văn kiên
+	public function getcomboObj($q, $sort, $order, $offset, $rows) {
+		$result = array ();
+		$query = $this->db->query ( "SELECT Tenthonto,tbldm_xa.Tenxa AS Tenxa,tbldm_huyen.Tenhuyen AS Tenhuyen,tbldm_tinh.Tentinh	AS Tentinh
+				FROM tbldm_thonto,tbldm_xa,tbldm_huyen,tbldm_tinh WHERE (Tenthonto LIKE '%$q%' 
+				OR 
+					tbldm_xa.Tenxa Like '%$q%'
+				or
+					tbldm_huyen.Tenhuyen like '%$q%'
+				or
+					tbldm_tinh.Tentinh like '%$q%'
+			)
+				AND
+					(tbldm_tinh.Id=tbldm_huyen.TinhId
+				AND
+					tbldm_huyen.Id=tbldm_xa.HuyenId
+				AND 
+					tbldm_xa.Id = tbldm_thonto.XaId
+			)
+		" );
+		$result = $query->fetchAll ();
+		return $result;
+	}
+	
+	/**
+	 * In danh sach tach khau
+	 *
+	 * @param unknown_type $shoten        	
+	 * @param unknown_type $gioitinh        	
+	 * @param unknown_type $sdiachi        	
+	 * @param unknown_type $sThonto        	
+	 * @param unknown_type $thongtincoquanId        	
+	 * @param unknown_type $namhoatdong        	
+	 */
+	public function getdanhsach($shoten, $gioitinh, $sdiachi, $sThonto, $thongtincoquanId, $namhoatdong) {
+		$WHERE = "Hoten LIKE '%$shoten%'";
+		$wherethonto = "";
+		if ($sThonto != "")
+			$wherethonto = " and tblchuhodan.ThontoId =$sThonto ";
+		
+		if ($gioitinh != 'Tatca')
+			$WHERE = $WHERE . " AND Gioitinh LIKE '%$gioitinh%'
+			AND tblnhankhau.Mahodan in (SELECT tblchuhodan.Mahodan FROM tblchuhodan WHERE Diachi like '%$sdiachi%' and tblchuhodan.ThongtincoquanId=$thongtincoquanId   $wherethonto )
+			";
+		else
+			$WHERE = $WHERE . " AND tblnhankhau.Mahodan in (SELECT tblchuhodan.Mahodan FROM tblchuhodan WHERE  Diachi like '%$sdiachi%' and tblchuhodan.ThongtincoquanId=$thongtincoquanId   $wherethonto )
+		";
+		$query = $this->db->query ( " 	SELECT Id, Mahodan, Hoten, Gioitinh, Cmnd, (DATE_FORMAT(Ngaycap,'%d/%m/%Y')) AS Ngaycap,
+				Noicap, Dienthoai, (DATE_FORMAT(Ngaysinh,'%d/%m/%Y')) AS Ngaysinh,
+				(SELECT Diachi FROM tblchuhodan WHERE tblnhankhau.Mahodan = tblchuhodan.Mahodan and tblchuhodan.ThongtincoquanId=tblnhankhau.ThongtincoquanId) AS Diachi,
+				(SELECT ThontoId FROM tblchuhodan WHERE tblchuhodan.Mahodan = tblnhankhau.Mahodan and tblchuhodan.ThongtincoquanId=$thongtincoquanId) AS ThontoId
+				,(SELECT tbldm_thonto.Tenthonto FROM tbldm_thonto,tblchuhodan WHERE tbldm_thonto.Id = tblchuhodan.ThontoId
+				AND tblchuhodan.Mahodan = tblnhankhau.Mahodan
+				AND tblchuhodan.ThongtincoquanId = tblnhankhau.ThongtincoquanId) AS Thonto  FROM tblnhankhau
+	
+	
+				WHERE  ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong AND (Lachuho IS NULL OR Lachuho != 1)
+				AND Id NOT IN (SELECT NhankhauId FROM tblgiaykhaitu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong <= $namhoatdong)
+				AND $WHERE AND Vanglai != 1
+				" );
+		return $query->fetchAll ();
+	}
+}
+?>

@@ -1,0 +1,257 @@
+<?php 
+/**
+ * 
+ * @author Lê Văn Kiên
+ *thomnd edit
+ */
+include 'PublicdetailController.php';
+
+class XaController extends PublicdetailController
+{
+	private $_mxa;
+	public function init(){
+		$this->initValue();	
+		$this->_mxa = new Model_Xa();
+	}
+	public function indexAction()
+	{
+	
+	}
+	
+
+	public function jsonAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		
+		try 
+		{
+			$jsonObj = json_encode($this->_mxa->getFetObj($sort, $order, $offset, $rows));
+		}
+		catch (Exception $e)
+		{
+			echo "<script type=\"text/javascript\">
+			alert('Exception: $e->__toString();!');
+			</script>";
+		}
+	
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function comboAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		try 
+		{
+			$jsonObj = json_encode($this->_mxa->getIdName());
+		}
+		catch (Exception $e)
+		{
+			echo "<script type=\"text/javascript\">
+			alert('Exception: $e->__toString();!');
+			</script>";
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function combobythongtincoquanidAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		if($this->TblThongtincoquanbyId[0]['Phuluc'] !=1)
+		{
+			return;
+		}
+		$jsonObj = json_encode($this->_mxa->combobythongtincoquanid($this->TblThongtincoquanbyId[0]['CoquanId']));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function combobyidhuyenAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$huyenid = $this->_getParam('idhuyen');
+		if($huyenid == "")
+		{
+			return;
+		}
+		$jsonObj = json_encode($this->_mxa->getIdNameByHuyenId($huyenid));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction()
+	{
+			$this->_helper->layout()->disableLayout();
+			$jsonObj = array();
+			
+			$Tenxa = $_REQUEST['Tenxa'];
+			$huyenid = $_REQUEST['huyen'];
+			
+			if($huyenid == 0)
+			{
+				echo "<script type=\"text/javascript\">
+				    alert('Hãy lựa chọn quận/huyện!');
+					</script>";
+				return ;
+			}
+			
+			$dup = $this->_mxa->dupliObj($Tenxa, $huyenid);
+			if($dup > 0)
+			{
+				echo "<script type=\"text/javascript\">
+				    alert('Xã phường đã tồn tại!');
+					</script>";
+				$jsonObj["success"] = false;
+				return $this->view->jsonObj = json_encode($jsonObj);
+			}
+			else
+			{
+				$id = $this->_mxa->addObj($Tenxa, $huyenid);
+				$jsonObj["success"] = true;
+			}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function updateAction()
+	{
+		$this->_helper->layout()->disableLayout();
+	
+		$id = $this->_getParam('idxa');
+		$o_Tenxa = $this->_getParam('Tenxa');
+		$o_huyenid = $this->_getParam('huyenid');
+
+		$Tenxa = $_REQUEST['Tenxa'];
+		$huyenid = $_REQUEST['huyen'];
+			
+		if($huyenid == 0)
+		{
+			echo "<script type=\"text/javascript\">
+				    alert('Hãy lựa chọn quận/huyện!');
+					</script>";
+			return ;
+		}
+	
+		if(isset($id) && $id > 0)
+		{
+			if($Tenxa == $o_Tenxa && $huyenid == $o_huyenid)
+			{
+				$jsonObj["success"] = true;
+			}
+			else
+			{
+				$dup = $this->_mxa->dupliObj($Tenxa, $huyenid);
+				if($dup > 0)
+				{
+					echo "<script type=\"text/javascript\">
+					    alert('Xã/phường đã tồn tại!');
+						</script>";
+					$jsonObj["success"] = false;
+					return $this->view->jsonObj = json_encode($jsonObj);
+				}
+				else
+				{
+					$this->_mxa->updateObj($id, $Tenxa, $huyenid);
+					$jsonObj["success"] = true;
+				}
+			}
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function delAction()
+	{
+		$id = $_REQUEST['idxa'];
+		$delId = null;
+		$jsonObjv = null;
+	
+		if(isset($id) && $id > 0)
+		{
+			$delId = $this->_mxa->delObj($id);
+		}
+		else
+		{
+			return;
+		}
+	
+		if(!$delId)
+		{
+			$jsonObj = json_encode(array('success'=>false));
+		}
+		else
+		{
+			$jsonObj = json_encode(array('success'=>true));
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//lê văn kiên
+	// edit  Phadh
+	public function combogridAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Tenxa';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+	   
+		$this->_helper->layout ()->disableLayout ();
+        $sXa = $this->_getParam('sXa');
+        $sHuyen = $this->_getParam('sHuyen');
+        $sTinh = $this->_getParam('sTinh');
+		$q = isset($_POST['q']) ? strval($_POST['q']) : '';
+		$jsonObj = json_encode ( $this->_mxa->getcomboObj($sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// thomnd
+	public function combogridbycoquanhuyenAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Tenxa';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+	
+		$this->_helper->layout ()->disableLayout ();
+		$sXa = $this->_getParam('sXa');
+		$sHuyen = $this->_getParam('sHuyen');
+		$sTinh = $this->_getParam('sTinh');
+		$q = isset($_POST['q']) ? strval($_POST['q']) : '';
+		$jsonObj = json_encode ( $this->_mxa->combogridbycoquanhuyenObj($this->TblThongtincoquanbyId,$sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	//
+	
+	
+	public function combogridvanglaiAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Tenxa';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+	
+		$this->_helper->layout ()->disableLayout ();
+		$sXa = $this->_getParam('sX');
+		$sHuyen = $this->_getParam('sH');
+		$sTinh = $this->_getParam('sT');
+		$q = isset($_POST['q']) ? strval($_POST['q']) : '';
+		$jsonObj = json_encode ( $this->_mxa->getcomboObj($sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function combogridbhAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Tenxa';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+	
+		$this->_helper->layout ()->disableLayout ();
+		$sXa = $this->_getParam('sXa');
+		$sHuyen = $this->_getParam('sHuyen');
+		$sTinh = $this->_getParam('sTinh');
+		$q = isset($_POST['q']) ? strval($_POST['q']) : '';
+		$jsonObj = json_encode ( $this->_mxa->comboObj($sXa, $sHuyen, $sTinh, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

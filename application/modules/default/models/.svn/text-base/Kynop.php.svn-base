@@ -1,0 +1,62 @@
+<?php
+/**
+ * @author Phadh
+ * */
+ class Model_Kynop{
+    
+    // ket noi co so du lieu
+    protected $db;
+    
+    // khoi tao ham dung cho class
+    public function __construct(){
+        $this->db = Zend_Registry::get("db");
+    }
+    
+    // hien thi du lieu theo phan trang
+    public function getFetObj($sort, $order, $offset, $rows){
+        $result = array();
+        $query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_kynop");
+        $row = $query->fetchAll();
+        $query = $this->db->query("SELECT Id, Tenkynop, Giatri FROM tbldm_kynop ORDER BY $sort $order LIMIT $offset, $rows");
+        $result ["total"] = $row [0] ['Total'];
+		$result ["rows"] = $query->fetchAll();
+		return $result;
+    }
+    
+    //lay thong tin Id va Name cua doi tuong
+    public function getIdName(){
+        $query = $this->db->query("SELECT Id, Tenkynop, Giatri FROM tbldm_kynop");
+        return $query->fetchAll();
+    }
+    
+    // kiem tra trung lap du lieu
+    public function dupliObj($id, $Tenkynop){
+        $query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_kynop WHERE Tenkynop = '$Tenkynop'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_kynop WHERE Id != $id AND Tenkynop = '$Tenkynop'");
+		}
+		$row = $query->fetchAll();
+		$total = $row[0] ['Total'];
+		return $total;
+    }
+    
+    // them oi du lieu ky nop
+    public function addObj($data){
+        $Id = $this->db->insert('tbldm_kynop', $data);
+		return $Id;
+    }
+    
+    // cap nhat du lieu ky nop
+    public function updateObj($id, $data){
+        $Id = $this->db->update ( 'tbldm_kynop', $data, 'Id = ' . $id );
+		return $Id;
+    }
+    
+    // xoa du lieu ky nop
+    public function delObj($id){
+        $Id = $this->db->delete ( 'tbldm_kynop', 'Id = ' . $id );
+		return $Id;
+    }
+    
+    
+ }

@@ -1,0 +1,165 @@
+<?php
+
+include 'PublicdetailController.php';
+class ThuocController extends PublicdetailController {
+	private $_MThuoc;
+	private $_Tenthuoc;
+	private $_Thuoc = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MThuoc = new Model_Thuoc ();
+
+		if (isset ( $_REQUEST ['Tenthuoc'] ) && $_REQUEST ['Tenthuoc'] != '') {
+			$this->_Tenthuoc = $_REQUEST ['Tenthuoc'];
+			$hinhanh = $this->getImage ();
+
+			$this->_Thuoc = array (
+					'Tenthuoc' => $this->_Tenthuoc,
+					'LoaithuocId' => $_REQUEST ['LoaithuocId'],
+					'DonvitinhId' => $_REQUEST ['DonvitinhId'],
+					'Hinhanh' => $hinhanh
+			);
+		}
+	}
+	public function indexAction() {
+	}
+
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThuoc->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MThuoc->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+
+		$dup = $this->_MThuoc->dupliObj (0, $this->_Tenthuoc, $_REQUEST['LoaithuocId'], $_REQUEST['DonvitinhId']);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên thuốc này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThuoc->addObj ( $this->_Thuoc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+
+	public function updateAction() {
+		$id = $this->_getParam ( 'idthuoc' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MThuoc->dupliObj ($id, $this->_Tenthuoc, $_REQUEST ['LoaithuocId'], $_REQUEST ['DonvitinhId'] );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên thuốc này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MThuoc->updateObj ( $id, $this->_Thuoc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['idthuoc'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MThuoc->delObj ( $id );
+		} else {
+			return;
+		}
+
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+	public function getImage() {
+		$hinhanh = (isset ( $_FILES ['image'] ['tmp_name'] ) && $_FILES ['image'] ['tmp_name'] != "") ? $_FILES ['image'] ['tmp_name'] : "";
+		$imgData = "";
+		try {
+			if ($hinhanh != "")
+				$imgData = file_get_contents ( $hinhanh );
+		} catch ( Excpetion $e ) {
+			echo "<script type=\"text/javascript\">
+				alert('Exception: Upload image!');
+				</script>";
+		}
+		return $imgData;
+	}
+
+
+	////////////////search thong tin thuoc
+	public function searAction() {
+		$this->_helper->layout ()->disableLayout ();
+
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'asc';
+		$offset = ($page - 1) * $rows;
+
+		$Tenthuocs = $this->_getParam ( 'sTenthuoc' );
+		$Loaithuocids = $this->_getParam ( 'sLoaithuocId' );
+
+		$jsonObj = json_encode ( $this->_MThuoc->searObj ( $Tenthuocs, $Loaithuocids,$sort, $order, $offset, $rows ) );
+
+		return $this->view->jsonObj = $jsonObj;
+	}
+
+
+	// lay thong tin chi tiet cua thuoc
+
+	public function detailAction() {
+		$id = $this->_getParam ( 'idthuoc' );
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+
+		$jsonObj = $this->_MThuoc->getObjById_Detail ( $id );
+
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	// combogird
+	public function combogridAction(){
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$stenthuoc = $this->_getParam('sTenthuoc');
+		$sloaithuoc = $this->_getParam('sLoaithuoc');
+		$jsonObj = json_encode($this->_MThuoc->getIdbyNamegrid($sort, $order, $offset, $rows, $stenthuoc, $sloaithuoc));
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

@@ -1,0 +1,21 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ * Create thomnd
+ */
+class CtphieunhapthietbiController extends PublicdetailController {
+	protected $_MCTPhieunhapthietbi;
+	private $_ThontincoquanId;
+	public function init() {
+		$this->initValue ();
+		$this->_MCTPhieunhapthietbi = new Model_CTPhieunhapthietbi();
+		$this->_ThontincoquanId = $this->TblThongtincoquanbyId[0]['Id'];
+	}
+
+	public function getbymapnAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$maphieunhap = $this->_getParam ( 'Maphieunhap' );
+		$jsonObj = json_encode ( $this->_MCTPhieunhapthietbi->getFetObjByMaphieunhap ( $maphieunhap, $this->_ThontincoquanId ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

@@ -1,0 +1,100 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+class BiaendController extends PublicdetailController{
+	private $_MBiaend;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	
+	public function init(){
+		$this->initValue();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId[0]['Tencoquan'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId[0]['Namhoatdong'];
+	}
+	
+	
+	
+	public function indexAction(){
+		
+	}
+	
+	public function biaAction(){
+		$this->_helper->layout()->disableLayout();
+		$helpExport = new HelpFuncExportExcel();
+		$objReader = PHPExcel_IOFactory::createReader("Excel5");
+		
+		$objPHPExcel = new PHPExcel();
+		$sheet  = $objPHPExcel->getActiveSheet();
+
+		/*
+		 * 	 Bắt đầu set các giá trị
+		*/
+		$sheet->setCellValue('A2', 'Kiến nghị');
+		$sheet->mergeCellsByColumnAndRow(0, 2, 7, 2);
+		$helpExport->setStyle_15_TNR_B_C($sheet, 'A2', 'A2');
+		$sheet->setCellValue('A3', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 3, 7, 3);
+		$sheet->setCellValue('A4', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 4, 7, 4);
+		$sheet->setCellValue('A5', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 5, 7, 5);
+		$sheet->setCellValue('A6', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 6, 7, 6);
+		$sheet->setCellValue('A7', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 7, 7, 7);
+		$sheet->setCellValue('A8', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 8, 7, 8);
+		$sheet->setCellValue('A9', '......................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 9, 7, 9);
+		$sheet->setCellValue('A10', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 10, 7, 10);
+		$sheet->setCellValue('A11', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 11, 7, 11);
+		$sheet->setCellValue('A12', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 12, 7, 12);
+		$sheet->setCellValue('A13', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 13, 7, 13);
+		$sheet->setCellValue('A14', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 14, 7, 14);
+		$sheet->setCellValue('A15', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 15, 7, 15);
+		$sheet->setCellValue('A16', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 16, 7, 16);
+		$sheet->setCellValue('A17', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 17, 7, 17);
+		$sheet->setCellValue('A18', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 18, 7, 18);
+		$sheet->setCellValue('A19', '.....................................................................................................................................');
+		$sheet->mergeCellsByColumnAndRow(0, 19, 7, 19);
+
+		$sheet->setCellValue ( 'F21', 'Ngày... tháng... năm '.$this->_Namhoatdong );
+		$sheet->mergeCellsByColumnAndRow ( 5, 21, 7, 21 );
+		//$helpExport->setStyle_12_TNR_N_C($sheet, 'C20', 'C20');
+		$helpExport->setStyle_13_TNR_I_C ( $sheet, 'A3', 'F21' );
+		$sheet->setCellValue ( 'F22', 'Thủ trưởng đơn vị' );
+		$sheet->mergeCellsByColumnAndRow ( 5, 22, 7, 22 );
+		$helpExport->setStyle_13_TNR_B_C($sheet, 'F22', 'F22');
+		$sheet->setCellValue ( 'F23', '(Ký tên đóng dấu)' );
+		$sheet->mergeCellsByColumnAndRow ( 5, 23, 7, 23 );
+		$helpExport->setStyle_10_TNR_I_C ( $sheet, 'F23', 'F23' );
+		
+		$objPHPExcel->getActiveSheet ()->setTitle ( 'Bìa end' );
+		$objPHPExcel->setActiveSheetIndex ( 0 );
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="BiaEnd(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+	}
+	
+	
+}

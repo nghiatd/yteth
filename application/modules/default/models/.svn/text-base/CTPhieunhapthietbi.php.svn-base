@@ -1,0 +1,72 @@
+<?php
+/*
+ * Created thomnd
+ */
+class Model_CTPhieunhapthietbi {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	public function getFetObjByMaphieunhap($Mahoadon, $ThongtincoquanId) {
+		$query = $this->db->query ( "	select	Id,Mahoadon as Maphieunhap ,DoituongId as cId
+				
+				, (select Tenthietbivattu from tbldm_thietbivattu where Id=tblchitietnhapxuat.DoituongId		) as cTenthietbivattu
+				
+				
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where id=tblchitietnhapxuat.DoituongId) ) as Tendonvitinh
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where id=tblchitietnhapxuat.DoituongId) ) as cTendonvitinh
+				
+				,Soluong as cSoluong,Dongia as cDongia,(Soluong * Dongia) AS cThanhtien,NhacungcapId as cNhacungcapId,
+				(select Tennhacungcap from tbldm_nhacungcap where Id=tblchitietnhapxuat.NhacungcapId) as cTennhacungcap
+				,HangsanxuatId as cHangsanxuatId,
+				(select Tenhang from tbldm_hangsanxuat where Id=tblchitietnhapxuat.HangsanxuatId) as cTenhang
+				,
+				
+				
+				MucluutruId as cMucluutru,
+				
+				(SELECT Tenmucluutru FROM  tbldm_mucluutru WHERE Id = MucluutruId) AS cTenmucluutru,
+				
+				
+				NuocsanxuatId as cNuocsanxuatId,
+				(select Tennuocsanxuat from tbldm_nuocsanxuat where Id=tblchitietnhapxuat.NuocsanxuatId) as cTennuocsanxuat
+				,(DATE_FORMAT(Hansudung,'%d/%m/%Y')) 	  as cHansudung,Ghichu as cGhichu,ThongtincoquanId,
+				(Soluong * Dongia) AS Thanhtien
+			 from tblchitietnhapxuat		where Mahoadon='$Mahoadon' and Dang=0 and  ThongtincoquanId =$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	public function getFetObjByMaphieunhapExcel($Mahoadon, $ThongtincoquanId){
+		$query = $this->db->query ( "select	Id,Mahoadon,DoituongId
+				
+				, (select Tenthietbivattu from tbldm_thietbivattu where Id=tblchitietnhapxuat.DoituongId		) as Tenthietbivattu
+				
+				
+				,
+				(select Tendonvitinh from tbldm_donvitinh where Id in (select DonvitinhId from tbldm_thietbivattu where id=tblchitietnhapxuat.DoituongId) ) as Tendonvitinh
+				
+				,Soluong,Dongia,NhacungcapId,
+				(select Tennhacungcap from tbldm_nhacungcap where Id=tblchitietnhapxuat.NhacungcapId) as Tennhacungcap
+				,HangsanxuatId,
+				(select Tenhang from tbldm_hangsanxuat where Id=tblchitietnhapxuat.HangsanxuatId) as Tenhang
+				,
+				NuocsanxuatId,
+				(select Tennuocsanxuat from tbldm_nuocsanxuat where Id=tblchitietnhapxuat.NuocsanxuatId) as Tennuocsanxuat
+				,Hansudung,Ghichu,ThongtincoquanId
+			 from tblchitietnhapxuat		where  Dang=0  and Mahoadon='$Mahoadon' and ThongtincoquanId =$ThongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	public function addObj($_data) {
+
+		$id = $this->db->insert ('tblchitietnhapxuat', $_data );
+		return $id;
+	}
+	public function delObj($Mahoadon, $ThongtincoquanId) {
+		$where [] = "Mahoadon = '$Mahoadon'";
+		$where [] = "ThongtincoquanId = $ThongtincoquanId";
+		$where [] ="Dang=0";
+		$idDel = $this->db->delete ( 'tblchitietnhapxuat', $where );
+		return $idDel;
+	}
+}

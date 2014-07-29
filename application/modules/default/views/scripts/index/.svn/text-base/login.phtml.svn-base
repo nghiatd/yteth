@@ -1,0 +1,114 @@
+<!-- longnp -->
+
+<?php
+$user = $this->formText('User', '', array('style' => 'width: 200px; border:1px solid #00c8ff; border-radius:3px;', 'maxlength' => '24'));
+$pass = $this->formPassword('Pass', '', array('style' => 'width: 200px; margin-left:31px; border:1px solid #00c8ff; border-radius:3px;', 'maxlength' => '32'));
+$captcha_val = $this->formText('captcha', '', array('style' => 'width: 200px; margin-left:11px; border:1px solid #00c8ff; border-radius:3px;', 'maxlength' => '4'));
+$btnButton = $this->formSubmit('submit', 'Đăng nhập');
+?>
+
+
+<!-- Begin login form -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Đăng nhập NiDi JSC.</title>
+<link rel="shortcut icon" type="image/x-icon" href="../public/images/favicon.ico" />
+<style>
+
+	table #login{
+		box-shadow:5px 5px 10px 10px gray;
+		border-radius:10px;
+	}
+	tbody{
+		border-radius:10px;
+	}
+	.ten{
+		height:40px;
+		border-bottom:2px solid green;
+	}
+	input #User{
+		width:200px;
+	}
+	.form{
+		width:350px;
+		margin-top:20px;
+	}
+	.slogan{
+		padding:5px;
+		background:#004675;
+		height:20px;
+		border-radius:0px 0px 10px 10px;
+	}
+	.slogan p{
+		position:relative;
+		top:-15px;
+		text-align:center;
+		color:white;
+	}
+	#User{
+		margin-left:4px;
+	}
+	.form .field-login {margin: 0 0 10px;}
+.form .field-login input {
+	display: inline;
+    float: right;
+}
+</style>
+</head>
+<body>
+<table border="0" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 100px;">
+	<tr>
+		<td colspan="4">
+			<form id="appForm" action="" method="POST" enctype="multipart/form-data">
+				<table id="login" align="center" border="0" width="398" cellpadding="0" style="border-collapse: collapse" bgcolor="#ffffff">
+					<tr>
+						<td height="24">
+							<div class="ten" style="margin-top:15px; text-align:center;"><b>HỆ THỐNG QUẢN LÝ Y TẾ TỔNG HỢP</b></div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<table border="0" width="398" cellpadding="0" style="border-collapse: collapse; ">
+								
+								<tr style="background:url(../public/images/.jpg) no-repeat center left;">
+									<td width="20"></td>
+									<td valign="top"></td>
+									<td valign="top">
+									<div class="form">
+									<div class="field-login"><span>Tên đăng nhập:<?php echo $user; ?></span></div>
+									<div class="field-login"><span>Mật khẩu: <?php echo $pass; ?></span></div>
+									<div class="field-login"><span>Mã xác nhận: <?php echo $captcha_val?><?php echo $this->formHidden('captcha_id',$this->captchaID)?></span>
+									</div>
+									
+									</div>
+									<div style="margin-left:96px; margin-bottom:10px;"><?php $postLink = $this->url()?>
+									<?php echo $this->captcha;?><div>
+									</div></div>
+									<div style="margin-bottom:10px; margin-left:95px;">
+									<?php echo $btnButton; ?>
+									<input id="Quenmatkhau" name="Quenmatkhau" type="button" value="Quên mật khẩu"/></div>
+									</td>
+									
+								</tr>
+							</table>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<div class="slogan">
+							<p>Công ty Cổ phần Giải pháp Công nghệ NiDi - NiDi ,.JSC</p>
+							</div>
+						</td>
+					</tr>
+					
+				</table>
+			</form>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
+<!-- End login form -->

@@ -1,0 +1,59 @@
+<?php
+/**
+ * Phadh
+ */
+class Model_Chuyennganh{
+	
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	// hien thi danh sach theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_chuyennganh");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, Tenchuyennganh FROM tbldm_chuyennganh ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$reuslt['rows'] = $query->fetchAll();
+		return $reuslt;
+	}
+	
+	// lay du lieu combobox
+	public function getIdbyName(){
+		$query = $this->db->query("SELECT Id, Tenchuyennganh FROM tbldm_chuyennganh");
+		return $query->fetchAll();
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $tenchuyennganh){
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldm_chuyennganh WHERE Tenchuyennganh = '$tenchuyennganh'");
+		if($id != 0){
+			$query =$this->db->query("SELECT COUNT(*) AS Total FROM tbldm_chuyennganh WHERE Tenchuyennganh = '$tenchuyennganh' AND Id != $id");
+		}
+		$row = $query->fetchAll ();
+		$total = $row [0] ['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addobj($data){
+		$Id = $this->db->insert('tbldm_chuyennganh', $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function updateObj($id, $data){
+		$Id = $this->db->update('tbldm_chuyennganh', $data, 'Id='.$id);
+		return $Id;
+	}
+	
+	// xoa du lieu
+	public function delObj($id){
+		$Id = $this->db->delete ( 'tbldm_chuyennganh', 'Id =' . $id );
+		return $Id;
+	}
+	
+}

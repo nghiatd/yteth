@@ -1,0 +1,120 @@
+<?php
+
+/**********
+ * Create by Phadh
+ */
+
+include 'PublicdetailController.php';
+
+class LoaithuocController extends PublicdetailController
+{
+	private $_MLoaithuoc;
+	private $_Tenloaithuoc;
+	private $_Loaithuoc = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MLoaithuoc = new Model_Loaithuoc ();
+	
+		if (isset ( $_REQUEST ['Tenloaithuoc'] ) && $_REQUEST ['Tenloaithuoc'] != '') {
+			$this->_Tenloaithuoc = $_REQUEST ['Tenloaithuoc'];
+			$this->_Loaithuoc = array (
+					'Tenloaithuoc' => $_REQUEST ['Tenloaithuoc']
+			);
+		}
+	}
+	public function indexAction() {
+	}
+	// lay tat ca giu lieu cua bang loai thuoc
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+	
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MLoaithuoc->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function jsonaddrowAction() {
+	
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MLoaithuoc->getFetaddrowObj( $this->TblThongtincoquanbyId [0] ['Id']) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - Tra về Id và Tên của đối tượng (Combobox).
+	 *
+	 * @return string json
+	 */
+	public function comboAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MLoaithuoc->getIdName () );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	//them moi loai thuoc
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+	
+		$dup = $this->_MLoaithuoc->dupliObj ($this->_Tenloaithuoc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên loại thuốc này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MLoaithuoc->addObj ( $this->_Loaithuoc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// update loai thuoc
+	
+	public function updateAction() {
+		$id = $this->_getParam ( 'idloaithuoc' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MLoaithuoc->dupliObj ($this->_Tenloaithuoc );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên loại thuốc này đã có!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MLoaithuoc->updateObj ( $id, $this->_Loaithuoc );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	// xoa loai thuoc
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['idloaithuoc'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+	
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MLoaithuoc->delObj ( $id );
+		} else {
+			return;
+		}
+	
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	
+}

@@ -1,0 +1,99 @@
+<?php
+class Model_Daotaonhansu{
+	protected $db;
+	
+	public function __construct(){
+		$this->db = Zend_Registry::get("db");
+	}
+	
+	//hien thi du lieu theo phan trang
+	public function getFetObj($sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(*) AS Total FROM tbldaotaonhansu 
+				WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay,
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Noidung, Noidaotao, Namhoatdong, Ghichu
+				FROM tbldaotaonhansu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong 
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+	
+	// detial dao tao nhan su
+	public function detail($id, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$query = $this->db->query("SELECT Id FROM tbldaotaonhansu WHERE Id = $id AND ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong");
+		$result = $query->fetchAll();
+		return $result;
+	}
+	
+	// hien thi chi tiet dao tao nhan su
+	public function getInfobyId($id, $sort, $order, $offset, $rows){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tblchitietdaotaonhansu WHERE DaotaonhansuId = $id");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, DaotaonhansuId, NhansuId, Ketqua, Ghichu, 
+				(SELECT Hoten FROM tblnhansu WHERE tblnhansu.Id = tblchitietdaotaonhansu.NhansuId) AS Nhanvien
+				FROM tblchitietdaotaonhansu WHERE tblchitietdaotaonhansu.DaotaonhansuId = $id ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result; 
+	}
+	
+	// kiem tra trung lap du lieu
+	public function dupliObj($id, $thongtincoquanId, $namhoatdong, $tungay, $denngay, $noidaotao, $noidung){
+		$result = array();
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldaotaonhansu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+									AND Tungay = '$tungay' AND Denngay = '$denngay' AND Noidung = '$noidung' AND Noidaotao = '$noidaotao'");
+		if($id != 0){
+			$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldaotaonhansu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong
+									AND Tungay = '$tungay' AND Denngay = '$denngay' AND Noidung = '$noidung' AND Noidaotao = '$noidaotao' AND Id != $id");
+		}
+		$result = $query->fetchAll();
+		$total = $result[0]['Total'];
+		return $total;
+	}
+	
+	// them moi du lieu
+	public function addObj($data){
+		$Id = $this->db->insert("tbldaotaonhansu", $data);
+		return $Id;
+	}
+	
+	// cap nhat du lieu
+	public function  updateObj($id, $data){
+		$Id = $this->db->update("tbldaotaonhansu", $data, 'Id = '.$id);
+		return $Id;
+	}
+	
+	// xao du lieu
+	public function delObj($id){
+		$Id = $this->db->delete('tbldaotaonhansu', 'Id = '.$id);
+		return $Id;
+	}
+	
+	// tiim kiem dao tao nhan su
+	public function searObj($sNoidung, $sNoidaotao, $sTungay, $sDenngay, $sort, $order, $offset, $rows, $thongtincoquanId, $namhoatdong){
+		$result = array();
+		$where = "Noidung LIKE '%$sNoidung%'";
+		if($sNoidaotao != '')
+			$where = $where."AND Noidaotao LIKE '%$sNoidaotao%'";
+		if($sTungay != '')
+			$where = $where."AND Tungay = '$sTungay'";
+		if($sDenngay != '')
+			$where = $where."AND Denngay = '$sDenngay'";
+		if($sTungay!= '' && $sDenngay != '')
+			$where = $where."AND Tungay <= '$sTungay' AND Denngay <= '$sDenngay'";
+		$query = $this->db->query("SELECT COUNT(Id) AS Total FROM tbldaotaonhansu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where");
+		$row = $query->fetchAll();
+		$query = $this->db->query("SELECT Id, ThongtincoquanId, DATE_FORMAT(Tungay, '%d/%m/%Y') AS Tungay,
+				DATE_FORMAT(Denngay, '%d/%m/%Y') AS Denngay, Noidung, Noidaotao, Namhoatdong, Ghichu
+				FROM tbldaotaonhansu WHERE ThongtincoquanId = $thongtincoquanId AND Namhoatdong = $namhoatdong AND $where
+				ORDER BY $sort $order LIMIT $offset, $rows");
+		$result['total'] = $row[0]['Total'];
+		$result['rows'] = $query->fetchAll();
+		return $result;
+	}
+}

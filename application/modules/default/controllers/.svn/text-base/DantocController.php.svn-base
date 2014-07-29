@@ -1,0 +1,166 @@
+<?php
+/**
+ *  Lê văn Kiên
+ */
+include_once 'PublicdetailController.php';
+class DantocController extends PublicdetailController {
+	private $_MDantoc;
+	private $_Tendantoc;
+	private $_Dantoc = array ();
+	
+	public function indexAction() {
+	}
+
+	// thomnd
+	
+	public function cbogriddantocAction(){
+		
+		$q =  $this->_getParam ( 'sTendantoc' );
+		$this->_helper->layout ()->disableLayout ();		
+		$jsonObj = json_encode ( Model_Dantoc::getIdNameforcbogrid($q));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	//
+	public function init() {
+		$this->initValue ();
+		$this->_MDantoc = new Model_Dantoc();
+		
+		if (isset ( $_REQUEST ['Tendantoc'] ) && $_REQUEST ['Tendantoc'] != '') {
+			$this->_Tendantoc = $_REQUEST ['Tendantoc'];
+			$this->_Dantoc = array (
+					'Tendantoc' => $_REQUEST ['Tendantoc'] 
+			);
+		}
+	}
+	public function jsonAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MDantoc->getFetObj ( $sort, $order, $offset, $rows ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function comboAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout ()->disableLayout ();
+		
+		$mDantoc = new Model_Dantoc();
+		$sdantoc = $this->_getParam('sdantoc');
+		$q = isset ( $_POST ['q'] ) ? strval ( $_POST ['q'] ) : '';
+		$jsonObj = null;
+		$jsonObj = json_encode ( $mDantoc->getIdName($sdantoc, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function combodantocmeAction() {
+		$page = isset ( $_POST ['page'] ) ? intval ( $_POST ['page'] ) : 1;
+		$rows = isset ( $_POST ['rows'] ) ? intval ( $_POST ['rows'] ) : 10;
+		$sort = isset ( $_POST ['sort'] ) ? strval ( $_POST ['sort'] ) : 'Id';
+		$order = isset ( $_POST ['order'] ) ? strval ( $_POST ['order'] ) : 'desc';
+		$offset = ($page - 1) * $rows;
+		$this->_helper->layout ()->disableLayout ();
+	
+		$mDantoc = new Model_Dantoc();
+		$sdantocme = $this->_getParam('sdantocme');
+		$q = isset ( $_POST ['q'] ) ? strval ( $_POST ['q'] ) : '';
+		$jsonObj = null;
+		$jsonObj = json_encode ( $mDantoc->getIdNameM($sdantocme, $q, $sort, $order, $offset, $rows));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function combobythieusoAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$thieuso = $this->_getParam ( 'thieuso' );
+		if ($thieuso == "") {
+			return;
+		}
+		$mDantoc = new Model_Dantoc();
+		$jsonObj = null;
+		$jsonObj = json_encode ( $mDantoc->getIdNameByThieuso($thieuso));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		$varTendantoc = $_REQUEST ['Tendantoc'];
+		$varThieuso = (isset ( $_POST ["ThieusoBP"] ) && $_POST ["ThieusoBP"] != "") ? $_POST ["ThieusoBP"] : "";
+		if ($varThieuso == 'on')
+			$varThieuso = 1;
+		else
+			$varThieuso = 0;
+		
+		$mDantoc = new Model_Dantoc();
+		$dup = $mDantoc->CheckValueObj ( 0, $varTendantoc);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên dân tộc này đã có trong danh sách!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$id = $mDantoc->AddObj ( $varTendantoc, $varThieuso);
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		
+		$mDantoc = new Model_Dantoc();
+		
+		$varTendantoc = $_REQUEST ['Tendantoc'];
+		$varThieuso = (isset ( $_POST ["ThieusoBP"] ) && $_POST ["ThieusoBP"] != "") ? $_POST ["ThieusoBP"] : "";
+		if ($varThieuso == 'on')
+			$varThieuso = 1;
+		else
+			$varThieuso = 0;
+		$varid = $this->_getParam ( 'IdDantoc' );
+		
+		$dup = $mDantoc->CheckValueObj ( $varid, $varTendantoc);
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Tên dân tộc này đã có trong danh sách');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$mDantoc->updateObj ( $varid,$varTendantoc, $varThieuso);
+			$jsonObj ["success"] = true;
+		}
+		
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	public function delAction() {
+		$id = $_REQUEST ['idDantoc'];
+		$delId = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$mDantoc = new Model_Dantoc();
+			$delId = $mDantoc->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $delId) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

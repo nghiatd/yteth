@@ -1,0 +1,66 @@
+<?php
+/**
+ * 
+ * @author Daitk
+ *
+ */
+class Model_CTKhamthai {
+	/**
+	 * - Kết nối DB
+	 *
+	 * @var connection
+	 */
+	protected $db;
+	// Khởi tạo hàm dựng của Class
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+	/**
+	 * - Lấy dữ liệu trong bảng theo Sosokhambenh.
+	 */
+	public function getFetObjBySosokhambenh($sosokhamthai,$thongtincoquanId) {
+		$query = $this->db->query ( "SELECT Id, DATE_FORMAT(Ngaykham, '%d/%m/%Y') AS NgaykhamCT, Tuanthai, DATE_FORMAT(Dukienngaysinh, '%d/%m/%Y') AS Dukienngaysinh, 
+				Trongluongme, Vongbung, CaoTC, Khungchau, Proteinnieu, Huyetap, SomuitiemUV, IF(Khamtainha = 1, 'on', '') AS Khamtainha, 
+				IF(Tinhtrangthieumau = 1, 'on', '') AS Tinhtrangthieumau, IF(Uongviensat = 1, 'on', '') AS Uongviensat, IF(Dethuong = 1, 'on', '') AS Dethuong, 
+				Timthai, Ngoithai, Conguyco, NhansuId, Ghichu, (SELECT Hoten FROM tblnhansu WHERE Id = NhansuId) AS Tennguoikham, Sophieukcb 
+				 FROM tblchitietlankhamthai WHERE Sophieukcb  = '$sosokhamthai' and ThongtincoquanId=$thongtincoquanId" );
+		return $query->fetchAll ();
+	}
+	/**
+	 * - Thêm dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @return Int
+	 */
+	public function addObj($data) {
+		$Id = $this->db->insert ( 'tblchitietlankhamthai', $data );
+		return $Id;
+	}
+	/**
+	 * - Sửa dữ liệu vào bảng.
+	 *
+	 * @param Array $data        	
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function updateObj($id, $data) {
+		$Id = $this->db->update ( 'tblchitietlankhamthai', $data, "Id =".$id );
+		return $Id;
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @param Number $id        	
+	 * @return Int
+	 */
+	public function delObj($id) {
+		$Id = $this->db->delete ( 'tblchitietlankhamthai', "Sophieukcb = '$id'" );
+		return $Id;
+	}
+	public function delbSophieukcbandthongtincoquanIdObj($Sophieukcb,$ThongtincoquanId) {
+		$Id = $this->db->delete ( 'tblchitietlankhamthai', "Sophieukcb = '$Sophieukcb'" ,"ThongtincoquanId=$ThongtincoquanId");
+		return $Id;
+	}
+	
+}
+?>

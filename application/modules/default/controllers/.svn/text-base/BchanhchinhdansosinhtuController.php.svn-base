@@ -1,0 +1,345 @@
+<?php
+include 'PublicdetailController.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+include 'HelpFuncExportExcel.php';
+/**
+ * PHPExcel
+ */
+require_once 'library/PHPExcel/PHPExcel.php';
+/**
+ * PHPExcel_IOFactory
+ */
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class BchanhchinhdansosinhtuController extends PublicdetailController {
+	private $_MBCHanhchinhdansosinhtu;
+	private $_Tencoquan;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	public function init() {
+		$this->initValue ();
+		$this->_MBCHanhchinhdansosinhtu = new Model_BCHanhchinhdansosinhtu ();
+		$this->_Tencoquan = $this->TblThongtincoquanbyId [0] ['Tencoquan'];
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+	}
+	
+	/**
+	 * - BC ĐƠN VỊ HÀNH CHÍNH, DÂN SỐ VÀ TÌNH HÌNH SINH TỬ
+	 */
+	public function indexAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$thangnamTinhtong = $this->_Namhoatdong . '07';
+		$helpExport = new HelpFuncExportExcel ();
+		$objReader = PHPExcel_IOFactory::createReader ( "Excel5" );
+		$colIndex = '';
+		$rowIndex = 0;
+		// try {
+		$objPHPExcel = new PHPExcel ();
+		$sheet = $objPHPExcel->getActiveSheet ();
+		/*
+		 * Bắt đầu set các giá trị, căn chỉnh style Bắt đầu set các giá trị
+		 * tĩnh.
+		 */
+		$sheet->setCellValue( 'A1', $this->TblThongtincoquanbyId[0]['Tencoquan']);
+		$sheet->mergeCellsByColumnAndRow(0, 1, 2, 1);
+		$helpExport->setStyle_13_TNR_B_L($sheet, 'A1', 'A1');
+		$sheet->setCellValue ( 'A2', 'ĐƠN VỊ HÀNH CHÍNH, DÂN SỐ VÀ TÌNH HÌNH SINH TỬ' );
+		$sheet->mergeCellsByColumnAndRow ( 0, 2, 6, 2 );
+		$sheet->setCellValue ( 'A3', 'NĂM ' . $this->_Namhoatdong );
+		$sheet->mergeCellsByColumnAndRow ( 0, 3, 6, 3 );
+		$helpExport->setStyle_15_TNR_B_C ( $sheet, 'A2', 'A3' );
+		
+		$rowStart = 4;
+		$colStart = 'A';
+		$rowIndex = $rowStart;
+		$colIndex = $colStart;
+		$sheet = $objPHPExcel->getActiveSheet ();
+		// BEGIN set width for column
+		$sheet->getColumnDimension ( 'A' )->setWidth ( 6 );
+		$sheet->getColumnDimension ( 'B' )->setWidth ( 25.13 );
+		$sheet->getColumnDimension ( 'C' )->setWidth ( 10.13 );
+		$sheet->getColumnDimension ( 'D' )->setWidth ( 5.25 );
+		$sheet->getColumnDimension ( 'E' )->setWidth ( 18.63 );
+		$sheet->getColumnDimension ( 'F' )->setWidth ( 10 );
+		$sheet->getColumnDimension ( 'G' )->setWidth ( 10.38 );
+		$sheet->getRowDimension('2')->setRowHeight(25);
+		// END set width for column
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chỉ tiêu', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Số lượng', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'STT', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Chỉ tiêu', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Tổng số', $colIndex );
+		$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, 'Trđ: Nữ', $colIndex );
+		$helpExport->setStyle_11_TNR_B_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+		$rowIndex += 1;
+		$colIndex = $colStart;
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '1', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '2', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '3', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '4', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '5', $colIndex );
+		$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '6', $colIndex );
+		$helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, '7', $colIndex );
+		$helpExport->setStyle_10_TNR_I_C ( $sheet, $colStart . $rowIndex, $colIndex . $rowIndex );
+		// Lấy dữ liệu
+		$jsonObj = $this->_MBCHanhchinhdansosinhtu->getDVHCDSVTHST ( $this->_ThongtincoquanId, $thangnamTinhtong, $this->_Namhoatdong );
+		
+		$data = array ();
+		$formatIndex = $rowIndex + 1;
+		if (count ( $jsonObj ) > 0) {
+			$data [0] = array (
+					'1',
+					'Diện tích (Km2)',
+					$jsonObj [0] ['Dientichxa'],
+					'5',
+					'Tổng số sơ sinh sống',
+					$jsonObj [0] ['TSSosinh_Song'],
+					$jsonObj [0] ['TSSosinh_Song_Nu'] 
+			);
+			$data [1] = array (
+					'2',
+					'Số thôn, bản',
+					$jsonObj [0] ['Sothonban'],
+					'6',
+					'Tổng số chết',
+					$jsonObj [0] ['TSChet'],
+					$jsonObj [0] ['TSChet_Nu'] 
+			);
+			$data [2] = array (
+					'3',
+					'Số thôn, bản có NVYT hoạt động',
+					' ', // $jsonObj [0] ['TSThon_NVYTHD'],
+					' ',
+					'Trđ: Chết tại trạm',
+					$jsonObj [0] ['TSChet_Taitram'],
+					$jsonObj [0] ['TSChet_Taitram_Nu'] 
+			);
+			$data [3] = array (
+					'4',
+					'Dân số của xã đến 1/7',
+					$jsonObj [0] ['Dansoxa'],
+					' ',
+					'         Chết tại nhà',
+					$jsonObj [0] ['TSChet_Tainha'],
+					$jsonObj [0] ['TSChet_Tainha_Nu'] 
+			);
+			$data [4] = array (
+					' ',
+					'Trđ: Nữ',
+					$jsonObj [0] ['Dansoxa_Nu'],
+					' ',
+					'         Tại cơ sở YT khác',
+					$jsonObj [0] ['TSChet_YTKhac'],
+					$jsonObj [0] ['TSChet_YTKhac_Nu'] 
+			);
+			$data [5] = array (
+					' ',
+					'         Phụ nữ >= 15',
+					$jsonObj [0] ['Dansoxa_Nu_lonhonbang15tuoi'],
+					' ',
+					'         Chết nơi khác',
+					$jsonObj [0] ['TSChet_Noikhac'],
+					$jsonObj [0] ['TSChet_Noikhac_Nu'] 
+			);
+			$data [6] = array (
+					' ',
+					'         Trẻ em < 1 tuổi',
+					$jsonObj [0] ['Dansoxa_Nhohon1tuoi'],
+					' ',
+					'         Chết < 1 tuổi',
+					$jsonObj [0] ['TSChet_nhon1tuoi'],
+					$jsonObj [0] ['TSChet_nhon1tuoi_Nu'] 
+			);
+			$data [7] = array (
+					' ',
+					'         Trẻ em < 5 tuổi',
+					$jsonObj [0] ['Dansoxa_Nhohon5tuoi'],
+					' ',
+					'         Chết < 5 tuổi',
+					$jsonObj [0] ['TSChet_nhon5tuoi'],
+					$jsonObj [0] ['TSChet_nhon5tuoi_Nu'] 
+			);
+			$data [8] = array (
+					' ',
+					'         Trẻ em < 6 tuổi',
+					$jsonObj [0] ['Dansoxa_Nhohon6tuoi'],
+					' ',
+					'         Chết mẹ',
+					' ',
+					$jsonObj [0] ['TSChetme'] 
+			);
+			$data [9] = array (
+					' ',
+					'         Trẻ em < 15 tuổi',
+					$jsonObj [0] ['Dansoxa_Nhohon15tuoi'],
+					' ',
+					' ',
+					' ',
+					' ' 
+			);
+		} else {
+			$data [0] = array (
+					'1',
+					'Diện tích (Km2)',
+					' ',
+					'5',
+					'Tổng số sơ sinh sống',
+					' ',
+					' ' 
+			);
+			$data [1] = array (
+					'2',
+					'Số thôn, bản',
+					' ',
+					'6',
+					'Tổng số chết',
+					' ',
+					' ' 
+			);
+			$data [2] = array (
+					'3',
+					'Số thôn, bản có NVYT hoạt động',
+					' ',
+					' ',
+					'Trđ: Chết tại trạm',
+					' ',
+					' ' 
+			);
+			$data [3] = array (
+					'4',
+					'Dân số của xã đến 1/7',
+					' ',
+					' ',
+					'         Chết tại nhà',
+					' ',
+					' ' 
+			);
+			$data [4] = array (
+					' ',
+					'Trđ: Nữ',
+					' ',
+					' ',
+					'         Tại cơ sở YT khác',
+					' ',
+					' ' 
+			);
+			$data [5] = array (
+					' ',
+					'         Phụ nữ >= 15',
+					' ',
+					' ',
+					'         Chết nơi khác',
+					' ',
+					' ' 
+			);
+			$data [6] = array (
+					' ',
+					'         Trẻ em < 1 tuổi',
+					' ',
+					' ',
+					'         Chết < 1 tuổi',
+					' ',
+					' ' 
+			);
+			$data [7] = array (
+					' ',
+					'         Trẻ em < 5 tuổi',
+					' ',
+					' ',
+					'         Chết < 5 tuổi',
+					' ',
+					' ' 
+			);
+			$data [8] = array (
+					' ',
+					'         Trẻ em < 6 tuổi',
+					' ',
+					' ',
+					'         Chết mẹ',
+					' ',
+					' ' 
+			);
+			$data [9] = array (
+					' ',
+					'         Trẻ em < 15 tuổi',
+					' ',
+					' ',
+					' ',
+					' ',
+					' ' 
+			);
+		}
+		$rowIndex = $this->initRow ( $sheet, $helpExport, $data, $rowIndex, 7 );
+		$helpExport->setStyle_11_TNR_N_L ( $sheet, 'A' . $formatIndex, 'G' . $rowIndex );
+		$helpExport->setStyle_Align_Center ( $sheet, $colStart . $rowStart, $colStart . $rowIndex );
+		$helpExport->setStyle_Align_Center ( $sheet, 'D' . $rowStart, 'D' . $rowIndex );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'G' . $rowIndex )->getBorders ()->getOutline ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$sheet->getStyle ( 'A' . $rowStart . ':' . 'G' . $rowIndex )->getBorders ()->getInside ()->setBorderStyle ( PHPExcel_Style_Border::BORDER_THIN );
+		$rowIndex += 1;
+		$formatIndex = $rowIndex;
+		$helpExport->setValueForSheet ( $sheet, 'A' . $rowIndex, 'Xã có đạt chuẩn quốc gia không?', 'A' );
+		$sheet->mergeCellsByColumnAndRow ( 0, $rowIndex, 4, $rowIndex );
+		$helpExport->setStyle_13_TNR_I_L ( $sheet, 'A' . $rowIndex, 'G' . $rowIndex );
+		$objPHPExcel->getActiveSheet ()->setTitle ( 'Page 1' );
+		/*
+		 * Set active sheet index to the first sheet, so Excel opens this as the
+		 * first sheet
+		 */
+		$objPHPExcel->setActiveSheetIndex ( 0 );
+		/* Redirect output to a clientâ€™s web browser (Excel5) */
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT);
+		$objPHPExcel->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
+		$pageMargin = $sheet->getPageMargins();
+		$pageMargin->setTop(.5);
+		$pageMargin->setLeft(.44);
+		$pageMargin->setRight(.42);
+		header ( 'Content-Type: application/vnd.ms-excel' );
+		header ( 'Content-Disposition: attachment;filename="DVHCDSVTHST(' . date ( "d/m/Y" ) . ').xls"' );
+		header ( 'Cache-Control: max-age=0' );
+		$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+		$objWriter->save ( 'php://output' );
+		/*
+		 * } catch ( Exception $e ) { echo "<script type=\"text/javascript\">
+		 * alert('Exception: Export Excel!'); </script>"; }
+		 */
+	}
+	/**
+	 * - Khởi tạo các dòng trong sheet Excel với dữ liệu được đưa vào.
+	 *
+	 * @param PHPExcel_Worksheet $_sheet        	
+	 * @param HelpFuncExportExcel $_helpExport        	
+	 * @param Array $_data        	
+	 * @param Number $_rowIndex        	
+	 * @param Number $_numCol        	
+	 * @return Number
+	 */
+	public function initRow($_sheet, $_helpExport, $_data, $_rowIndex, $_numCol) {
+		$helpExport = $_helpExport;
+		$sheet = $_sheet;
+		$rowIndex = $_rowIndex;
+		$data = $_data;
+		$numCol = $_numCol;
+		foreach ( $data as $item ) {
+			$rowIndex += 1;
+			$colIndex = 'A';
+			for($i = 0; $i < $numCol; $i ++) {
+				$colIndex = $helpExport->setValueForSheet ( $sheet, $colIndex . $rowIndex, (isset ( $item [$i] ) ? $item [$i] : ""), $colIndex );
+			}
+		}
+		return $rowIndex;
+	}
+}
+
+
+
+
+
+
+
+

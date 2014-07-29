@@ -1,0 +1,127 @@
+<?php
+include 'PublicdetailController.php';
+class MucluutruController   extends PublicdetailController 
+{
+	// phadh sua phan trang
+	public function jsonAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+		$rows = isset($_POST['rows']) ? intval($_POST['rows']) : 10;
+		$sort = isset($_POST['sort']) ? strval($_POST['sort']) : 'Id';
+		$order = isset($_POST['order']) ? strval($_POST['order']) : 'desc';
+		$offset = ($page-1)*$rows;
+		$mMucluutru = new Model_Mucluutru();
+		$jsonObj = json_encode($mMucluutru->getFetObj($this->ThongtincoquanId,$sort, $order, $offset, $rows));
+		
+		return $this->view->jsonObj = $jsonObj;
+	}
+	private $ThongtincoquanId;
+	public function indexAction()
+	{
+		
+	}
+	public function init() {
+		$this->initValue ();
+		$this->ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+	}
+	
+	public function comboAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$mMucluutru = new Model_Mucluutru();
+		$jsonObj = json_encode($mMucluutru->getMucluutru($this->ThongtincoquanId));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	// End daitk
+	
+	public function comboaddrowAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$mMucluutru = new Model_Mucluutru();
+		$jsonObj = json_encode($mMucluutru->getMucluutruaddnewrow($this->ThongtincoquanId));
+		return $this->view->jsonObj = $jsonObj;
+	}
+	public function addAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$jsonObj = array();
+	
+	
+		$Tenmucluutru = $_REQUEST['Tenmucluutru'];
+	
+		$mMucluutru = new Model_Mucluutru();
+		$dup = $mMucluutru->CheckValueObj(0,$Tenmucluutru,$this->ThongtincoquanId);
+		if($dup > 0)
+		{
+			echo "<script type=\"text/javascript\">
+					    alert('Tên bạn nhập đã có trong dữ liệu!');
+					</script>";
+			$jsonObj["success"] = false;
+			return $this->view->jsonObj = json_encode($jsonObj);
+		}
+		else
+		{
+			$id = $mMucluutru->addObj($Tenmucluutru,$this->ThongtincoquanId);
+			$jsonObj["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function updateAction()
+	{
+		$this->_helper->layout()->disableLayout();
+		$id = $this->_getParam('idMucluutru');
+		$Tenmucluutru = $_REQUEST['Tenmucluutru'];
+		$jsonObj = array();
+		$mMucluutru = new Model_Mucluutru();
+		if(isset($id) && $id > 0)
+		{
+				
+			$dup = $mMucluutru->CheckValueObj($id, $Tenmucluutru,$this->ThongtincoquanId);
+			if($dup > 0)
+			{
+				echo "<script type=\"text/javascript\">
+					    alert('Tên đã có trong danh sách!');
+					</script>";
+				$jsonObj["success"] = false;
+				return $this->view->jsonObj = json_encode($jsonObj);
+			}
+			else
+			{
+				$id = $mMucluutru->updateObj($id, $Tenmucluutru);
+				$jsonObj["success"] = true;
+			}
+				
+		}else return;
+	
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+	
+	public function delAction()
+	{
+		$id = $_REQUEST['idMucluutru'];
+		$delId = null;
+		$jsonObjv = null;
+	
+		if(isset($id) && $id > 0)
+		{
+			$mMucluutru = new Model_Mucluutru();
+			$delId = $mMucluutru->delObj($id);
+		}
+		else
+		{
+			return;
+		}
+	
+		if(!$delId)
+		{
+			$jsonObj = json_encode(array('success'=>false));
+		}
+		else
+		{
+			$jsonObj = json_encode(array('success'=>true));
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

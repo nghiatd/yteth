@@ -1,0 +1,141 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Daitk
+ */
+class CtkhamthaiController extends PublicdetailController {
+	private $_MCTKhamthai;
+	private $_Sosokhamthai;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_CTKhamthai = array ();
+	public function init() {
+		$this->initValue ();
+		$this->_MCTKhamthai = new Model_CTKhamthai ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		
+		if (isset ( $_REQUEST ['Sophieukcb'] ) && $_REQUEST ['Sophieukcb'] != '') {
+			$this->_Sosokhamthai = $_REQUEST ['Sophieukcb'];
+			$_Ngaykham = (isset ( $_REQUEST ['NgaykhamCT'] ) && $_REQUEST ['NgaykhamCT'] != '') ? $_REQUEST ['NgaykhamCT'] : '';
+			$_Ngaykham = ($_Ngaykham != '') ? $this->convertDate ( $_Ngaykham ) : $_Ngaykham;
+			$_Dukiensinh = (isset ( $_REQUEST ['Dukienngaysinh'] ) && $_REQUEST ['Dukienngaysinh'] != '') ? $_REQUEST ['Dukienngaysinh'] : '';
+			$_Dukiensinh = ($_Dukiensinh != '') ? $this->convertDate ( $_Dukiensinh ) : $_Dukiensinh;
+			$_Thieumau = (isset ( $_POST ['Tinhtrangthieumau'] ) && $_POST ['Tinhtrangthieumau'] != '') ? $_POST ['Tinhtrangthieumau'] : '';
+			$_Thieumau = ($_Thieumau == 'on') ? 1 : 0;
+			$_Uongsat = (isset ( $_POST ['Uongviensat'] ) && $_POST ['Uongviensat'] != '') ? $_POST ['Uongviensat'] : '';
+			$_Uongsat = ($_Uongsat == 'on') ? 1 : 0;
+			$_DKdethuong = (isset ( $_POST ['Dethuong'] ) && $_POST ['Dethuong'] != '') ? $_POST ['Dethuong'] : '';
+			$_DKdethuong = ($_DKdethuong == 'on') ? 1 : 0;
+			$_Khamtainha = (isset ( $_POST ['Khamtainha'] ) && $_POST ['Khamtainha'] != '') ? $_POST ['Khamtainha'] : '';
+			$_Khamtainha = ($_Khamtainha == 'on') ? 1 : 0;
+			$this->_CTKhamthai = array (
+					'Sophieukcb' => $this->_Sosokhamthai,
+					'Ngaykham' => $_Ngaykham,
+					'Tuanthai' => $_REQUEST ['Tuanthai'],
+					'Dukienngaysinh' => $_Dukiensinh,
+					'Trongluongme' => $_REQUEST ['Trongluongme'],
+					'Vongbung' => $_REQUEST ['Vongbung'],
+					'CaoTC' => $_REQUEST ['CaoTC'],
+					'Khungchau' => $_REQUEST ['Khungchau'],
+					'Proteinnieu' => $_REQUEST ['Proteinnieu'],
+					'Huyetap' => $_REQUEST ['Huyetap'],
+					'Tinhtrangthieumau' => $_Thieumau,
+					'Uongviensat' => $_Uongsat,
+					'SomuitiemUV' => $_REQUEST ['SomuitiemUV'],
+					'Timthai' => $_REQUEST ['Timthai'],
+					'Ngoithai' => $_REQUEST ['Ngoithai'],
+					'Dethuong' => $_DKdethuong,
+					'Conguyco' => $_REQUEST ['Conguyco'],
+					'NhansuId' => $_REQUEST ['NhansuId'],
+					'Khamtainha' => $_Khamtainha,
+					'Ghichu' => $_REQUEST ['Ghichu'],
+					'ThongtincoquanId' => $this->_ThongtincoquanId 
+			);
+		}
+	}
+
+	public function getbysosokhamthaiAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$sosokhamthai = $this->_getParam ( 'sosokhamthai' );
+		$jsonObj = json_encode ( $this->_MCTKhamthai->getFetObjBySosokhambenh ( $sosokhamthai, $this->TblThongtincoquanbyId [0] ['Id'] ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		try {
+			$this->_MCTKhamthai->addObj ( $this->_CTKhamthai );
+			$jsonObj ["success"] = true;
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Thêm lần khám thai không thành công!');
+					</script>";
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function updateAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $this->_getParam ( 'id' );
+		$jsonObj = array ();
+		try {
+			$this->_MCTKhamthai->updateObj ( $id, $this->_CTKhamthai );
+			$jsonObj ["success"] = true;
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Thêm lần khám thai không thành công!');
+					</script>";
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MCTKhamthai->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}
+
+
+
+
+
+
+
+

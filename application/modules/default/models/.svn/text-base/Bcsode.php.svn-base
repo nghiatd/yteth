@@ -1,0 +1,69 @@
+<?php
+/**
+ * 
+ * @author Lê Văn Kiên
+ *
+ */
+class Model_Bcsode {
+	protected $db;
+	public function __construct() {
+		$this->db = Zend_Registry::get ( "db" );
+	}
+		
+	/**
+	 * - CHI TIẾT SỔ ĐẺ
+	 *
+	 *       	
+	 * @param Number $thongtincoquanId        	
+	 * @param Number $namhoatdong        	
+	 */
+	
+	// LIKE '%$diaban%'
+	public function getCTSD($thongtincoquanId, $namhoatdong) {
+		$str_query = "SELECT DATE_FORMAT(Ngaysinhsan, '%d/%m/%Y') AS Ngaysinhsan,
+		(SELECT Hoten FROM tblnhankhau WHERE tblnhankhau.Id = tblsinhsan.NhankhauId) AS Hoten,
+		(select ($namhoatdong- year(ngaysinh)) as Tuoi from tblnhankhau where tblnhankhau.Id = tblsinhsan.NhankhauId and tblsinhsan.ThongtincoquanId=$thongtincoquanId ) AS Tuoi,
+
+		(SELECT  concat(Diachi,', ' , (select Tenthonto from tbldm_thonto where id = tblchuhodan.ThontoId))  FROM  tblchuhodan where Mahodan 
+			in (select Mahodan from tblnhankhau where tblnhankhau.Id=tblsinhsan.NhankhauId)
+			and   tblchuhodan.ThongtincoquanId=$thongtincoquanId) as Diachi,
+		(select Nghenghiep from tblnhankhau where tblnhankhau.Id = tblsinhsan.NhankhauId) AS Nghenghiep,
+		
+		if(Tiemuvdulieu=1, 'x',' ') AS Tiemuvdulieu,
+		
+		
+		CASE WHEN Bumetronggiodau='Có' THEN 'x'
+         WHEN Bumetronggiodau = 'Không rõ' THEN 'KR'
+         ELSE '' END AS Kiemtrabathoiky,if(Duocquanly=1, 'x',' ') AS Duocquanly,
+		(select Tendiadiem from tbldm_diadiem where tbldm_diadiem.Id = tblsinhsan.DiadiemId) AS Diadiem,
+		Solancothai,Solande,Soconhienco,
+		
+		if( (select count(Id) from  tbldm_hinhthucsinhsan where tblsinhsan.HinhthucsinhsanId = tbldm_hinhthucsinhsan.Id and tbldm_hinhthucsinhsan.Tenhinhthuc LIKE '%Đẻ thường%' ) =1, 'x',' ') AS Dethuong,
+		if((select count(Id) from  tbldm_hinhthucsinhsan where tblsinhsan.HinhthucsinhsanId = tbldm_hinhthucsinhsan.Id and tbldm_hinhthucsinhsan.Tenhinhthuc LIKE '%Foc xép%' )=1 , 'x',' ') AS Focxep,
+		if((select count(Id) from  tbldm_hinhthucsinhsan where tblsinhsan.HinhthucsinhsanId = tbldm_hinhthucsinhsan.Id and tbldm_hinhthucsinhsan.Tenhinhthuc LIKE '%Mổ%' )=1, 'x',' ') AS Mo,
+		if((select count(Id) from  tbldm_taibiensinhsan where tblsinhsan.TaibiensinhsanId = tbldm_taibiensinhsan.Id and tbldm_taibiensinhsan.Tentaibien LIKE '%Băng huyết%' )=1, 'x',' ') AS Banghuyet,
+		if((select count(Id) from  tbldm_taibiensinhsan where tblsinhsan.TaibiensinhsanId = tbldm_taibiensinhsan.Id and tbldm_taibiensinhsan.Tentaibien LIKE '%Sản giật%' )=1, 'x',' ') AS Sangiat,
+		if((select count(Id) from  tbldm_taibiensinhsan where tblsinhsan.TaibiensinhsanId = tbldm_taibiensinhsan.Id and tbldm_taibiensinhsan.Tentaibien LIKE '%Uốn ván sinh sản%' )=1, 'x',' ') AS Uvss,
+		if((select count(Id) from  tbldm_taibiensinhsan where tblsinhsan.TaibiensinhsanId = tbldm_taibiensinhsan.Id and tbldm_taibiensinhsan.Tentaibien LIKE '%Vỡ tử cung%' )=1, 'x',' ') AS Votucung,
+		if((select count(Id) from  tbldm_taibiensinhsan where tblsinhsan.TaibiensinhsanId = tbldm_taibiensinhsan.Id and tbldm_taibiensinhsan.Tentaibien LIKE '%Nhiễm trùng%' )=1, 'x',' ') AS Nhiemtrung,
+		if((select count(Id) from  tbldm_taibiensinhsan where tblsinhsan.TaibiensinhsanId = tbldm_taibiensinhsan.Id and tbldm_taibiensinhsan.Tentaibien LIKE '%Chết%' )=1, 'x',' ') AS Chet,
+			IF(Gioitinh = 1,  Cannang, ' ') AS Namcannang, 				
+		IF(Gioitinh = 0,  Cannang, ' ')  AS Nucannang,
+			IF(Chettu22tuan =1, 'x', ' ') AS Chettu22tuan,
+		(select Hoten from tblnhansu where tblnhansu.Id = tblsinhsan.NhansuId) AS Nguoidode,
+
+		CASE WHEN Bumetronggiodau='Có' THEN 'x'
+         WHEN Bumetronggiodau = 'Không rõ' THEN 'KR'
+         ELSE '' END AS Bume,
+		
+		
+		 
+    
+		
+		if(Tiemk1=1, 'x',' ') AS Tiemk1,
+		Khamtuandau,Kham7den42
+		FROM tblsinhsan WHERE YEAR(Ngaysinhsan) = $namhoatdong AND ThongtincoquanId = $thongtincoquanId order by DATE(Ngaysinhsan) ASC";
+		$query = $this->db->query ( $str_query );
+		return $query->fetchAll ();
+	}
+}

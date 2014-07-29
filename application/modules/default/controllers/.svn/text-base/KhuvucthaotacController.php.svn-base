@@ -1,0 +1,12 @@
+<?php
+class KhuvucthaotacController extends Zend_Controller_Action{
+	private $_MKhuvucthaotac;
+	public function init(){
+		$this->_MKhuvucthaotac = new Model_Khuvucthaotac();
+	}
+	public function khuvucAction(){
+		$this->_helper->layout()->disableLayout();
+		$jsonObj= $this->_MKhuvucthaotac->getFetObj();
+		return $this->view->jsonObj = json_encode($jsonObj);
+	}
+}

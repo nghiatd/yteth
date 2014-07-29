@@ -1,0 +1,291 @@
+body{
+	font: normal 12px/23px "Segoe UI",Arial,sans-serif;
+	color: black;
+}
+
+ul, ol{
+	list-style:none;
+}
+.logo_company{
+	width: 15%;
+	display: block;
+	float: left;
+	height: 30px;
+	background:url('logo_company.PNG') no-repeat;
+}
+.nav-menu-item{
+	padding:2px;
+	width:98%;
+}
+.nav-menu-item a{
+	font-weight: bold;
+}
+a:hover.l-btn-plain{
+	border:1px solid #f7d74a;
+	background-image: linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -o-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -moz-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -webkit-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -ms-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+}
+.s-pec{
+	height: 26px;
+	width: 1px;
+	background:url('images/s-pec.PNG') repeat-x;
+}
+.fback
+{
+	
+}
+.tblForm
+{
+	/*background: black;*/
+}
+.tblForm td
+{
+	border-right: 0px;
+	border-bottom: 0px;
+}
+.titback
+{
+	background: #EFEFEF;
+	/*width: 100%;*/
+	padding-left: 5px;
+	color: red;
+}
+.tblForm 2Col
+{
+	
+}
+.tblForm 1Col
+{
+	
+}
+
+#nav-top{
+	
+	
+}
+.nav-menu-top{
+	width: 100%;
+	float: right;
+	background-image: linear-gradient(bottom, rgb(210,220,245) 37%, rgb(234,238,247) 69%);
+	background-image: -o-linear-gradient(bottom, rgb(210,220,245) 37%, rgb(234,238,247) 69%);
+	background-image: -moz-linear-gradient(bottom, rgb(210,220,245) 37%, rgb(234,238,247) 69%);
+	background-image: -webkit-linear-gradient(bottom, rgb(210,220,245) 37%, rgb(234,238,247) 69%);
+	background-image: -ms-linear-gradient(bottom, rgb(210,220,245) 37%, rgb(234,238,247) 69%);
+}
+a.l-btn
+{
+	color: #15428b;
+}
+#menu{
+	
+	float:left;
+}
+#menu span {
+	display: block;
+	text-align: center;
+	width: auto;
+}
+#menu img{
+	border:0px;
+ 	padding: 4px;
+}
+#menu div{
+	float:left;
+	padding-top:3px;
+	margin-left: 5px;
+}
+#menu div a{
+	text-decoration:none;
+	color:#15428b;
+	
+	padding:40px 4px 4px;
+}
+#menu div a:hover{
+	border-radius:10px;
+}
+#menu{
+	border-bottom:1px solid #99bbe8;
+	width:100%;
+}
+.welcome-css img {vertical-align: middle;margin-left: 2px;}
+.easyui-layout .panel-body.panel-body-noheader.layout-body img.welcome-img-page {width: auto; height : auto;}
+.f-r {
+	float : right; display : inline;
+
+}
+.f-r li {
+  display: inline;
+}
+.f-r > ul {
+  margin: 0;
+  padding: 0;
+}
+.f-l {
+	float : left; display : inline
+}
+#nav-top #noidung {
+  display: block;
+  padding-top: 19px;
+}
+.sp-title {
+  text-align: center;
+  margin : 0 0 10px;
+}
+.sp-r {
+  float: right;
+   display: inline;
+}
+.sp-l {
+  display: inline;
+  float: left;
+  margin-right: 20px;
+}
+.sp-r > ul {
+  margin: 0;
+  padding: 0;
+}
+#menu #nav-top a:hover {border : 1px solid #15428B;-moz-box-shadow: 0 0 2px 2px #15428B;-webkit-box-shadow: 0 0 2px 2px#15428B;box-shadow: 0 0 2px 2px #15428B;}
+
+
+
+#menu #nav-top a.muctieuquocgia-btn{background: url("../images/muctieuquocgia.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.muctieuquocgia-btn {background: url("../images/muctieuquocgia-hover.png") no-repeat scroll center top transparent;}
+
+
+
+
+#menu #nav-top a.website-btn{background: url("../images/website.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.website-btn {background: url("../images/website-hover.png") no-repeat scroll center top transparent;}
+
+
+
+#menu #nav-top a.qt-btn{background: url("../images/home.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.qt-btn {background: url("../images/home-hover.png") no-repeat scroll center top transparent;}
+
+
+#menu #nav-top a.home-btn {background: url("../images/qltt.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.home-btn {background: url("../images/qltt-hover.PNG") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.ht-btn{background: url("../images/Hodan.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.ht-btn {background: url("../images/Hodan-hover.png") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.ql-btn {background: url("../images/khambenh.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.ql-btn {background: url("../images/khambenh-hover.PNG") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.dh-btn {background: url("../images/tiemchung.png") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.dh-btn {background: url("../images/tiemchung-hover.png") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.nv-btn {background: url("../images/thuoc.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.nv-btn {background: url("../images/thuoc-hover.png") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.th-btn {background: url("../images/baocao.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.th-btn {background: url("../images/baocao-hover.png") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.tg-btn {background: url("../images/trogiup.PNG") no-repeat scroll center top transparent;}
+#menu #nav-top a:hover.tg-btn {background: url("../images/trogiup-hover.PNG") no-repeat scroll center top transparent;}
+
+#menu #nav-top a.first {margin-left: 0;}
+
+#nav-top #menu a { padding : 4px 0 0;}
+
+.combogrid-nhanvien {
+	height: 60px;
+}
+/****************************style css via toolbaxnhansu******************************/
+.nav-menu-top > ul {
+  margin-top: !important;
+}
+.nav-menu-top ul {
+  height: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav-menu-top ul ul {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.nav-menu-top ul ul a {
+}
+.nav-menu-top ul ul ul {
+  left: 100%;
+  top: 0;
+}
+.nav-menu-top li {
+  float: left;
+  padding: 0px 8px 0px 8px;
+}
+.nav-menu-top li a {
+  display: block;
+  font-weight: bold;
+  line-height: 30px;
+  padding: 0px 13px;
+  text-align: center;
+  text-decoration: none;
+}
+.nav-menu-top li a:hover {
+  	border:1px solid #f7d74a;
+	background-image: linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -o-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -moz-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -webkit-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+	background-image: -ms-linear-gradient(bottom, rgb(255,247,206) 37%, rgb(255,226,140) 69%);
+}
+.nav-menu-top li ul {
+  background:#f0f0f0;
+  display: none;
+  height: auto;
+  filter: alpha(opacity=95);
+  opacity: 0.95;
+  position: absolute;
+  width: 205px;
+  z-index: 200;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  /*top:1em;
+		/*left:0;*/
+
+}
+.nav-menu-top li:hover > ul {
+  display: block;
+}
+.nav-menu-top li li {
+  display: block;
+  padding: 0px;
+  position: relative;
+  width: 205px;
+}
+.nav-menu-top li ul a {
+  display: block;
+  font-size: 12px;
+  font-style: normal;
+  font-weight:normal;
+  padding: 0px 30px;
+  text-align: left;
+  line-height:2em;
+}
+.nav-menu-top li ul a:hover {
+	background:#fafafa;
+    border:1px solid #7eabcd;
+	border-radius:3px;
+}
+.nav-menu-top p {
+  clear: left;
+}
+.nav-menu-top .active > a {
+}
+.nav-menu-top .active > a:hover {
+  color: black;
+}
+.nav-menu-top li ul li ul{
+	width:400px;
+}
+.nav-menu-top li ul li ul li{
+	width:400px;
+}
+

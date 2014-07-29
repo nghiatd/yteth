@@ -1,0 +1,155 @@
+<?php
+include 'PublicdetailController.php';
+/**
+ *
+ * @author Daitk
+ *        
+ */
+class NgansachmotnamController extends PublicdetailController {
+	private $_MNgansachmotnam;
+	private $_ThongtincoquanId;
+	private $_Namhoatdong;
+	private $_Ngansachmotnam = array ();
+	private $_MHistory;
+	public function init() {
+		$this->initValue ();
+		$this->_MNgansachmotnam = new Model_Ngansachmotnam ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+		$this->_Namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong'];
+		$this->_MHistory = new Model_History ();
+		try {
+			if (isset ( $_REQUEST ['Ngansachnhanuoc'] ) && $_REQUEST ['Ngansachnhanuoc'] != '') {
+				$this->_Ngansachmotnam = array (
+						'ThongtincoquanId' => $this->_ThongtincoquanId,
+						'Ngansachnhanuoc' => $_REQUEST ['Ngansachnhanuoc'],
+						'Vientro' => $_REQUEST ['Vientro'],
+						'Chigiaoducvadaotao' => $_REQUEST ['Chigiaoducvadaotao'],
+						'Chiphongbenh' => $_REQUEST ['Chiphongbenh'],
+						'Chichuabenh' => $_REQUEST ['Chichuabenh'],
+						'Chidskhhgd' => $_REQUEST ['Chidskhhgd'],
+						'Chiqlnn' => $_REQUEST ['Chiqlnn'],
+						'Chiytequocgia' => $_REQUEST ['Chiytequocgia'],
+						'socoso' => $_REQUEST ['socoso'],
+						'Ngansachxa' => $_REQUEST ['Ngansachxa'],
+						'ThuBHYT' => $_REQUEST ['ThuBHYT'],
+						'Thudichvukhamchuabenh' => $_REQUEST ['Thudichvukhamchuabenh'],
+						'Thukhac' => $_REQUEST ['Thukhac'],
+						'Chiluong' => $_REQUEST ['Chiluong'],
+						'Chimuasam' => $_REQUEST ['Chimuasam'],
+						'Chidautu' => $_REQUEST ['Chidautu'],
+						'Chikhac' => $_REQUEST ['Chikhac'],
+						'Dientichxa' => $_REQUEST ['Dientichxa'],
+						'Namhoatdong' => $this->_Namhoatdong,
+						'Tongsoduongbenh' => $_REQUEST ['Tongsoduongbenh'],
+						'Tongsokhamduphong' => $_REQUEST ['Tongsokhamduphong'] 
+				);
+			}
+		} catch ( Exception $e ) {
+			echo "<script type=\"text/javascript\">
+					alert('Thao tác không thành công!');
+					</script>";
+			return;
+		}
+	}
+	
+	public function indexAction() {
+		$this->view->namhoatdong = $this->_Namhoatdong;
+		return $this->view;
+	}
+	/**
+	 * - View dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function jsonAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = json_encode ( $this->_MNgansachmotnam->getFetObj ( $this->_ThongtincoquanId, $this->_Namhoatdong ) );
+		return $this->view->jsonObj = $jsonObj;
+	}
+	/**
+	 * - View chi tiết dữ liệu.
+	 *
+	 * @return Array item
+	 */
+	public function detailAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = $this->_MNgansachmotnam->getFetObj ( $this->_ThongtincoquanId, $this->_Namhoatdong );
+		$this->view->jsonObj = $jsonObj;
+		$this->view->namhoatdong = $this->_Namhoatdong;
+		return $this->view;
+	}
+	/**
+	 * - Thêm dữ liệu.
+	 *
+	 * @return String json
+	 */
+	public function addAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$jsonObj = array ();
+		
+		$dup = $this->_MNgansachmotnam->dupliObj ( 0, $this->_ThongtincoquanId, $this->_Namhoatdong );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Trong năm hoạt động đã có nguồn ngân sách, bạn không thể thêm!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MNgansachmotnam->addObj ( $this->_Ngansachmotnam );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblngansachmotnam', 'Cập nhật', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Sửa dữ liệu.
+	 *
+	 * @return string json
+	 */
+	public function updateAction() {
+		$id = $this->_getParam ( 'id' );
+		$this->_helper->layout ()->disableLayout ();
+		$dup = $this->_MNgansachmotnam->dupliObj ( $id, $this->_ThongtincoquanId, $this->_Namhoatdong );
+		if ($dup > 0) {
+			echo "<script type=\"text/javascript\">
+			    alert('Chưa thể sửa được, hãy quay lại sau!');
+			</script>";
+			$jsonObj ["success"] = false;
+			return $this->view->jsonObj = json_encode ( $jsonObj );
+		} else {
+			$this->_MNgansachmotnam->updateObj ( $id, $this->_Ngansachmotnam );
+			$this->_MHistory->insert ( $this->TblUserbyId [0] ['Id'], $this->Time_Ac, 'tblngansachmotnam', 'Cập nhật', $this->UserIP );
+			$jsonObj ["success"] = true;
+		}
+		return $this->view->jsonObj = json_encode ( $jsonObj );
+	}
+	/**
+	 * - Xóa dữ liệu.
+	 *
+	 * @return void string
+	 */
+	public function delAction() {
+		$this->_helper->layout ()->disableLayout ();
+		$id = $_REQUEST ['id'];
+		// $id = $this->_getParam ( 'id' );
+		$_Id = null;
+		$jsonObjv = null;
+		
+		if (isset ( $id ) && $id > 0) {
+			$_Id = $this->_MNgansachmotnam->delObj ( $id );
+		} else {
+			return;
+		}
+		
+		if (! $_Id) {
+			$jsonObj = json_encode ( array (
+					'success' => false 
+			) );
+		} else {
+			$jsonObj = json_encode ( array (
+					'success' => true 
+			) );
+		}
+		return $this->view->jsonObj = $jsonObj;
+	}
+}

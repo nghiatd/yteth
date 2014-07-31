@@ -6,9 +6,9 @@
 include_once APPLICATION_PATH . '//modules/default/controllers/PublicdetailController.php';
 class Websitefront_IndexController extends PublicdetailController {
 	
-	public function initValue() {		
+	public function initValue() {
 		$cache = Zend_Registry::get('cache');
-		$this->coquanId = 1;
+        $this->coquanId = 6;
 		$strIP = str_replace('.', '', $_SERVER['REMOTE_ADDR']);
 		if ($this->getRequest ()->isPost ()) {
 			$coquanId[$strIP] = $this->getRequest ()->getParam ( 'coquanId' );
@@ -26,7 +26,7 @@ class Websitefront_IndexController extends PublicdetailController {
 				$this->coquanId = 1;
 		}
 		
-		
+
 	}
 	public function init() {
 		$this->_helper->layout->setLayout ( 'websiteyte_layout' );
@@ -34,11 +34,11 @@ class Websitefront_IndexController extends PublicdetailController {
 	}
 	public function indexAction() {
 		
-		
+
 		
 		$this->view->CoQuanId = $this->coquanId;
 		$this->view->DanhMuc = Websitefront_Model_Danhmuc::getDanhMucObj ( 1, $this->coquanId );
-		
+
 		$this->view->DanhMucBoDy = Websitefront_Model_Danhmuc::getDanhMucObj ( 0, $this->coquanId );
 		// print_r($this->view->DanhMucBody);die;
 		
@@ -48,7 +48,7 @@ class Websitefront_IndexController extends PublicdetailController {
 		$this->view->QuangCao = Websitefront_Model_Lienket::getLienKet ( 1, $this->coquanId );
 		$this->view->Banner = Websitefront_Model_Lienket::getLienKet ( 2, $this->coquanId );
 		//print_r($this->view->Banner[0]['Id']);die;
-		$this->view->Thuvien = Websitefront_Model_Lienket::getLienKet ( 3, $this->coquanId );
+        $this->view->Album = Websitefront_Model_Lienket::getLienKet(3, $this->coquanId);
 		//$this->view->TinMoi = Websitefront_Model_Tintuc::getTintucByLoai ( 1, $this->coquanId );
 		
 		$this->view->Lich = Websitefront_Model_Tintuc::getTintucByLoai ( 3, $this->coquanId );

@@ -8,7 +8,7 @@ class Websitefront_TintucController extends PublicdetailController {
 
 	public function initValue() {
 		$cache = Zend_Registry::get('cache');
-	
+        $this->coquanId = 6;
 		$strIP = str_replace('.', '', $_SERVER['REMOTE_ADDR']);
 		if ($this->getRequest ()->isPost ()) {
 			$coquanId[$strIP] = $this->getRequest ()->getParam ( 'coquanId' );
@@ -33,7 +33,7 @@ class Websitefront_TintucController extends PublicdetailController {
 		$this->initValue ();
 	}
 	public function indexAction() {
-		
+        $this->view->Album = Websitefront_Model_Lienket::getLienKet(3, $this->coquanId);
 		// $this->view->Thuvien = Websitefront_Model_Lienket::getLienKet(3,
 		// $this->TblThongtincoquanbyId[0]['Id']);
 		// $this->view->TinMoi = Websitefront_Model_Tintuc::getTintucByLoai(1,
@@ -111,8 +111,8 @@ class Websitefront_TintucController extends PublicdetailController {
 	public function detailAction() {
 		
 		$request = $this->getRequest ()->getParams ();
-		
-		
+
+        $this->view->Album = Websitefront_Model_Lienket::getLienKet(3, $this->coquanId);
 		$titleplain = $request ['title'];
 		$titleplain = explode ( '.', $titleplain );
 		

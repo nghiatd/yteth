@@ -7,7 +7,7 @@ include_once APPLICATION_PATH . '//modules/default/controllers/PublicdetailContr
 class Websitefront_BandoController extends PublicdetailController {
 public function initValue() {		
 		$cache = Zend_Registry::get('cache');
-		
+        $this->coquanId = 6;
 		$strIP = str_replace('.', '', $_SERVER['REMOTE_ADDR']);
 		if ($this->getRequest ()->isPost ()) {
 			$coquanId[$strIP] = $this->getRequest ()->getParam ( 'coquanId' );
@@ -46,6 +46,7 @@ public function initValue() {
 	
 
 	public function indexAction() {
+        $this->view->Album = Websitefront_Model_Lienket::getLienKet(3, $this->coquanId);
 		$form = new Websitefront_Form_Lienhe();
 		$this->view->form = $form;
 		//$this->view->message = $this->_helper->flashMessenger->getMessages();

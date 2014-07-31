@@ -172,14 +172,14 @@
 					<!-- Nav -->
 					<nav id="nav">
                                                     
-							 
+							 <?php if($this->DanhMuc): ?>
 			                    <ul class="sf-menu">
 			                    	<?php foreach ($this->DanhMuc as $value):?>
 			                        <li><a
 											href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Danhmuc::getLink($value['Alias'])?>"><?php echo $value['TieuDe'];?></a></li>
 			                        <?php endforeach;?>
 			                    </ul>
-			                  
+			                  <?php endif; ?>
                         
 
 					</nav>
@@ -231,14 +231,14 @@
                    
                  
 						<div class="column-one-fourth">
-						<?php if($this->Thuvien):?>
+						<?php if($this->Album):?>
 							<h5 class="line">
 								<span>Thư viện ảnh</span>
 							</h5>
 							<div class="">
-								<ul id="basicuse" class="thumbs">
+								<ul id="" class="thumbs">
 								<li class="hide"></li>
-								<?php foreach ($this->LienKet as $value):?>
+								<?php foreach ($this->Album as $value):?>
 									<li><img src="<?php echo $this->baseUrl ().Websitefront_Model_Lienket::getImage($value['Id'])?>" /></li>
 								<?php endforeach;?>		
 								</ul>
@@ -249,10 +249,9 @@
 							<h5 class="line">
 								<span>Thống kê truy cập</span>
 							</h5>
-							<p>Blandit rutrum, erat et egestas ultricies, dolor tortor
-								egestas enim, quiste rhon cus sem purus eu sapien. Lorem ipsum
-								dolor sit amet adipcising elit. Elit norem simuls tortor lorem
-								adipcising purus mosteu dsapien egestas.</p>
+							<p>
+                                <a href="http://www.nameblog.blogspot.com" title=""><img src="http://services.webestools.com/cpt_global/3199-11.png" width="150" height="200" alt="Free Global Counter" /></a>
+                            </p>
 						</div>
 						<p class="copyright">Copyright © 2014 Công Ty Giải Pháp Công Nghệ NiDi</p>
 					</div>

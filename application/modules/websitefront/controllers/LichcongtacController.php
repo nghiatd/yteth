@@ -5,9 +5,9 @@
  */
 include_once APPLICATION_PATH . '//modules/default/controllers/PublicdetailController.php';
 class Websitefront_LichcongtacController extends PublicdetailController {
-public function initValue() {		
+public function initValue() {
 		$cache = Zend_Registry::get('cache');
-		
+    $this->coquanId = 6;
 		$strIP = str_replace('.', '', $_SERVER['REMOTE_ADDR']);
 		if ($this->getRequest ()->isPost ()) {
 			$coquanId[$strIP] = $this->getRequest ()->getParam ( 'coquanId' );
@@ -24,8 +24,8 @@ public function initValue() {
 			else
 				$this->coquanId = 1;
 		}
-		
-		
+
+
 	}
 	public function init() {
 		$this->_helper->layout->setLayout ( 'websiteyte_layout' );
@@ -33,9 +33,10 @@ public function initValue() {
 	}
 	
 	public function indexAction() {
+        $this->view->Album = Websitefront_Model_Lienket::getLienKet(3, $this->coquanId);
 		$this->view->Files = Websitefront_Model_Lichcongtac::getAllObj($this->coquanId);
 
-		
+
 		
 		
 		
@@ -45,7 +46,7 @@ public function initValue() {
 		$this->view->LienKetDuoi = Websitefront_Model_Lienket::getLienKet ( 4, $this->coquanId );
 		$this->view->QuangCao = Websitefront_Model_Lienket::getLienKet ( 1, $this->coquanId );
 		$this->view->Banner = Websitefront_Model_Lienket::getLienKet ( 2, $this->coquanId );
-		$this->view->Thuvien = Websitefront_Model_Lienket::getLienKet ( 3, $this->coquanId );
+
 		$this->view->TinMoiNhat = Websitefront_Model_Tintuc::getTinOderBy ( '', 'NgayTao DESC', 8, $this->coquanId );
 		$this->view->TinXemNhieu = Websitefront_Model_Tintuc::getTinOderBy ( '', 'LuotXem DESC', 8, $this->coquanId );
 		if ($this->getRequest ()->isPost ()) {
@@ -54,7 +55,7 @@ public function initValue() {
 	}
 	
 	public function viewAction(){
-		
+        $this->view->Album = Websitefront_Model_Lienket::getLienKet(3, $this->coquanId);
 		
 	try{
 			$File = Websitefront_Model_Lichcongtac::getObjByFile($this->getRequest()->getParam('title'), $this->coquanId);

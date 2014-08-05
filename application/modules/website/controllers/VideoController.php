@@ -41,6 +41,7 @@ class Website_VideoController extends PublicdetailController {
 
 	public function setValue() {
 		$data = array ();
+
 		$data ['TieuDe'] = $_REQUEST ['TieuDe'];
 		$data ['ThongtincoquanId'] = $this->_ThongtincoquanId;
 		$trangThai = isset ( $_REQUEST ['TrangThai'] ) ? $_REQUEST ['TrangThai'] : '0';
@@ -103,6 +104,7 @@ class Website_VideoController extends PublicdetailController {
 	public function updateAction() {
 		$this->_helper->layout ()->disableLayout ();
 		$id = $this->_getParam ( 'Id' );
+
 		$data = $this->setValue ();
         if($_FILES['Video']['name'])
             $data ['Video'] = $this->getFileName($_FILES['Video']['name']);
@@ -122,7 +124,7 @@ class Website_VideoController extends PublicdetailController {
             $jsonObj ["msg"] = 'Bạn chưa chọn tiêu đề!';
             $jsonObj ["success"] = false;
         } else {
-            print_r($data);die;
+
             Website_Model_Video::updateObj ( $id, $data );
 
             if ($_FILES ['Video'] ['name']) {
@@ -143,7 +145,7 @@ class Website_VideoController extends PublicdetailController {
 		if (count ( $items )) {
 			foreach ( $items as $value ) {
 				if (isset ( $value ['Id'] ) && $value ['Id'] > 0)
-					Website_Model_Lienket::delObj ( $value ['Id'] );
+					Website_Model_Video::delObj ( $value ['Id'] );
 			}
 			$jsonObj ["msg"] = 'Cập nhật dữ liệu  thành công!';
 			$jsonObj ["success"] = true;

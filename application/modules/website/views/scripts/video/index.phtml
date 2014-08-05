@@ -20,8 +20,7 @@
 			$('#dlg').dialog('open').dialog('setTitle','Sửa');
             $('#video-name').html(row.V);
 			$('#fm').form('load',row);
-			url = 'video/update/Id/'+ row.Id +'/'+'/TrangThai/'+row.TrangThai+'/Video/'+row.V;
-			console.log(url);
+			url = "video/update/Id/"+ row.Id +"/TrangThai/"+row.TrangThai+"/Video/"+row.V+"/TieuDe/"+row.TieuDe;
             return false;
 		}else{
 			$.messager.show({
@@ -34,14 +33,13 @@
 	}
 
 	function del(){
-		var rows = $('#dg').datagrid('getChecked');
-		
-		
+		var rows = $('#dg').datagrid('getSelections');
+
 		items = rows.length;
 		if (items > 0){
 			$.messager.confirm('Thông báo','Bạn có chắc chắn muốn '+items+' phần tử xóa?',function(r){
 				if (r){
-					$.post('lienket/del',{items:rows},function(result){
+					$.post('video/del',{items:rows},function(result){
 						if (result.success){
 							$('#dg').datagrid('reload');	
 							show_messager('Cập nhật dữ liệu thành công!');

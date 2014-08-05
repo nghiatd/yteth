@@ -18,8 +18,7 @@ class PublicdetailController extends Zend_Controller_Action {
 	 * Huyện
 	 */
 	public function initValue() {
-		
-		
+
 		$Info = Zend_Auth::getInstance ()->getStorage ()->read ();
 		
 		$this->IdUser = $Info->Id;
@@ -58,7 +57,9 @@ class PublicdetailController extends Zend_Controller_Action {
 	
 		$Info = Zend_Auth::getInstance ()->getStorage ()->read ();
 		$this->IdUser = $Info->Id;
-		Model_Publicdetail::GetIdUser ( $this->IdUser );
+
+		Websitefront_Model_Publicdetail::GetIdUser ( $this->IdUser );
+
 		$this->setfortblAction ();		
 		$this->layout->Hethong=$this->TblUserbyId [0] ['Hethong'];
 		$this->layout->Nhansu=$this->TblUserbyId [0] ['Nhansu'];

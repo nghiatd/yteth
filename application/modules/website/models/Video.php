@@ -207,10 +207,10 @@ class Website_Model_Video {
 		}
 		
 		$query = self::$db->query ( "SELECT COUNT( * ) AS Total FROM tbl_video
-				WHERE TieuDe='$TieuDe' AND ThongtincoquanId = $thongtincoquanid " );
+				WHERE Video='$Video' AND ThongtincoquanId = $thongtincoquanid " );
 		if ($id != 0) {
 			$query = self::$db->query ( "SELECT COUNT( * ) AS Total FROM tbl_video
-				WHERE ThongtincoquanId = $thongtincoquanid AND Id != $id AND TieuDe='$TieuDe'" );
+				WHERE ThongtincoquanId = $thongtincoquanid AND Id != $id AND Video='$Video'" );
 		}
 		$row = $query->fetchAll ();
 		$total = $row [0] ['Total'];

@@ -1,73 +1,73 @@
 
 <section id="slider">
-	<div class="container">
-		<div class="main-slider">
-			<div class="badg">
-				<p>
-					<a href="#">Popular.</a>
-				</p>
-			</div>
-			<div class="flexslider">
-				<ul class="slides">
-								<?php if($this->TinMoi):?>
-								<?php foreach ($this->TinMoi as $value):?>
-									<li>
-									
-									<?php if(Websitefront_Model_Tintuc::checkImage($value['Id'])):?>
-									<img src="<?php echo $this->baseUrl ().Websitefront_Model_Tintuc::getImage($value['Id']);?>"
-						width="540px" height="230px" alt="<?php echo $value['TieuDe']?>" />
-									<?php else:?>
-									<img src="<?php echo $this->baseUrl ().Websitefront_Model_Tintuc::getDefaultImage($value['Id']);?>"
-						width="540px" height="230px" alt="<?php echo $value['TieuDe']?>" />
-									<?php endif;?>	
-						<p class="flex-caption">
-							<a href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"><?php echo $value['TieuDe']?></a> 
-											<?php echo PublicdetailController::strimTitle($value['MoTa'], 10);?>
-										</p></li>
-								<?php endforeach;?>		
-								<?php endif;?>		
-									
-								</ul>
-			</div>
-		</div>
+    <div class="container">
+        <div class="main-slider">
+            <div class="badg">
+                <p>
+                    <a href="#">Popular.</a>
+                </p>
+            </div>
+            <div class="flexslider">
+                <ul class="slides">
+                    <?php if($this->TinMoi):?>
+                        <?php foreach ($this->TinMoi as $value):?>
+                            <li>
 
-		<div class="slider2">
-						
-						<?php if($this->ThongBao):?>
-							<marquee onmouseover="this.stop()" onmouseout="this.start()"
-				scrollamount="2" direction="up" width="100%" height="131"
-				align="left">
-				<ul id="thongbao-scrollbox">
-								 <?php foreach ($this->ThongBao as $value):?>
-									
-									<li><a
-						href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"><?php echo PublicdetailController::strimTitle($value['TieuDe'])?></a></li>
-									
-								<?php endforeach;?>  	
-								</ul>
-			</marquee>
+                                <?php if(Websitefront_Model_Tintuc::checkImage($value['Id'])):?>
+                                    <img src="<?php echo $this->baseUrl ().Websitefront_Model_Tintuc::getImage($value['Id']);?>"
+                                         width="540px" height="230px" alt="<?php echo $value['TieuDe']?>" />
+                                <?php else:?>
+                                    <img src="<?php echo $this->baseUrl ().Websitefront_Model_Tintuc::getDefaultImage($value['Id']);?>"
+                                         width="540px" height="230px" alt="<?php echo $value['TieuDe']?>" />
+                                <?php endif;?>
+                                <p class="flex-caption">
+                                    <a href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"><?php echo $value['TieuDe']?></a>
+                                    <?php echo PublicdetailController::strimTitle($value['MoTa'], 10);?>
+                                </p></li>
+                        <?php endforeach;?>
                     <?php endif;?>
-						</div>
-		<div class="box-bottom">
-			<div class="box1">
-				<a href="<?php echo $this->baseUrl()?>/websitefront/lichcongtac.html"><img
-					src="<?php echo $this->baseUrl ();?>/public/websiteyte/img/lich.jpg"
-					alt="MyPassion" /></a>
-			</div>
-			<div class="box2">
-				<a href="<?php echo $this->baseUrl()?>/websitefront/albumanh.html"><img
-					src="<?php echo $this->baseUrl ();?>/public/websiteyte/img/album.jpg"
-					alt="MyPassion" /></a>
-			</div>
-		</div>
-	</div>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="slider2">
+
+            <?php if($this->ThongBao):?>
+                <marquee onmouseover="this.stop()" onmouseout="this.start()"
+                         scrollamount="2" direction="up" width="100%" height="131"
+                         align="left">
+                    <ul id="thongbao-scrollbox">
+                        <?php foreach ($this->ThongBao as $value):?>
+
+                            <li><a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"><?php echo PublicdetailController::strimTitle($value['TieuDe'])?></a></li>
+
+                        <?php endforeach;?>
+                    </ul>
+                </marquee>
+            <?php endif;?>
+        </div>
+        <div class="box-bottom">
+            <div class="box1">
+                <a href="<?php echo $this->baseUrl()?>/websitefront/lichcongtac.html"><img
+                        src="<?php echo $this->baseUrl ();?>/public/websiteyte/img/lich.jpg"
+                        alt="MyPassion" /></a>
+            </div>
+            <div class="box2">
+                <a href="<?php echo $this->baseUrl()?>/websitefront/albumanh.html"><img
+                        src="<?php echo $this->baseUrl ();?>/public/websiteyte/img/album.jpg"
+                        alt="MyPassion" /></a>
+            </div>
+        </div>
+    </div>
 </section>
 <section id="content">
-	<div class="container">
-		<!-- Main Content -->
-		<div class="main-content">
+<div class="container">
+<!-- Main Content -->
+<div class="main-content">
 
-			<!-- Popular News
+<!-- Popular News
                 	<div class="column-one-third">
                     	<h5 class="line"><span>Popular News.</span></h5>
                         <div class="outertight">
@@ -110,7 +110,7 @@
                     </div>
                      /Popular News -->
 
-			<!-- Hot News
+<!-- Hot News
                     <div class="column-one-third">
                     	<h5 class="line"><span>Hot News.</span></h5>
                         <div class="outertight m-r-no">
@@ -153,286 +153,287 @@
                     </div>
                      /Hot News -->
 
-			<!-- Life Style -->
-			<div class="column-two-third">
-							
-							<?php if(isset($this->DanhMucBoDy[0]['Id'])):?>
-							<?php $this->TinHoatDong = Websitefront_Model_Tintuc::getTinTheoDanhMuc($this->DanhMucBoDy[0]['Id'], 10, $this->CoQuanId)?>
-							
-								<h5 class="line">
+<!-- Life Style -->
+<div class="column-two-third">
+
+    <?php if(isset($this->DanhMucBoDy[0]['Id'])):?>
+        <?php $this->TinHoatDong = Websitefront_Model_Tintuc::getTinTheoDanhMuc($this->DanhMucBoDy[0]['Id'], 10, $this->CoQuanId)?>
+
+        <h5 class="line">
 					<span> <a
-						href="<?php echo Websitefront_Model_Danhmuc::getLink($this->DanhMucBoDy[0]['Alias']);?>">
-					<?php echo $this->DanhMucBoDy[0]['TieuDe']; ?>
-					</a>
+                            href="<?php echo Websitefront_Model_Danhmuc::getLink($this->DanhMucBoDy[0]['Alias']);?>">
+                            <?php echo $this->DanhMucBoDy[0]['TieuDe']; ?>
+                        </a>
 
 					</span>
-					<div class="navbar">
-						<a id="next1" class="next" href="#"><span></span></a> <a
-							id="prev1" class="prev" href="#"><span></span></a>
-					</div>
-				</h5>
+            <div class="navbar">
+                <a id="next1" class="next" href="#"><span></span></a> <a
+                    id="prev1" class="prev" href="#"><span></span></a>
+            </div>
+        </h5>
 
-				<div class="outertight">
+        <div class="outertight">
 
 
-					<a
-						href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[0]['Alias'])?>">
-										<?php if(Websitefront_Model_Tintuc::checkImage($this->TinHoatDong[0]['Id'])):?>
-											<img
-						src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getImage($this->TinHoatDong[0]['Id']);?>"
-						width="270px" height="140px"
-						alt="<?php echo $this->TinHoatDong[0]['TieuDe']?>" />
-										<?php else:?>	
-											<img
-						src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getDefaultImage();?>"
-						width="270px" height="140px"
-						alt="<?php echo $this->TinHoatDong[0]['TieuDe']?>" />
-										<?php endif;?>
-										
-										</a>
-					<h6 class="regular">
-						<a
-							href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[0]['Alias'])?>"><b><?php echo PublicdetailController::strimTitle($this->TinHoatDong[0]['TieuDe'])?></b></a>
-					</h6>
+            <a
+                href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[0]['Alias'])?>">
+                <?php if(Websitefront_Model_Tintuc::checkImage($this->TinHoatDong[0]['Id'])):?>
+                    <img
+                        src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getImage($this->TinHoatDong[0]['Id']);?>"
+                        width="270px" height="140px"
+                        alt="<?php echo $this->TinHoatDong[0]['TieuDe']?>" />
+                <?php else:?>
+                    <img
+                        src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getDefaultImage();?>"
+                        width="270px" height="140px"
+                        alt="<?php echo $this->TinHoatDong[0]['TieuDe']?>" />
+                <?php endif;?>
 
-					<p><?php echo PublicdetailController::strimTitle($this->TinHoatDong[0]['MoTa'])?></p>
-					<span class="meta"><?php echo $this->TinHoatDong[0]['NgayTao']?></span>
-				</div>
+            </a>
+            <h6 class="regular">
+                <a
+                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[0]['Alias'])?>"><b><?php echo PublicdetailController::strimTitle($this->TinHoatDong[0]['TieuDe'])?></b></a>
+            </h6>
 
-				<div class="outertight m-r-no">
-					<ul class="block" id="carousel">
-									<?php $count = count($this->TinHoatDong);?>
-									<?php if($count >= 2):?>
-									<?php for ($i=1; $i<$count; $i++):?>
-										<li><a
-							href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[$i]['Alias'])?>"></a>
-							<p>
-								<a
-									href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[$i]['Alias'])?>">
-												<?php echo PublicdetailController::strimTitle($this->TinHoatDong[$i]['TieuDe'], 10)?></a>
-								<span><?php echo $this->TinHoatDong[$i]['NgayTao']?></span>
-							</p> <span class="rating"><span style="width: 80%;"></span></span>
-						</li>
-									<?php endfor;?>	
-									<?php endif;?>	
-									</ul>
-				</div>
-								<?php endif;?>
-							</div>
-			<!-- /Life Style -->
+            <p><?php echo PublicdetailController::strimTitle($this->TinHoatDong[0]['MoTa'])?></p>
+            <span class="meta"><?php echo $this->TinHoatDong[0]['NgayTao']?></span>
+        </div>
 
-			<!-- World News -->
-			<div class="column-two-third">
-							
-							<?php if(isset($this->DanhMucBoDy[1])):?>
-							<?php //print_r(count($this->DanhMucBoDy[1]));die;?>
-							<?php $this->TinDaoTao = Websitefront_Model_Tintuc::getTinTheoDanhMuc($this->DanhMucBoDy[1]['Id'], 7, $this->CoQuanId);?>
-								<h5 class="line">
-					<span><?php echo PublicdetailController::strimTitle($this->DanhMucBoDy[1]['TieuDe'])?></span>
-					<div class="navbar">
-						<a id="next2" class="next" href="#"><span></span></a> <a
-							id="prev2" class="prev" href="#"><span></span></a>
-					</div>
-				</h5>
-								<?php $count = count($this->TinDaoTao);?>
-								<?php if($count >=2):?>
-								<div class="outerwide">
-					<ul class="wnews" id="carousel2">
-									<?php //($count <4)?$c=$count:$c=3;?>
-									<?php for ($i=0; $i<=1; $i++):?>
-									<li>
-								
-								<?php if(Websitefront_Model_Tintuc::checkImage($this->TinDaoTao[$i]['Id'])):?>
-									<img
-							src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getImage($this->TinDaoTao[$i]['Id']);?>"
-							width="300px" height="162px"
-							alt="<?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['TieuDe'])?>" />
-								<?php else:?>	
-									<img
-							src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getDefaultImage(true);?>"
-							width="300px" height="162px"
-							alt="<?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['TieuDe'])?>" />
-								<?php endif;?>
-								
-											<h6 class="regular">
-								<a
-									href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[1]['Alias'], $this->TinDaoTao[$i]['Alias'])?>"><b> <?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['TieuDe'])?></b></a>
-							</h6>
-							<p><?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['MoTa'])?></p>
-							<span class="meta"><?php echo $this->TinDaoTao[$i]['NgayTao']?></span>
-						</li>
-									<?php endfor;?>			
-									</ul>
-				</div>
-								<?php endif;?>
+        <div class="outertight m-r-no">
+            <ul class="block" id="carousel">
+                <?php $count = count($this->TinHoatDong);?>
+                <?php if($count >= 2):?>
+                    <?php for ($i=1; $i<$count; $i++):?>
+                        <li><a
+                                href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[$i]['Alias'])?>"></a>
+                            <p>
+                                <a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[0]['Alias'], $this->TinHoatDong[$i]['Alias'])?>">
+                                    <?php echo PublicdetailController::strimTitle($this->TinHoatDong[$i]['TieuDe'], 10)?></a>
+                                <span><?php echo $this->TinHoatDong[$i]['NgayTao']?></span>
+                            </p> <span class="rating"><span style="width: 80%;"></span></span>
+                        </li>
+                    <?php endfor;?>
+                <?php endif;?>
+            </ul>
+        </div>
+    <?php endif;?>
+</div>
+<!-- /Life Style -->
 
-								<div class="outerwide">
-								<?php if($count>=3):?>
-									<ul class="block2">
-									<?php for ($j=2; $j<=$count-1; $j++):?>
-									
-										<li><a
-							href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[1]['Alias'], $this->TinDaoTao[$j]['Alias'])?>">
-						</a>
-							<p>
-								<a
-									href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[1]['Alias'], $this->TinDaoTao[$j]['Alias'])?>">
-												<?php echo PublicdetailController::strimTitle($this->TinDaoTao[$j]['TieuDe'])?></a><span><?php echo $this->TinDaoTao[$j]['NgayTao']?></span>
-							</p> <span class="rating"><span style="width: 80%;"></span></span>
-						</li>
-									<?php endfor;?>	
-									</ul>
-								<?php endif;?>	
-								</div>
-								<?php endif;?>
-							</div>
-			<!-- /World News -->
+<!-- World News -->
+<div class="column-two-third">
 
-			<!-- Popular News -->
-			<div class="column-two-third">
-							<?php $countDM = count($this->DanhMucBoDy);?>
-							<?php //print_r($countDM);die;?>
-							<?php if($countDM > 2):?>
-							<?php $countDM = $countDM-1;?>
-							<?php for ($h=2; $h<=$countDM; $h++):?>
-							<div class="outertight <?php echo ($h%2 ==  1)?'m-r-no':''?>">
-					<h5 class="line">
-						<span><?php echo $this->DanhMucBoDy[$h]['TieuDe'];?></span>
-										<?php //print_r($this->DanhMucBoDy[$h]['Id']);die;?>
-									</h5>
-							<?php $this->NghienCuu = Websitefront_Model_Tintuc::getTinTheoDanhMuc($this->DanhMucBoDy[$h]['Id'],3 , $this->CoQuanId);?>		
-							<?php if($this->NghienCuu):?>
-									<div class="outertight">
-						<div class="flexslider">
-						
-								<?php if(Websitefront_Model_Tintuc::checkImage($this->NghienCuu[0]['Id'])):?>
-									<img
-								src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getImage($this->DanhMucBoDy[$h]['Id'], $this->NghienCuu[0]['Id']);?>"
-								width="300px" height="162px"
-								alt="<?php echo $this->NghienCuu[0]['TieuDe']?>" />
-											<?php else:?>	
-									<img
-								src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getDefaultImage();?>"
-								width="300px" height="162px"
-								alt="<?php echo $this->NghienCuu[0]['TieuDe']?>" />
-								<?php endif;?>	
-											
-										</div>
+    <?php if(isset($this->DanhMucBoDy[1])):?>
+        <?php //print_r(count($this->DanhMucBoDy[1]));die;?>
+        <?php $this->TinDaoTao = Websitefront_Model_Tintuc::getTinTheoDanhMuc($this->DanhMucBoDy[1]['Id'], 7, $this->CoQuanId);?>
+        <h5 class="line">
+            <span><?php echo PublicdetailController::strimTitle($this->DanhMucBoDy[1]['TieuDe'])?></span>
+            <div class="navbar">
+                <a id="next2" class="next" href="#"><span></span></a> <a
+                    id="prev2" class="prev" href="#"><span></span></a>
+            </div>
+        </h5>
+        <?php $count = count($this->TinDaoTao);?>
+        <?php if($count >=2):?>
+            <div class="outerwide">
+                <ul class="wnews" id="carousel2">
+                    <?php //($count <4)?$c=$count:$c=3;?>
+                    <?php for ($i=0; $i<=1; $i++):?>
+                        <li>
 
-						<h6 class="regular">
-							<a
-								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[$h]['Alias'],$this->NghienCuu[0]['Alias'])?>"><?php echo PublicdetailController::strimTitle( $this->NghienCuu[0]['TieuDe'], 10);?></a>
-						</h6>
-						<span class="meta"><?php echo $this->NghienCuu[0]['NgayTao']?></span>
-					</div>
+                            <?php if(Websitefront_Model_Tintuc::checkImage($this->TinDaoTao[$i]['Id'])):?>
+                                <img
+                                    src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getImage($this->TinDaoTao[$i]['Id']);?>"
+                                    width="300px" height="162px"
+                                    alt="<?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['TieuDe'])?>" />
+                            <?php else:?>
+                                <img
+                                    src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getDefaultImage(true);?>"
+                                    width="300px" height="162px"
+                                    alt="<?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['TieuDe'])?>" />
+                            <?php endif;?>
 
-					<ul class="block">
-									<?php $count = count($this->NghienCuu);?>
-									<?php if($count>1):?>
-									<?php for ($j=1; $j<=$count-1; $j++):?>
-										<li><a
-							href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[$h]['Alias'],$this->TinDaoTao[$j]['Alias'])?>">
-						</a>
-							<p>
-								<a
-									href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[$h]['Alias'],$this->TinDaoTao[$j]['Alias'])?>"><?php echo PublicdetailController::strimTitle($this->NghienCuu[$j]['TieuDe'])?></a><span><?php echo $this->NghienCuu[$j]['NgayTao']?></span>
-							</p> <span class="rating"><span style="width: 80%;"></span></span>
-						</li>
-									<?php endfor;?>	
-									<?php endif;?>	
-									</ul>
-								<?php endif;?>	
-								</div>
-								<?php endfor; ?>
-								<?php endif;?>
+                            <h6 class="regular">
+                                <a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[1]['Alias'], $this->TinDaoTao[$i]['Alias'])?>"><b> <?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['TieuDe'])?></b></a>
+                            </h6>
+                            <p><?php echo PublicdetailController::strimTitle($this->TinDaoTao[$i]['MoTa'])?></p>
+                            <span class="meta"><?php echo $this->TinDaoTao[$i]['NgayTao']?></span>
+                        </li>
+                    <?php endfor;?>
+                </ul>
+            </div>
+        <?php endif;?>
 
-							</div>
-			<!-- /Popular News -->
+        <div class="outerwide">
+            <?php if($count>=3):?>
+                <ul class="block2">
+                    <?php for ($j=2; $j<=$count-1; $j++):?>
 
-		</div>
-		<!-- /Main Content -->
+                        <li><a
+                                href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[1]['Alias'], $this->TinDaoTao[$j]['Alias'])?>">
+                            </a>
+                            <p>
+                                <a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[1]['Alias'], $this->TinDaoTao[$j]['Alias'])?>">
+                                    <?php echo PublicdetailController::strimTitle($this->TinDaoTao[$j]['TieuDe'])?></a><span><?php echo $this->TinDaoTao[$j]['NgayTao']?></span>
+                            </p> <span class="rating"><span style="width: 80%;"></span></span>
+                        </li>
+                    <?php endfor;?>
+                </ul>
+            <?php endif;?>
+        </div>
+    <?php endif;?>
+</div>
+<!-- /World News -->
 
-		<!-- Left Sidebar -->
-                <div class="column-one-third">
-                	
-                    
-                    <div class="sidebar">
-                    	<h5 class="line"><span>Video</span></h5>
-                        
-                        <div class="full-frame" id="player" style="width: 100%; height: 100%; overflow: hidden;"><embed width="100%" height="100%" name="player1" id="player1" tabindex="0" type="application/x-shockwave-flash" src="https://s.ytimg.com/yts/swfbin/player-vflmDyk47/watch_as3.swf" allowfullscreen="true" wmode="opaque" allowscriptaccess="always" bgcolor="#000000" flashvars="title=NHANONG24H.COM%20-%20SAO%20KHU%C3%8A%202014&amp;ldpj=-2&amp;ssl=1&amp;length_seconds=48&amp;iurlhq=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fhqdefault.jpg&amp;cr=US&amp;is_html5_mobile_device=false&amp;probably_logged_in=1&amp;view_count=36&amp;allow_ratings=1&amp;iurlsd=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fsddefault.jpg&amp;iurlmq=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fmqdefault.jpg&amp;video_id=sjaRbCEx708&amp;allow_embed=1&amp;index=0&amp;iurl=https%3A%2F%2Fi1.ytimg.com%2Fvi%2FsjaRbCEx708%2Fhqdefault.jpg&amp;enablejsapi=1&amp;rel=1&amp;idpj=-9&amp;hl=en_US&amp;authuser=0&amp;sentiment=2&amp;eurl=http%3A%2F%2Fnhanong24h.com%2F&amp;el=embedded&amp;avg_rating=0&amp;fexp=902408%2C924222%2C927622%2C930008%2C934024%2C934030%2C936118%2C940207%2C946011%2C949401&amp;loaderUrl=http%3A%2F%2Fnhanong24h.com%2F&amp;playerapiid=player1&amp;framer=http%3A%2F%2Fnhanong24h.com%2F"></div>
-                        
-                        <div class="full-frame" style="width: 100%; height: 100%; overflow: hidden;"> <object width="100%" height="100%"><param name="movie" value="//www.youtube.com/v/TG-ySKps3-4?hl=en_US&amp;version=3&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="//www.youtube.com/v/TG-ySKps3-4?hl=en_US&amp;version=3&amp;rel=0" type="application/x-shockwave-flash" width="100%" height="100%" allowscriptaccess="always" allowfullscreen="true"></embed></object></div>
-                        
+<!-- Popular News -->
+<div class="column-two-third">
+    <?php $countDM = count($this->DanhMucBoDy);?>
+    <?php //print_r($countDM);die;?>
+    <?php if($countDM > 2):?>
+        <?php $countDM = $countDM-1;?>
+        <?php for ($h=2; $h<=$countDM; $h++):?>
+            <div class="outertight <?php echo ($h%2 ==  1)?'m-r-no':''?>">
+                <h5 class="line">
+                    <span><?php echo $this->DanhMucBoDy[$h]['TieuDe'];?></span>
+                    <?php //print_r($this->DanhMucBoDy[$h]['Id']);die;?>
+                </h5>
+                <?php $this->NghienCuu = Websitefront_Model_Tintuc::getTinTheoDanhMuc($this->DanhMucBoDy[$h]['Id'],3 , $this->CoQuanId);?>
+                <?php if($this->NghienCuu):?>
+                    <div class="outertight">
+                        <div class="flexslider">
+
+                            <?php if(Websitefront_Model_Tintuc::checkImage($this->NghienCuu[0]['Id'])):?>
+                                <img
+                                    src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getImage($this->DanhMucBoDy[$h]['Id'], $this->NghienCuu[0]['Id']);?>"
+                                    width="300px" height="162px"
+                                    alt="<?php echo $this->NghienCuu[0]['TieuDe']?>" />
+                            <?php else:?>
+                                <img
+                                    src="<?php echo $this->baseUrl (). Websitefront_Model_Tintuc::getDefaultImage();?>"
+                                    width="300px" height="162px"
+                                    alt="<?php echo $this->NghienCuu[0]['TieuDe']?>" />
+                            <?php endif;?>
+
+                        </div>
+
+                        <h6 class="regular">
+                            <a
+                                href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[$h]['Alias'],$this->NghienCuu[0]['Alias'])?>"><?php echo PublicdetailController::strimTitle( $this->NghienCuu[0]['TieuDe'], 10);?></a>
+                        </h6>
+                        <span class="meta"><?php echo $this->NghienCuu[0]['NgayTao']?></span>
                     </div>
-                    
-                    <div class="sidebar">
-                    	<h5 class="line"><span>QUẢNG CÁO</span></h5>
-                    	<?php if($this->QuangCao):?>
-                        <ul class="ads125">
-                        <?php foreach ($this->QuangCao as $value):?>
-                        <?php if(Websitefront_Model_Lienket::checkImage($value['Id'])):?>
-                        	<li><a href="<?php echo $value['Link']?>"><img src="<?php echo $this->baseUrl(). Websitefront_Model_Lienket::getImage($value['Id']);?>"	title="<?php echo $value['TieuDe']?>" alt="<?php echo $value['TieuDe']?>" /></a></li>
-                        <?php else:?>
-                        	<li><a href="<?php echo $value['Link']?>"><img src="<?php echo $this->baseUrl(). Websitefront_Model_Lienket::getDefaultImage();?>"	title="<?php echo $value['TieuDe']?>" alt="<?php echo $value['TieuDe']?>" /></a></li>
-                        <?php endif;?>	
-                        <?php endforeach;?>    
-                        </ul>
+
+                    <ul class="block">
+                        <?php $count = count($this->NghienCuu);?>
+                        <?php if($count>1):?>
+                            <?php for ($j=1; $j<=$count-1; $j++):?>
+                                <li><a
+                                        href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[$h]['Alias'],$this->TinDaoTao[$j]['Alias'])?>">
+                                    </a>
+                                    <p>
+                                        <a
+                                            href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($this->DanhMucBoDy[$h]['Alias'],$this->TinDaoTao[$j]['Alias'])?>"><?php echo PublicdetailController::strimTitle($this->NghienCuu[$j]['TieuDe'])?></a><span><?php echo $this->NghienCuu[$j]['NgayTao']?></span>
+                                    </p> <span class="rating"><span style="width: 80%;"></span></span>
+                                </li>
+                            <?php endfor;?>
                         <?php endif;?>
-                    </div>
-                    
-                    <div class="sidebar">
-				<div id="tabs">
-					<ul>
-						<li><a href="#tabs1">Gần nhất</a></li>
-						<li><a href="#tabs2">Phổ biến</a></li>
-						<li><a href="#tabs3">Bình luận</a></li>
-					</ul>
-					<div id="tabs1">
-						<ul>
-                                <?php if($this->TinMoiNhat):?>
-                                <?php foreach ($this->TinMoiNhat as $value):?>
-                                	<li><a
-								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
-								class="title"><?php echo PublicdetailController::strimTitle($value['TieuDe']);?>.</a> <span
-								class="meta"><?php echo $value['NgayTao'];?></span> <span
-								class="rating"><span style="width: 70%;"></span></span></li>
-                                  <?php endforeach;?>  
-                                 <?php endif;?>   
-                                </ul>
-					</div>
-					<div id="tabs2">
-						<ul>
-                                	 <?php if($this->TinXemNhieu):?>
-                                <?php foreach ($this->TinXemNhieu as $value):?>
-                                	<li><a
-								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
-								class="title"><?php echo $value['TieuDe'];?>.</a> <span
-								class="meta"><?php echo $value['NgayTao'];?></span> <span
-								class="rating"><span style="width: 70%;"></span></span></li>
-                                  <?php endforeach;?>  
-                                 <?php endif;?> 
-                                </ul>
-					</div>
-					<div id="tabs3">
-						<ul>
-                                	 <?php if($this->LuotBL):?>
-                                <?php foreach ($this->LuotBL as $value):?>
-                                	<li><a
-								href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
-								class="title"><?php echo $value['TieuDe'];?>.</a> <span
-								class="meta"><?php echo $value['NgayTao'];?></span> <span
-								class="rating"><span style="width: 70%;"></span></span></li>
-                                  <?php endforeach;?>  
-                                 <?php endif;?> 
-                                </ul>
-					</div>
-				</div>
-			</div>
-                    
-                    
-                    
-                </div>
-                <!-- /Left Sidebar -->
+                    </ul>
+                <?php endif;?>
+            </div>
+        <?php endfor; ?>
+    <?php endif;?>
 
-	</div>
+</div>
+<!-- /Popular News -->
+
+</div>
+<!-- /Main Content -->
+
+<!-- Left Sidebar -->
+<div class="column-one-third">
+
+
+    <div class="sidebar">
+        <h5 class="line"><span>Video</span></h5>
+        <?php if($this->Videos): ?>
+            <?php foreach($this->Videos as $value): ?>
+                <div class="full-frame" style="width: 100%; height: 100%; overflow: hidden;"><img="<?php echo $this->baseUrl() . Websitefront_Model_Video::getLink($value['Id'], $value['Video']); ?>"></div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+    </div>
+
+    <div class="sidebar">
+        <h5 class="line"><span>QUẢNG CÁO</span></h5>
+        <?php if($this->QuangCao):?>
+            <ul class="ads125">
+                <?php foreach ($this->QuangCao as $value):?>
+                    <?php if(Websitefront_Model_Lienket::checkImage($value['Id'])):?>
+                        <li><a href="<?php echo $value['Link']?>"><img src="<?php echo $this->baseUrl(). Websitefront_Model_Lienket::getImage($value['Id']);?>"	title="<?php echo $value['TieuDe']?>" alt="<?php echo $value['TieuDe']?>" /></a></li>
+                    <?php else:?>
+                        <li><a href="<?php echo $value['Link']?>"><img src="<?php echo $this->baseUrl(). Websitefront_Model_Lienket::getDefaultImage();?>"	title="<?php echo $value['TieuDe']?>" alt="<?php echo $value['TieuDe']?>" /></a></li>
+                    <?php endif;?>
+                <?php endforeach;?>
+            </ul>
+        <?php endif;?>
+    </div>
+
+    <div class="sidebar">
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs1">Gần nhất</a></li>
+                <li><a href="#tabs2">Phổ biến</a></li>
+                <li><a href="#tabs3">Bình luận</a></li>
+            </ul>
+            <div id="tabs1">
+                <ul>
+                    <?php if($this->TinMoiNhat):?>
+                        <?php foreach ($this->TinMoiNhat as $value):?>
+                            <li><a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
+                                    class="title"><?php echo PublicdetailController::strimTitle($value['TieuDe']);?>.</a> <span
+                                    class="meta"><?php echo $value['NgayTao'];?></span> <span
+                                    class="rating"><span style="width: 70%;"></span></span></li>
+                        <?php endforeach;?>
+                    <?php endif;?>
+                </ul>
+            </div>
+            <div id="tabs2">
+                <ul>
+                    <?php if($this->TinXemNhieu):?>
+                        <?php foreach ($this->TinXemNhieu as $value):?>
+                            <li><a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
+                                    class="title"><?php echo $value['TieuDe'];?>.</a> <span
+                                    class="meta"><?php echo $value['NgayTao'];?></span> <span
+                                    class="rating"><span style="width: 70%;"></span></span></li>
+                        <?php endforeach;?>
+                    <?php endif;?>
+                </ul>
+            </div>
+            <div id="tabs3">
+                <ul>
+                    <?php if($this->LuotBL):?>
+                        <?php foreach ($this->LuotBL as $value):?>
+                            <li><a
+                                    href="<?php echo $this->baseUrl ().'/websitefront/'.Websitefront_Model_Tintuc::getLink($value['Cate'], $value['Alias'])?>"
+                                    class="title"><?php echo $value['TieuDe'];?>.</a> <span
+                                    class="meta"><?php echo $value['NgayTao'];?></span> <span
+                                    class="rating"><span style="width: 70%;"></span></span></li>
+                        <?php endforeach;?>
+                    <?php endif;?>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+<!-- /Left Sidebar -->
+
+</div>
 </section>

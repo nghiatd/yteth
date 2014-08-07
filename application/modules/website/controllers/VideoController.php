@@ -2,26 +2,26 @@
 /**
  * Create By Daitk
  */
-//include ("library/PHPExcel/PHPEXCHelper.php");
-///**
-// * PHPExcel
-// */
-//include APPLICATION_PATH . '//modules/default/controllers/HelpFuncExportExcel.php';
-//require_once 'library/PHPExcel/PHPExcel.php';
+include ("library/PHPExcel/PHPEXCHelper.php");
+/**
+ * PHPExcel
+ */
+include APPLICATION_PATH . '//modules/default/controllers/HelpFuncExportExcel.php';
+require_once 'library/PHPExcel/PHPExcel.php';
 include_once APPLICATION_PATH . '//modules/default/controllers/PublicdetailController.php';
 /**
  * PHPExcel_IOFactory
  */
-//require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
+require_once 'library/PHPExcel/PHPExcel/IOFactory.php';
 class Website_VideoController extends PublicdetailController {
 	private $_ThongtincoquanId;
 	private $_MHistory;
 	public function init() {
-//		$this->initValue ();
-//		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
-//
-//		$this->_MHistory = new Model_History ();
-        $this->_ThongtincoquanId = 6;
+		$this->initValue ();
+		$this->_ThongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
+
+		$this->_MHistory = new Model_History ();
+
 	}
 	public function indexAction() {
 
@@ -42,6 +42,7 @@ class Website_VideoController extends PublicdetailController {
 	public function setValue() {
 		$data = array ();
 		$data ['TieuDe'] = $_REQUEST ['TieuDe'];
+        $data ['Video'] = isset($_REQUEST['Video'])? $_REQUEST['Video'] : '';
 		$data ['ThongtincoquanId'] = $this->_ThongtincoquanId;
 		$trangThai = isset ( $_REQUEST ['TrangThai'] ) ? $_REQUEST ['TrangThai'] : '0';
 		$data ['TrangThai'] = $trangThai;
@@ -69,14 +70,11 @@ class Website_VideoController extends PublicdetailController {
 		$jsonObj = array ();
 		$data = $this->setValue ();
 
-        if($_FILES['Video']['name'])
-            $data ['Video'] = $this->getFileName($_FILES['Video']['name']);
-        else
-            $data ['Video'] = '';
-        if($data['Video'] != ''){
+
+        if($data['TieuDe'] != ''){
             $dup = Website_Model_Video::dupliObj(0, $data['Video'], $data ['ThongtincoquanId']);
             if($dup > 0){
-                $jsonObj ["msg"] = 'Video đã tồn tại!';
+                $jsonObj ["msg"] = 'Tiêu đề đã tồn tại!';
                 $jsonObj ["success"] = false;
                 echo json_encode($jsonObj);
                 return;
@@ -89,10 +87,10 @@ class Website_VideoController extends PublicdetailController {
 		} else {
 			Website_Model_Video::addObj ( $data );
 
-			if ($_FILES ['Video'] ['name']) {
-				$imgDir = APPLICATION_PATH . "/../public/uploads/videos/" . Website_Model_Video::getLastInsertId () . "/";
-				$this->getImages ( $imgDir , $data ['Video']);
-			}
+//			if ($_FILES ['Video'] ['name']) {
+//				$imgDir = APPLICATION_PATH . "/../public/uploads/videos/" . Website_Model_Video::getLastInsertId () . "/";
+//				$this->getImages ( $imgDir , $data ['Video']);
+//			}
 			
 			$jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
 			$jsonObj ["success"] = true;
@@ -104,14 +102,14 @@ class Website_VideoController extends PublicdetailController {
 		$this->_helper->layout ()->disableLayout ();
 		$id = $this->_getParam ( 'Id' );
 		$data = $this->setValue ();
-        if($_FILES['Video']['name'])
-            $data ['Video'] = $this->getFileName($_FILES['Video']['name']);
-        else
-            $data ['Video'] = $this->getRequest()->getParam('Video');
-        if($data['Video'] != ''){
-            $dup = Website_Model_Video::dupliObj($id, $data['Video'], $data ['ThongtincoquanId']);
+//        if($_FILES['Video']['name'])
+//            $data ['Video'] = $this->getFileName($_FILES['Video']['name']);
+//        else
+//            $data ['Video'] = $this->getRequest()->getParam('Video');
+        if($data['TieuDe'] != ''){
+            $dup = Website_Model_Video::dupliObj($id, $data['TieuDe'], $data ['ThongtincoquanId']);
             if($dup > 0){
-                $jsonObj ["msg"] = 'Video đã tồn tại!';
+                $jsonObj ["msg"] = 'Tiêu đề đã tồn tại!';
                 $jsonObj ["success"] = false;
                 echo json_encode($jsonObj);
                 return;
@@ -121,14 +119,13 @@ class Website_VideoController extends PublicdetailController {
         if (!($data['TieuDe'])) {
             $jsonObj ["msg"] = 'Bạn chưa chọn tiêu đề!';
             $jsonObj ["success"] = false;
-        } else {
-            print_r($data);die;
+        } else{
             Website_Model_Video::updateObj ( $id, $data );
 
-            if ($_FILES ['Video'] ['name']) {
-                $imgDir = APPLICATION_PATH . "/../public/uploads/videos/" . $id . "/";
-                $this->getImages ( $imgDir , $data ['Video']);
-            }
+//            if ($_FILES ['Video'] ['name']) {
+//                $imgDir = APPLICATION_PATH . "/../public/uploads/videos/" . $id . "/";
+//                $this->getImages ( $imgDir , $data ['Video']);
+//            }
 
             $jsonObj ["msg"] = 'Cập nhật dữ liệu thành công!';
             $jsonObj ["success"] = true;
@@ -143,7 +140,7 @@ class Website_VideoController extends PublicdetailController {
 		if (count ( $items )) {
 			foreach ( $items as $value ) {
 				if (isset ( $value ['Id'] ) && $value ['Id'] > 0)
-					Website_Model_Lienket::delObj ( $value ['Id'] );
+					Website_Model_Video::delObj ( $value ['Id'] );
 			}
 			$jsonObj ["msg"] = 'Cập nhật dữ liệu  thành công!';
 			$jsonObj ["success"] = true;

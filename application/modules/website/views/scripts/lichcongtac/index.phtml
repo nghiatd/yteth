@@ -37,16 +37,9 @@
 
 	function del(){
 		
-		//var rows = $('#dg').datagrid('getSelected');
-		var rows = $('#dg').datagrid('getRows');
-		var arr = [];
-		
-		for(i=0; i<rows.length; ++i){
-			 if(rows[i]['ck']==1)
-				arr.push(1);	 
-		}	
-		console.log(arr);
-		console.log(rows);
+
+		var rows = $('#dg').datagrid('getSelections');
+
 		items = rows.length;
 		if (items > 0){
 			$.messager.confirm('Thông báo','Bạn có chắc chắn muốn '+items+' phần tử xóa?',function(r){
@@ -94,7 +87,7 @@
 	data-options="border:false,fit:true,singleSelect:true,fitColumns:false,selectOnCheck:false,checkOnSelect:false">
 	<thead>
 		<tr>
-			<th data-options="field:'ck',checkbox:true"></th>
+
 			<th field="TieuDe" width="150" sortable="true">Tiêu Đề</th>
 			<th field="F" width="200" sortable="true">File</th>
 			<th field="NgayTao" width="150" sortable="true">Ngày tạo</th>

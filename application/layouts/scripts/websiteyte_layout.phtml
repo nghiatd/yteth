@@ -43,8 +43,9 @@
 <link rel="stylesheet" type="text/css"
 	href="<?php echo $this->baseUrl ();?>/public/websiteyte/css/960.css" />
 	<?php */ ?>
-	<?php echo $this->minifyHeadLink()
-	
+	<?php
+    //echo $this->minifyHeadLink()
+	echo $this->headLink()
 	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/superfish.css')
 	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/fontello/fontello.css')
 	->appendStylesheet($this->baseUrl ().'/public/websiteyte/css/ui.css')
@@ -295,7 +296,8 @@
 		
 		
 		
-	<?php echo $this->minifyHeadScript()
+	<?php
+    echo $this->minifyHeadScript()
 	->appendFile($this->baseUrl().'/public/websiteyte/js/jquery.js')
 	
 	->appendFile($this->baseUrl().'/public/websiteyte/js/easing.min.js')

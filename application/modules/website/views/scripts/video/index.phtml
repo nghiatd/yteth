@@ -17,11 +17,12 @@
 		var row = $('#dg').datagrid('getSelected');
 
 		if (row){
+            console.log(row);
 			$('#dlg').dialog('open').dialog('setTitle','Sửa');
             $('#video-name').html(row.V);
 			$('#fm').form('load',row);
-			url = 'video/update/Id/'+ row.Id +'/'+'/TrangThai/'+row.TrangThai+'/Video/'+row.V;
-			console.log(url);
+			url = 'video/update/Id/'+ row.Id +'/'+'/TrangThai/'+row.TrangThai;
+
             return false;
 		}else{
 			$.messager.show({
@@ -34,14 +35,14 @@
 	}
 
 	function del(){
-		var rows = $('#dg').datagrid('getChecked');
+		var rows = $('#dg').datagrid('getSelections');
 		
 		
 		items = rows.length;
 		if (items > 0){
 			$.messager.confirm('Thông báo','Bạn có chắc chắn muốn '+items+' phần tử xóa?',function(r){
 				if (r){
-					$.post('lienket/del',{items:rows},function(result){
+					$.post('video/del',{items:rows},function(result){
 						if (result.success){
 							$('#dg').datagrid('reload');	
 							show_messager('Cập nhật dữ liệu thành công!');
@@ -85,7 +86,6 @@
 	<thead>
 		<tr>
 			<th field="TieuDe" width="200" sortable="true">Tiêu Đề</th>
-			<th field="V" width="150" sortable="true">Video</th>
 			<th field="T" width="430" sortable="true">Trạng Thái</th>
 			<th field="Id" data-options="hidden:true">Id</th>
 		</tr>
@@ -115,14 +115,16 @@
 					class="easyui-validatebox" style="width: 200px"
 					onkeypress="return beta(event)"></td>
 			</tr>
-			<tr>
-				<td>
-					<div>Video:</div>
-				</td>
-				<td class=""><input type="file" id="Video" name="Video" />
-                    <p id="video-name"></p>
+            <tr>
+                <td>
+                    <div>Video:</div>
                 </td>
-			</tr>
+                <td class="2Col">
+                    <!-- thay doi ten class easyui-text thanh  easyui-validatebox--> <textarea
+                        rows="200" style="height: 200px; overflow: hidden;" cols="50"
+                        name="Video" id="Video"></textarea>
+                </td>
+            </tr>
 			<tr>
 				<td>
 					<div>Trạng Thái:</div>

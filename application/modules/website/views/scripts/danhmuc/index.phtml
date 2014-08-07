@@ -32,7 +32,7 @@
 	}
 
 	function del(){
-		var rows = $('#dg').datagrid('getChecked');
+		var rows = $('#dg').datagrid('getSelections');
 		
 		
 		items = rows.length;
@@ -81,7 +81,7 @@
 	data-options="border:false,fit:true,singleSelect:true,fitColumns:false,selectOnCheck:false,checkOnSelect:false">
 	<thead>
 		<tr>
-			<th data-options="field:'ck',checkbox:true"></th>
+
 			<th field="TieuDe" width="200" sortable="true">Tên Danh Mục</th>
 			<th field="SapXep" width="150" sortable="true">Sắp Xếp</th>
 			<th field="T" width="430" sortable="true">Trạng Thái</th>

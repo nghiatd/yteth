@@ -59,7 +59,7 @@ class Website_Model_Video {
 		$result = array ();
 		$query = self::$db->query ( "SELECT COUNT(*) AS Total FROM tbl_video WHERE ThongtincoquanId = $thongtincoquanid" );
 		$row = $query->fetchAll ();
-		$query = self::$db->query ( "SELECT Id, TieuDe, Video as V, TrangThai,
+		$query = self::$db->query ( "SELECT Id, TieuDe, Video, TrangThai,
 				if(TrangThai=1, 'Cho Phép', 'Không cho phép') as T
 				
 				 FROM tbl_video WHERE ThongtincoquanId = $thongtincoquanid ORDER BY $sort $order LIMIT $offset, $rows" );
@@ -201,7 +201,7 @@ class Website_Model_Video {
 		$result ['rows'] = $query->fetchAll ();
 		return $result;
 	}
-	public static function dupliObj($id, $Video = null, $thongtincoquanid) {
+	public static function dupliObj($id, $TieuDe = null, $thongtincoquanid) {
 		if (self::$db == null) {
 			self::$db = Zend_Registry::get ( "db" );
 		}

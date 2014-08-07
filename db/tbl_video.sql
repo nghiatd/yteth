@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 05, 2014 at 03:07 AM
+-- Generation Time: Aug 07, 2014 at 02:59 AM
 -- Server version: 5.6.16
 -- PHP Version: 5.5.11
 
@@ -29,33 +29,19 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `tbl_video` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TieuDe` varchar(256) DEFAULT NULL,
-  `Video` varchar(256) DEFAULT NULL,
+  `Video` text,
   `TrangThai` tinyint(1) DEFAULT NULL,
   `ThongtincoquanId` int(11) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='latin1_swedish_ci' AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='latin1_swedish_ci' AUTO_INCREMENT=20 ;
 
 --
 -- Dumping data for table `tbl_video`
 --
 
 INSERT INTO `tbl_video` (`Id`, `TieuDe`, `Video`, `TrangThai`, `ThongtincoquanId`) VALUES
-(1, 'video moi', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 1, 6),
-(2, 'ggg', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 1, 6),
-(3, 'afsdf', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(4, 'hfhfg', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(5, 'fgjgj', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(6, 'afsdf', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(7, 'afsdf', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(8, 'fghdfg', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(9, 'fghdfg', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(10, 'kkkk', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 0, 6),
-(11, 'fadfs', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 1, 6),
-(12, 'aaaaaaaaaaaaaaaaa', '', 0, 6),
-(13, 'ggggggggg', 'teenage-mutant-ninja-turtles-_-official-tv-spot-_5-(2014)-[hd].mp4', 0, 6),
-(14, 'fadfs22222222', NULL, 1, 6),
-(15, 'ggggggggg12', NULL, 0, 6),
-(16, 'aaaaaaaaaaaaaaaaa191', 'the-flash-_-teaser-_-arrow-meets-the-flash.mp4', 1, 6);
+(18, 'video moi', '<object width="420" height="315"><param name="movie" value="//www.youtube.com/v/t7lGgpwqXQ0?hl=en_US&amp;version=3&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="//www.youtube.com/v/t7lGgpwqXQ0?hl=en_US&amp;version=3&amp;rel=0" type="application/x-shockwave-flash" width="420" height="315" allowscriptaccess="always" allowfullscreen="true"></embed></object>', 1, 6),
+(19, 'video 2', '<object width="420" height="315"><param name="movie" value="//www.youtube.com/v/sjaRbCEx708?hl=en_US&amp;version=3&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="//www.youtube.com/v/sjaRbCEx708?hl=en_US&amp;version=3&amp;rel=0" type="application/x-shockwave-flash" width="420" height="315" allowscriptaccess="always" allowfullscreen="true"></embed></object>', 1, 6);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

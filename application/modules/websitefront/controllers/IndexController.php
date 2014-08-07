@@ -67,6 +67,7 @@ class Websitefront_IndexController extends PublicdetailController {
 		// Websitefront_Model_Tintuc::getTinTheoDanhMuc(22, 3,
 		// $this->TblThongtincoquanbyId[0]['Id']);
 		$this->view->Videos = Websitefront_Model_Video::getFetObj($this->coquanId);
+
 		$this->view->TinMoiNhat = Websitefront_Model_Tintuc::getTinOderBy ( '', 'NgayTao DESC', 8, $this->coquanId );
 		$this->view->TinXemNhieu = Websitefront_Model_Tintuc::getTinOderBy ( '', 'LuotXem DESC', 8, $this->coquanId );
 		$this->view->LuotBL = Websitefront_Model_Tintuc::getTinOderBy ( '', 'LuotBL DESC', 8, $this->coquanId );

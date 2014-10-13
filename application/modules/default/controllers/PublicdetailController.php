@@ -1,6 +1,6 @@
 <?php
 class PublicdetailController extends Zend_Controller_Action {
-	
+
 	protected $TblUserbyId;
 	protected $IdUser, $TblTencoquan;
 	// field: Id,User,
@@ -20,7 +20,7 @@ class PublicdetailController extends Zend_Controller_Action {
 	public function initValue() {
 
 		$Info = Zend_Auth::getInstance ()->getStorage ()->read ();
-		
+
 		$this->IdUser = $Info->Id;
 		if ($this->IdUser == null) {
 			$auth = Zend_Auth::getInstance ();
@@ -40,27 +40,27 @@ class PublicdetailController extends Zend_Controller_Action {
 		$this->setlayout();
 	}
 	public function indexAction() {
-		
+
 	}
-	
+
 	protected function setfortblAction() {
 		$this->TblUserbyId = Model_Publicdetail::ReturnTblAdminbyId ();
 		$this->TblThongtincoquanbyId = Model_Publicdetail::ReturnTblThongtincoquanById ();
 		$this->TblTinhbytramId = Model_Publicdetail::ReturnTblTinhByTramId ();
 		$this->TblDongia = Model_Publicdetail::ReturnTblDongia ();
 		$this->TblTencoquan = $this->TblThongtincoquanbyId;
-		
+
 	}
 	public  function setlayout()
 	{
 		$this->layout = new Zend_Layout();
-	
+
 		$Info = Zend_Auth::getInstance ()->getStorage ()->read ();
 		$this->IdUser = $Info->Id;
 
 		Websitefront_Model_Publicdetail::GetIdUser ( $this->IdUser );
 
-		$this->setfortblAction ();		
+		$this->setfortblAction ();
 		$this->layout->Hethong=$this->TblUserbyId [0] ['Hethong'];
 		$this->layout->Nhansu=$this->TblUserbyId [0] ['Nhansu'];
 		$this->layout->Danso=$this->TblUserbyId [0]['Danso'];
@@ -75,17 +75,17 @@ class PublicdetailController extends Zend_Controller_Action {
 		$this->layout->ThongtincoquanId= $this->TblTencoquan[0]['Id'];
 		$this->layout->Hethongchild='none';
 		$this->layout->Nhansuchild='none';
-	
+
 	}
 	/**
 	 * $this->view->namhoatdong = $this->TblThongtincoquanbyId [0] ['Namhoatdong']; // $kq[0]['Namhoatdong'];
 		$this->view->thongtincoquanId = $this->TblThongtincoquanbyId [0] ['Id'];
-		
+
 	 * - convertDate(text) Chuyển đổi định dạng ngày tháng từ ngày/tháng/năm =>
 	 * năm-tháng-ngày
 	 *
 	 * @author Daitk
-	 * @param String $text        	
+	 * @param String $text
 	 * @return String
 	 */
 	public function convertDate($text) {
@@ -137,12 +137,12 @@ class PublicdetailController extends Zend_Controller_Action {
 		return $imgData;
 	}
 	// END Daitk
-	
+
 	public static function strimTitle($title='', $number=15) {
-	
+
 		return implode(' ',array_slice(explode(' ', strip_tags($title)), 0, $number));
 	}
-	
+
 	public static function create_slug($string) {
 		$coDau=array("à","á","ạ","ả","ã","â","ầ","ấ","ậ","ẩ","ẫ","ă","ằ","ắ"
 				,"ặ","ẳ","ẵ","è","é","ẹ","ẻ","ẽ","ê","ề","ế","ệ","ể","ễ","ì","í","ị","ỉ","ĩ",
@@ -181,5 +181,5 @@ class PublicdetailController extends Zend_Controller_Action {
 		$string = strtolower(str_replace($coDau,$khongDau,$string));
 		return str_replace(' ', '-', $string);
 	}
-	
+
 }

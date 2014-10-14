@@ -8,10 +8,6 @@ class Websitefront_IndexController extends PublicdetailController {
 	
 	public function initValue() {
 		$cache = Zend_Registry::get('cache');
-
-		$this->_em = Zend_Registry::getInstance()->entitymanager;
-
-
 	}
 	public function init() {
 		$this->_helper->layout->setLayout ( 'websiteyte_layout' );
@@ -19,16 +15,11 @@ class Websitefront_IndexController extends PublicdetailController {
 	}
 	public function indexAction() {
         $User = new Default_Model_User();
-        $User->setName('new 123us1231231');
-        $User->setAge(425);
-        $this->_em->persist($User);
-//        $this->_em->flush();
+        $data = array('name'=>'array123', 'age' => 'agee2342343e', 'sex' => 'sesssss');
+        $all = $User->getAll();
+//        $all = $User->getById(9);
+        $all = $User->getByCondition(array());
+        var_dump($all[0]->getName());die;
 
-        $all = $this->_em->getRepository('Default_Model_User')->findAll();
-        foreach($all as $value){
-            var_dump($value->getAge());
-        }
-        die;
 	}
 }
-?>

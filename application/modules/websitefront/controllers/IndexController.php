@@ -16,10 +16,11 @@ class Websitefront_IndexController extends PublicdetailController {
 	public function indexAction() {
         $User = new Default_Model_User();
         $data = array('name'=>'array123', 'age' => 'agee2342343e', 'sex' => 'sesssss');
-        $all = $User->getAll();
+//        $User->setData($data);
+//        $all = $User->getAll();
 //        $all = $User->getById(9);
         $all = $User->getByCondition(array());
-        var_dump($all[0]->getName());die;
+        var_dump($all);die;
 
 	}
 }

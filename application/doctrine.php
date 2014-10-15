@@ -31,6 +31,7 @@ APPLICATION_PATH . '/configs/application.ini'
 $application->getBootstrap()->bootstrap('doctrine');
 $em = $application->getBootstrap()->getResource('doctrine');
 
+$product = new Product();
 // generate the Doctrine HelperSet
 $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
 'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),

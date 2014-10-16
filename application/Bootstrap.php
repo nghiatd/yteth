@@ -54,7 +54,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 //        require_once('Doctrine/Common/ClassLoader.php');
 //        require_once('library/vendor/Common/ClassLoader.php');
 
-//        require_once('library/vendor/autoload.php');
+        require_once('library/vendor/autoload.php');
 
         $classLoader = new \Doctrine\Common\ClassLoader(
             'Doctrine',

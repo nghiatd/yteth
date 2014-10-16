@@ -22,13 +22,25 @@ class Websitefront_IndexController extends PublicdetailController {
 //        $all = $User->getByCondition(array());
 //        var_dump($all);die;
 
-        $model = new Default_Model_Product();
-        $model->setName('set from doctrine tool cli');
-        $em = Zend_Registry::getInstance()->entitymanager;
-//        $em->persist($model);
+//        $product = new Default_Model_Product();
+//        $product->setName('set from 123');
+//        $em = Zend_Registry::getInstance()->entitymanager;
+//        $em->persist($product);
+//
+//        $user = new Default_Model_User();
+//        $user->setName('tdn');
+//        $em->persist($user);
+//
 //        $em->flush();
 //        Doctrine\Common\Util\Debug::dump($em);die;
 
+        $User = new Default_Model_User();
+        $product = new Default_Model_Product();
+        $reporter = $User->getById($id = 1);
+        $defaultEngineer = $User->getById(2);
 
+        $product = $product->getById(1);
+
+        
 	}
 }

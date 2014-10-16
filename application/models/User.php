@@ -20,7 +20,7 @@ class Default_Model_User
     protected $assignedBugs = null;
 
     public function __construct(){
-
+        $this->_em = Zend_Registry::getInstance()->entitymanager;
         $this->reporterBugs = new ArrayCollection();
         $this->assignedBugs = new ArrayCollection();
     }
@@ -59,5 +59,9 @@ class Default_Model_User
     {
 
         $this->assignedBugs[] = $bug;
+    }
+
+    public function getById($id = 0){
+        return $this->_em->find(__CLASS__, $id);
     }
 }

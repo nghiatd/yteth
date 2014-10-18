@@ -14,32 +14,77 @@ class Websitefront_IndexController extends PublicdetailController {
 		$this->initValue ();
 	}
 	public function indexAction() {
-//        $User = new Default_Model_User();
-//        $data = array('name'=>'array123', 'age' => 'agee2342343e', 'sex' => 'sesssss');
-////        $User->setData($data);
-////        $all = $User->getAll();
-////        $all = $User->getById(9);
-//        $all = $User->getByCondition(array());
-//        var_dump($all);die;
+ 		$em = Zend_Registry::getInstance()->entitymanager;
+ 		// $allProducts = $em->getRepository('Default_Model_Product')->findAll();
+ 		// foreach ($allProducts as $key => $value) {
+ 		// 	$ProductModel = new Default_Model_Product();
+	  //  		$ProductModel->setName($value->getId().'-'.$value->getName());
+	  //  		$em->persist($ProductModel);
 
-//        $product = new Default_Model_Product();
-//        $product->setName('set from 123');
-//        $em = Zend_Registry::getInstance()->entitymanager;
-//        $em->persist($product);
-//
-//        $user = new Default_Model_User();
-//        $user->setName('tdn');
-//        $em->persist($user);
-//
-//        $em->flush();
+ 		// }
+   		
+   		// $em->flush();die;
+
+       // $product = new Default_Model_User();
+
+       // $product->setName('new user');
+      
+       // $em->persist($product);
+       // $em->flush();
+       // var_dump($product->getId());die;
+       // die;
+
 //        Doctrine\Common\Util\Debug::dump($em);die;
 
-        $User = new Default_Model_User();
-        $product = new Default_Model_Product();
-        $reporter = $User->getById($id = 1);
-        $defaultEngineer = $User->getById(2);
+		
+        // $User = new Default_Model_User();
+        // $product = new Default_Model_Product();
+        
+        // $reporter = $User->getById(1);
+        // $defaultEngineer = $User->getById(2);
 
-        $product = $product->getById(1);
+       
+$bug = new Default_Model_Bug();
+
+$bug->setDescription("Something does not work!");
+$bug->setCreated(new DateTime("now"));
+$bug->setStatus("OPEN");
+
+
+		$allProducts = $em->getRepository('Default_Model_Product')->findAll();
+
+		$reporter = $em->getRepository('Default_Model_User')->find(1);
+		$engineer = $em->getRepository('Default_Model_User')->find(5);
+
+ 		foreach ($allProducts as $key => $value) {
+ 			// var_dump($value);die;
+ 			$product = $em->getRepository('Default_Model_Product')->find($value->getId());
+ 			// var_dump($product);die;
+	   		$bug->assignToProduct($product);
+
+ 		}
+
+ 		$bug->setReporter($reporter);
+ 		$bug->setEngineer($engineer);
+
+$em->persist($bug);
+$em->flush();die;
+
+
+
+       	// $allBugs = $em->getRepository('Default_Model_Bug')->findAll();
+       	// foreach ($allBugs as $key => $value) {
+       	// 	$User = $em->getRepository('Default_Model_Bug')->find($value->getId());
+       	// 	$User->setDescription($value->getId().'-'.$value->getDescription());
+       	// 	$em->persist($User);
+       	// }
+       	// $em->flush();die;
+        // var_dump($reporter->getName())	;
+        // var_dump($defaultEngineer->getName());die;
+
+
+
+
 
         
 	}

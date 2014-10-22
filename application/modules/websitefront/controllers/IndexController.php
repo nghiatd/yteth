@@ -43,7 +43,22 @@ class Websitefront_IndexController extends PublicdetailController {
         // $reporter = $User->getById(1);
         // $defaultEngineer = $User->getById(2);
 
-       
+       $address = $em->getRepository('Default_Model_Address')->find(2);
+       var_dump($address->getUser()->getName());die;
+
+
+$addressModel = new Default_Model_Address();
+$user = $em->getRepository('Default_Model_User')->find(2);
+var_dump($user->getName());die;
+$addressModel->setAddress('new address');
+$addressModel->setUser($user);
+
+$em->persist($addressModel);
+$em->flush();die;
+
+$bug = $em->getRepository('Default_Model_Bug')->find(1);
+var_dump($bug->getEngineer()->getName());die;
+
 $bug = new Default_Model_Bug();
 
 $bug->setDescription("Something does not work!");

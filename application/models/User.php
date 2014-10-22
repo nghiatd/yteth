@@ -61,6 +61,10 @@ class Default_Model_User
         $this->assignedBugs[] = $bug;
     }
 
+    public function setToAddress($address){
+        $this->setToAddress[] = $address;
+    }
+
     public function getById($id = 0){
         return $this->_em->find(__CLASS__, $id);
     }

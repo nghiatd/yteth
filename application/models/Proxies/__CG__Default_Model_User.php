@@ -64,10 +64,10 @@ class Default_Model_User extends \Default_Model_User implements \Doctrine\ORM\Pr
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'reportedBugs', 'assignedBugs', 'id', 'name');
+            return array('__isInitialized__', 'reportedBugs', 'assignedBugs', 'id', 'name', 'addresss');
         }
 
-        return array('__isInitialized__', 'reportedBugs', 'assignedBugs', 'id', 'name');
+        return array('__isInitialized__', 'reportedBugs', 'assignedBugs', 'id', 'name', 'addresss');
     }
 
     /**
@@ -252,6 +252,17 @@ class Default_Model_User extends \Default_Model_User implements \Doctrine\ORM\Pr
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getById', array($id));
 
         return parent::getById($id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAddress()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAddress', array());
+
+        return parent::getAddress();
     }
 
 }

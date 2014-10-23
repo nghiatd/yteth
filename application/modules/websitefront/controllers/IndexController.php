@@ -43,7 +43,80 @@ class Websitefront_IndexController extends PublicdetailController {
         // $reporter = $User->getById(1);
         // $defaultEngineer = $User->getById(2);
 
-       $address = $em->getRepository('Default_Model_Address')->find(2);
+
+// $user = $em->getRepository('Default_Model_User')->find(1);
+// var_dump($user->getAddress());die;
+
+    // $user = $em->getRepository('Default_Model_User')->find(2);
+    $user = new Default_Model_User;
+    $user->setName('autdn122');
+
+    $addressModel = new Default_Model_Address;
+    $addressModel->setAddress('address added automatically24311234');
+    $addressModel->setUser($user);
+
+
+    $addressModel1 = new Default_Model_Address;
+    $addressModel1->setAddress('address added  1');
+    $addressModel1->setUser($user);
+
+
+
+
+    $user->addAdd($addressModel);
+    $user->addAdd($addressModel1);
+    $em->persist($user);
+    $em->flush();
+
+    foreach ($user->getAddress() as $key => $value) {
+      var_dump($value->getAddress());
+      # code...
+    }
+    var_dump($addressModel->getUser()->getId());
+
+    var_dump($addressModel->getUser()->getName());die;
+    
+    // foreach ($user->getAdd() as $key => $value) {
+    //   # code...
+    //   var_dump($value->getAddress());
+    //   var_dump(get_class($value));
+    // }
+
+    var_dump($address->getUser()->getName());die;
+    $bug = $em->getRepository('Default_Model_Bug')->find(2);
+    $product = $em->getRepository('Default_Model_Product')->find(3);
+
+    // var_dump($product->getBugs());die;
+    // var_dump($bug->getEngineer()->getAddress());die;
+    foreach ($bug->getProducts() as $key => $value) {
+      var_dump($value->getName());
+      # code...
+    }
+die;
+
+
+    $bug = new Default_Model_Bug;
+    // var_dump(new DateTime('now'));die;
+    $bug->setDescription('fatal error 123');
+    $bug->setCreated(new DateTime('now'));
+    $bug->setStatus('OPEN')  ;
+
+    foreach ($em->getRepository('Default_Model_Product')->findAll() as $key => $value) {
+      # code...
+      $bug->assignToProduct($value);
+    }
+    $bug->setEngineer($em->getRepository('Default_Model_User')->find(1));
+    $bug->setReporter($em->getRepository('Default_Model_User')->find(2));
+    $em->persist($bug);
+    $em->flush();die;
+
+    $aModel = new Default_Model_Useradd;
+    $aModel->setAddress('address added automatically user 1');
+    $aModel->setUser($em->getRepository('Default_Model_User')->find(1));
+    $em->persist($aModel);
+    $em->flush();
+
+       $address = $em->getRepository('Default_Model_Useradd')->find(3);
        var_dump($address->getUser()->getName());die;
 
 

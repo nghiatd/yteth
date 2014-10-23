@@ -1,4 +1,5 @@
 <?php
+use Doctrine\Common\Collections\ArrayCollection;
 // src/Product.php
 /**
  * @Entity @Table(name="products")
@@ -15,6 +16,16 @@ class Default_Model_Product
      * @var String
      */
     protected $name;
+
+
+     /**
+     * @ManyToMany(targetEntity="Default_Model_Bug", mappedBy="products")
+     **/
+    protected $bugs;
+    
+    public function __construct(){
+        $this->bugs = new ArrayCollection();
+    }
 
     public function getId()
     {

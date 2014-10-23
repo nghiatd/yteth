@@ -14,7 +14,8 @@ class Default_Model_Address
     protected $id;
 
     /**
-     * @ManyToOne(targetEntity="Default_Model_User", inversedBy="setToAddress")
+     * @ManyToOne(targetEntity="Default_Model_User", inversedBy="addresss"	)
+     * @JoinColumn(name="user_id", referencedColumnName="id")
      **/
     protected $user;
 

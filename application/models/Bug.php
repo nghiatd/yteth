@@ -34,6 +34,7 @@ class Default_Model_Bug
 
     /**
      * @ManyToMany(targetEntity="Default_Model_Product")
+     *  @JoinTable(name="default_model_bug_default_model_product")
      **/
     protected $products;
 

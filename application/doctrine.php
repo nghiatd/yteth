@@ -1,4 +1,5 @@
 <?php
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
 define('APPLICATION_ENV', 'production');
 
 define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
@@ -29,7 +30,9 @@ APPLICATION_PATH . '/configs/application.ini'
 
 // bootstrap doctrine
 $application->getBootstrap()->bootstrap('doctrine');
+
 $em = $application->getBootstrap()->getResource('doctrine');
+
 
 
 
@@ -38,5 +41,7 @@ $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
 'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
 'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
 ));
+
+var_dump($helperSet);die;
 
 \Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);

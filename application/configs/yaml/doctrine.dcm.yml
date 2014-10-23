@@ -1,0 +1,69 @@
+---
+detect_relations: true
+options:
+  collate: utf8_general_ci
+  charset: utf8
+  type: InnoDB
+
+Person:
+  tableName: persons
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+      default: 0
+    name:
+      type: string(45)
+
+Job:
+  tableName: jobs
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+    name:
+      type: string(45)
+    started_on:
+      type: timestamp
+    jobscol:
+      type: string(45)
+    persons_id:
+      type: integer(4)
+      primary: true
+      notnull: true
+    companies_id:
+      type: integer(4)
+      primary: true
+      notnull: true
+  relations:
+    person:
+      class: Person
+      local: persons_id
+      foreign: id
+      foreignAlias: jobs
+      foreignType: many
+      owningSide: true
+    company:
+      class: Company
+      local: companies_id
+      foreign: id
+      foreignAlias: jobs
+      foreignType: many
+      owningSide: true
+  indexes:
+    fk_jobs_persons_idx:
+      fields: [persons_id]
+    fk_jobs_companies1_idx:
+      fields: [companies_id]
+
+Company:
+  tableName: companies
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      notnull: true
+    name:
+      type: string(45)

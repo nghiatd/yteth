@@ -14,6 +14,7 @@ class Websitefront_IndexController extends PublicdetailController {
 		$this->initValue ();
 	}
 	public function indexAction() {
+    //http://future500.nl/articles/2013/09/more-on-one-to-manymany-to-one-associations-in-doctrine-2/
  		$em = Zend_Registry::getInstance()->entitymanager;
  		// $allProducts = $em->getRepository('Default_Model_Product')->findAll();
  		// foreach ($allProducts as $key => $value) {

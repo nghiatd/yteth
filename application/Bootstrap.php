@@ -1,4 +1,5 @@
 <?php
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 //	protected function _initDatabase() {
 //		$db = $this->getPluginResource ( 'db' )->getDbAdapter ();
@@ -73,11 +74,15 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
         // choosing the driver for our database schema
         // we'll use annotations
-        $driver = $config->newDefaultAnnotationDriver(
-            APPLICATION_PATH . '/models'
-        );
-        $config->setMetadataDriverImpl($driver);
 
+        // $driver = $config->newDefaultAnnotationDriver(
+        //     APPLICATION_PATH . '/models'
+        // );
+        $driver = new YamlDriver(array(APPLICATION_PATH . '/configs/yaml'));
+
+        // var_dump($driver);die;
+        $config->setMetadataDriverImpl($driver);
+// var_dump($config);die;
         // set the proxy dir and set some options
         $config->setProxyDir(APPLICATION_PATH . '/models/Proxies');
         $config->setAutoGenerateProxyClasses(true);
@@ -86,6 +91,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
         // now create the entity manager and use the connection
         // settings we defined in our application.ini
         $connectionSettings = $this->getOption('doctrine');
+
         $conn = array(
             'driver'    => $connectionSettings['conn']['driv'],
             'user'      => $connectionSettings['conn']['user'],
@@ -96,6 +102,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
         $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
         $platform = $entityManager->getConnection()->getDatabasePlatform();
         $platform->registerDoctrineTypeMapping('enum', 'string');
+
         // push the entity manager into our registry for later use
         $registry = Zend_Registry::getInstance();
         $registry->entitymanager = $entityManager;
